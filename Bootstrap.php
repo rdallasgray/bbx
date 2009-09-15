@@ -46,7 +46,9 @@ class Bbx_Bootstrap {
 		require(SHARED_LIB.'/Bbx/Loader.php');
 
 		@Zend_Loader::registerAutoload('Bbx_Loader');
-		// THIS NEEDS TO BE CHANGED TO WORK WITH ZEND_LOADER_AUTOLOADER BEFORE V2.0
+		//TODO THIS NEEDS TO BE CHANGED TO WORK WITH ZEND_LOADER_AUTOLOADER BEFORE V2.0
+
+//		set_error_handler(array("Bbx_ErrorHandler","errorHandler"));
 
 
 		/**

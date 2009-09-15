@@ -41,7 +41,7 @@ class Admin_ErrorController extends Bbx_Controller_Rest {
 			else {
 				$this->getResponse()->setHttpResponseCode(500);
 			}
-//			$this->_notify($error);
+			$this->_notify($error);
 			break;
 		}
 		
@@ -54,7 +54,7 @@ class Admin_ErrorController extends Bbx_Controller_Rest {
 	}
 
 	protected function _notify($error) {
-		if (isset(Bbx_Config::get()->site->mail->support_address)) {
+/*		if (isset(Bbx_Config::get()->site->mail->support_address)) {
 			try {
 				$mail = Bbx_Mail::instance();
 				$mail->setFrom('error@'.Bbx_Config::get()->site->location,Bbx_Config::get()->site->location);
@@ -65,7 +65,7 @@ class Admin_ErrorController extends Bbx_Controller_Rest {
 			}
 			catch (Exception $e) {
 			}
-		}
+		}*/
 	}
 }
 

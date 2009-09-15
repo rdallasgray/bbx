@@ -46,7 +46,7 @@ class Admin_MetadataController extends Bbx_Controller_Rest {
 		$url = $model->url();
 		$name = Inflector::interscore(Inflector::pluralize(get_class($model)));
 		$toStringPattern = $model->toStringPattern();
-		$metadata = array('url' => $url,'name' => $url,'to_string_pattern' => $toStringPattern);
+		$metadata = array('url' => $url,'name' => $name,'to_string_pattern' => $toStringPattern);
 		$this->view->assign($metadata);
 		$this->_forward('null',null,null,array('format' => 'json','final' => true));
 	}

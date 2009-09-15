@@ -48,7 +48,7 @@ class Bbx_Controller_Rest extends Zend_Controller_Action {
 	protected function _authenticate() {
 		$config = array(
 			'accept_schemes' => 'digest',
-			'realm'          => 'sorchadallas.com',
+			'realm'          => Bbx_Config::get()->env->site->location,
 			'digest_domains' => '/',
 			'nonce_timeout'  => 3600,
 		);
