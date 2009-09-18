@@ -129,7 +129,7 @@ class Bbx_Model_Relationship_Abstract {
 		$this->_select = array_merge_recursive($this->_select,$conditions);
 	}
 
-	public function getCollection(Bbx_Model $parentModel,$forceReload = false) {
+	public function getCollection(Bbx_Model $parentModel, $forceReload = false, $forceCollection = false) {
 		if (!$this->_isInitialised) {
 			$this->_initialise();
 		}
@@ -137,7 +137,18 @@ class Bbx_Model_Relationship_Abstract {
 			$this->_initCollection($parentModel);
 		}
 		if ($this->_type == 'belongsto' || $this->_type == 'hasone') {
-			return $this->_collections[$parentModel->id]->current();
+			if (($this->_collections[$parentModel->id]->current() instanceof Bbx_Model)) {
+				if (!$forceCollection) {
+					return $this->_collections[$parentModel->id]->current();
+				}
+			}
+			else if ($this->_type == 'hasone') {
+				Bbx_Log::write("creating new model");
+				$current = $this->_collections[$parentModel->id]->create();
+				if (!$forceCollection) {
+					return $current;
+				}
+			}
 		}
 		return $this->_collections[$parentModel->id];
 	}
