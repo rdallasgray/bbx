@@ -33,8 +33,6 @@ class Bbx_Model_Collection_Iterator implements SeekableIterator {
 	}
 
 	public function current() {
-//		print_r($this->_collection->getRowset());
-		echo $this->_collection->getRowset()->valid() === false;
 		if ($this->_collection->getRowset()->valid()) {
 			return $this->_collection->getCurrentRowModel();
 		}

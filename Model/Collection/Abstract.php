@@ -150,13 +150,14 @@ abstract class Bbx_Model_Collection_Abstract implements IteratorAggregate,Counta
 	
 	public function create($attributes = array()) {
 		if (isset($this->_relationship)) {
+			Bbx_Log::write('$this->_relationship is set, creating new and reloading');
 			$model = $this->_relationship->create($this->_parentModel,$attributes);
-			$this->_reload($model);
 		}
 		else {
+			Bbx_Log::write('$this->_relationship is NOT set, creating new and reloading');
 			$model = $this->_parentModel->create($attributes);
-			$this->_reload($this->_parentModel);
 		}
+		$this->_reload($this->_parentModel);
 		return $model;
 	}
 	
@@ -184,7 +185,7 @@ abstract class Bbx_Model_Collection_Abstract implements IteratorAggregate,Counta
 	protected function _reload(Bbx_Model $model) {
 		$this->_models = array();
 		if (isset($this->_relationship)) {
-			$c = $this->_relationship->getCollection($model,true);
+			$c = $this->_relationship->getCollection($model,true,true);
 			$this->_rowset = $c->getRowset();
 		}
 	}
