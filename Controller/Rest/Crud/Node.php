@@ -8,7 +8,7 @@ This file is part of Backbox.
 
 Backbox is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software  Foundation, either version 3 of the License, or (at your option) any later version.
  
-Boxes is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Backbox is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with Backbox. If not, see http://www.gnu.org/licenses/.
 
@@ -17,8 +17,6 @@ You should have received a copy of the GNU General Public License along with Bac
 
 
 class Bbx_Controller_Rest_Crud_Node extends Bbx_Controller_Rest_Crud {
-
-	protected $_nodalColumn = "";
 	
 	public function init() {
 		parent::init();
@@ -49,8 +47,7 @@ class Bbx_Controller_Rest_Crud_Node extends Bbx_Controller_Rest_Crud {
 	}
 
 	protected function _put() {
-		$this->model->$_nodalColumn = $this->_getBodyData()->$_nodalColumn;
-		$this->model->save();
+		$this->model->update($this->_getBodyData());
 	}
 
 	protected function _delete() {
