@@ -43,7 +43,7 @@ class Admin_MetadataController extends Bbx_Controller_Rest {
 	}
 	
 	protected function _sendMetadata($model) {
-		$url = $model->url();
+		$url = $model->url(true);
 		$name = Inflector::interscore(Inflector::pluralize(get_class($model)));
 		$toStringPattern = $model->toStringPattern();
 		$metadata = array('url' => $url,'name' => $name,'to_string_pattern' => $toStringPattern);
