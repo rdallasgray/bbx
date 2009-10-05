@@ -26,10 +26,6 @@ class Bbx_Model_Default_User extends Bbx_Model {
 		$this->hasOne('current_admin_session')->source('admin_sessions')
 			->select(array('order'=>'id DESC','where'=>"timein < NOW() AND timeout = '0000-00-00 00:00:00'",'limit'=>1));
 	}
-
-	public function findCurrentAdminSession() {
-		
-	}
 }
 
 ?>
