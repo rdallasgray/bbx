@@ -29,9 +29,9 @@ class Admin_AuthController extends Bbx_Controller_Rest {
 
 	public function loginAction() {
 		$this->_authenticate();
-		//		$this->_user = $this->_resolver->getUser();
-		//		$this->_checkLastLogin();
-		//		$this->_loginUser();
+		$this->_user = $this->_resolver->getUser();
+		$this->_checkLastLogin();
+		$this->_loginUser();
 	}
 
 	public function logoutAction() {
