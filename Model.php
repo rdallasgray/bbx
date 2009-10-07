@@ -22,7 +22,7 @@ class Bbx_Model implements IteratorAggregate {
 	protected $_table;
 	protected $_rowData;
 	protected $_primary;
-	protected $_to_string_pattern = '%id';
+	protected $_to_string_pattern = ':id';
 	protected $_url;
 	protected $_alwaysLinked = array();
 	protected $_neverLinked = array();
@@ -365,6 +365,9 @@ class Bbx_Model implements IteratorAggregate {
 		
 		if ($metadata[$key]['DATA_TYPE'] === 'tinyint') {
 			$value = (int) $value;
+		}
+		if ($metadata[$key]['DATA_TYPE'] === 'date') {
+			$value = Bbx_Date::fixFormat($value);
 		}
 		if ($value === '') {
 			$value = null;
