@@ -48,8 +48,6 @@ class Bbx_Bootstrap {
 		@Zend_Loader::registerAutoload('Bbx_Loader');
 		//TODO THIS NEEDS TO BE CHANGED TO WORK WITH ZEND_LOADER_AUTOLOADER BEFORE V2.0
 
-//		set_error_handler(array("Bbx_ErrorHandler","errorHandler"));
-
 
 		/**
 		* Set up locale, language and charset 
@@ -157,7 +155,7 @@ class Bbx_Bootstrap {
 
 		// LOCALE
 
-		// redo from scratch
+		//TODO redo locale from scratch
 
 
 		/**
@@ -186,10 +184,8 @@ class Bbx_Bootstrap {
 		*/
 
 		Zend_Controller_Action_HelperBroker::addPath(SHARED_LIB.'/Bbx/ActionHelper','Bbx_ActionHelper');
-		//Zend_Controller_Action_HelperBroker::addPath(SITE_ROOT.'/library/Site/ActionHelper','Site_ActionHelper');
 
 		$front->registerPlugin(new Bbx_ControllerPlugin_Startup);
-//		$front->registerPlugin(new Bbx_ControllerPlugin_ExtContext);
 
 
 		/**
@@ -220,14 +216,6 @@ class Bbx_Bootstrap {
 		Zend_Registry::set('db',$db);
 		
 		
-		/**
-		* Set up view
-		*
-		*/
-		
-		Bbx_View::get()->addHelperPath(SHARED_LIB.'/Bbx/View/Helper','Bbx_View_Helper_');
-		Bbx_View::get()->addHelperPath(SITE_ROOT.'/application/modules/'.MODULE_NAME.'/views/helpers','View_Helper_');
-
 		/**
 		* Start Front Controller 
 		*
