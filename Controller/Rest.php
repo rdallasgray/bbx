@@ -20,26 +20,29 @@ class Bbx_Controller_Rest extends Zend_Controller_Action {
 	
 	protected $_resolver;
 	protected $_lastModified;
+	protected $_defaultContext = null;
 	
 	public $contexts = array(
 		'index' => array('json'),
 		'show'  => array('json'),
 		'new'   => array('json')
 	);
+	
+	public function setDefaultContext($c) {
+		$this->_defaultContext = $c;
+	}
 
 	public function init() {
-		$this->_helper->contextSwitch()->initContext();
+		$this->_helper->contextSwitch()->initContext($this->_defaultContext);
 	}
 
 	protected function _setEtag($etag) {
-		
 		if (($ifNoneMatch = $this->getRequest()->getHeader('If-None-Match'))) {
 						
 			if ($ifNoneMatch === $etag) {
 				$this->getResponse()->setHttpResponseCode(304)->sendResponse();
 				exit();
 			}
-			
 		}
 		
 		$this->getResponse()->setHeader('Etag',$etag);

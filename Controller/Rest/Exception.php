@@ -18,12 +18,12 @@ You should have received a copy of the GNU General Public License along with Bac
 
 class Bbx_Controller_Rest_Exception extends Zend_Exception {
 	
-	public function __construct($message,$code = 400,$extra = null) {
+	public function __construct($message = 'Server Error',$code = 400,$extra = null) {
 		
 		switch ($code) {
 			case 401:
 			if (null == $message){
-				$message = 'Not authorised';
+				$message = 'Not Authorised';
 			}
 			break;
 			
@@ -33,9 +33,15 @@ class Bbx_Controller_Rest_Exception extends Zend_Exception {
 			}
 			break;
 			
+			case 404:
+			if (null == $message){
+				$message = 'Not Found';
+			}
+			break;
+			
 			case 405:
 			if (null == $message){
-				$message = 'Method not allowed';
+				$message = 'Method Not Allowed';
 			}
 			Zend_Controller_Front::getInstance()->getResponse()->setHeader('Allow',$extra['allowed_methods']);
 			break;

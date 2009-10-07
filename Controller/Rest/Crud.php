@@ -68,11 +68,9 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 	}
 
 	public function indexAction() {
-
 		$params = $this->_helper->Model->parseParams($this->_getAllParams());
 
 		$collectionName = Inflector::tableize(get_class($this->model));
-
 		if (!isset($this->collection)) {
 			$this->view->$collectionName = $this->model->findAll($params);
 		}
