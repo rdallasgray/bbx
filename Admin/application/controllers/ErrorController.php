@@ -54,7 +54,7 @@ class Admin_ErrorController extends Bbx_Controller_Rest {
 	}
 
 	protected function _notify($error) {
-//		Bbx_Log::write(print_r($error,true));
+		Bbx_Log::write(print_r($error,true));
 /*		if (isset(Bbx_Config::get()->site->mail->support_address)) {
 			try {
 				$mail = Bbx_Mail::instance();
