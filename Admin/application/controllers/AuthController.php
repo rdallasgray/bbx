@@ -24,7 +24,7 @@ class Admin_AuthController extends Bbx_Controller_Rest {
 		$this->_helper->contextSwitch()->addActionContext('error','json');
 		$this->_helper->contextSwitch()->addActionContext('login','json');
 		$this->_helper->contextSwitch()->addActionContext('logout','json');
-		$this->_helper->contextSwitch()->initContext();
+		parent::init();
 	}
 
 	public function loginAction() {
@@ -38,23 +38,27 @@ class Admin_AuthController extends Bbx_Controller_Rest {
 		$this->_authenticate();
 		$this->_user = $this->_resolver->getUser();
 		$session = $this->_user->current_admin_session;
-		if (!empty($session)) {
+		try {
 			$session->close();
+		}
+		catch (Exception $e) {
+			Bbx_Log::write("Unable to close session");
 		}
 	}
 
 	protected function _loginUser() {
 		$session = $this->_user->admin_sessions->create();
-		// doesn't work -- findCurrentAdminSession?
-		$session = $this->_user->current_admin_session;
 	}
 
 	protected function _checkLastLogin() {
-		$lastSession = $this->_user->last_admin_session;
-		if (!empty($lastSession)) {
-			if ($lastSession->timeout == '0000-00-00 00:00:00') {
-				$lastSession->close();
+		$session = $this->_user->last_admin_session;
+		try {
+			if ($session->timeout == '0000-00-00 00:00:00') {
+				$session->close();
 			}
+		}
+		catch (Exception $e) {
+			Bbx_Log::write("Unable to close session");
 		}
 	}
 
