@@ -25,7 +25,7 @@ class Bbx_Model_Default_AdminSession extends Bbx_Model {
 	}
 	
 	protected function _beforeSave() {
-		if ($this->timein == '' | $this->timein == '0000-00-00 00:00:00') {
+		if ($this->timein == '' || $this->timein == '0000-00-00 00:00:00') {
 			$this->setTimeIn();
 		}
 	}
