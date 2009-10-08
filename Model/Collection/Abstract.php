@@ -208,11 +208,11 @@ abstract class Bbx_Model_Collection_Abstract implements IteratorAggregate,Counta
 		return $date->get(Zend_Date::ISO_8601);
 	}
 */	
-	public function etag() {
+	public function etag($extra = null) {
 		
 		$data = $this->getRowset()->getRawData();
 		
-		return md5(serialize($data));
+		return md5(serialize($data).$extra);
 	}
 	
 	public function __destruct() {

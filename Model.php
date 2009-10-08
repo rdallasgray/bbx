@@ -305,20 +305,31 @@ class Bbx_Model implements IteratorAggregate {
 	}
 
 	public function create($attributes = array()) {
-		
+		$this->_beforeCreate();
 		unset($attributes['id']);
-		
-		return $this->build($attributes)->save();
+		$this->build($attributes);
+		$this->_afterCreate();
+		$this->save();
 	}
-
+	
+	protected function _beforeCreate() {
+	}
+	
+	protected function _afterCreate() {
+	}
+	
 	public function save() {
 		$this->_beforeSave();
 		$this->_rowData()->save();
 		Bbx_Log::write('saved model: ('.get_class($this).') '.print_r($this->toArray(),true));
+		$this->_afterSave();
 		return $this;
 	}
 	
 	protected function _beforeSave() {
+	}
+	
+	protected function _afterSave() {
 	}
 
 	public function update($attributes) {
@@ -580,10 +591,10 @@ class Bbx_Model implements IteratorAggregate {
 		
 	}
 */	
-	public function etag() {
+	public function etag($extra = null) {
 		
 		if (isset($this->modified_at)) {
-			return md5($this->modified_at);
+			return md5($this->modified_at.$extra);
 		}
 		
 		$cols = $this->columns();
@@ -593,7 +604,7 @@ class Bbx_Model implements IteratorAggregate {
 			$etagArray[] = $this->$col;
 		}
 		
-		return md5(implode('-',$etagArray)); 
+		return md5(implode('-',$etagArray).$extra); 
 	}
 	
 	public function __destruct() {
