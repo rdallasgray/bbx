@@ -21,10 +21,14 @@ class Bbx_ControllerPlugin_Startup extends Zend_Controller_Plugin_Abstract {
 	public function routeShutdown(Zend_Controller_Request_Abstract $request) {
 
 		$contextHelper = Zend_Controller_Action_HelperBroker::getStaticHelper('contextSwitch');
+		
 		$autoContextHelper = new Bbx_ActionHelper_AutoContext;
 		Zend_Controller_Action_HelperBroker::addHelper($autoContextHelper);
+		
 		$viewRenderer = Zend_Controller_Action_HelperBroker::getExistingHelper('viewRenderer');
+		
 		$module = $request->getModuleName();
+		
 		$path = SITE_ROOT.'/application/modules/'.MODULE_NAME.'/views';
 
 		switch ($module) {
@@ -55,7 +59,7 @@ class Bbx_ControllerPlugin_Startup extends Zend_Controller_Plugin_Abstract {
 			$view->addScriptPath($path.'/scripts');
 
 			$viewRenderer->setView($view);
-			
+
 			if (APP_MODE === 'development') {
 //				ini_set('display_errors',1);
 			}
