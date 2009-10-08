@@ -38,10 +38,9 @@ class Bbx_Controller_Rest extends Zend_Controller_Action {
 
 	protected function _setEtag($etag) {
 		if (($ifNoneMatch = $this->getRequest()->getHeader('If-None-Match'))) {
-						
 			if ($ifNoneMatch === $etag) {
-				$this->getResponse()->setHttpResponseCode(304)->sendResponse();
-				exit();
+//				$this->getResponse()->setHttpResponseCode(304)->sendResponse();
+//				exit();
 			}
 		}
 		
