@@ -16,58 +16,8 @@ You should have received a copy of the GNU General Public License along with Bac
 
 
 
-class Admin_ErrorController extends Bbx_Controller_Rest {
+class Admin_ErrorController extends Bbx_Controller_Rest_Error {
 	
-	public function init() {
-		$this->_helper->contextSwitch()->addActionContext('error','json');
-		$this->_helper->contextSwitch()->initContext();
-	}
-
-	public function errorAction() {
-		Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer')->setNoRender(true);
-		
-		$error = $this->_getParam('error_handler');
-
-		switch ($error->type) {
-			case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_CONTROLLER:
-			case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_ACTION:
-			$this->getResponse()->setHttpResponseCode(404);
-			break;
-
-			default:
-			if ($error['exception'] instanceof Bbx_Controller_Rest_Exception) {
-				$this->getResponse()->setHttpResponseCode($error['exception']->getCode());
-			}
-			else {
-				$this->getResponse()->setHttpResponseCode(500);
-			}
-			$this->_notify($error);
-			break;
-		}
-		
-		$this->view->error = $error['exception']->getMessage();
-		
-		if (isset($error['exception']->errorVars)) {
-			$this->view->errorVars = $error['exception']->errorVars;
-		}
-		
-	}
-
-	protected function _notify($error) {
-		Bbx_Log::write(print_r($error,true));
-/*		if (isset(Bbx_Config::get()->site->mail->support_address)) {
-			try {
-				$mail = Bbx_Mail::instance();
-				$mail->setFrom('error@'.Bbx_Config::get()->site->location,Bbx_Config::get()->site->location);
-				$mail->setBodyText(print_r($error,true));
-				$mail->addTo(Bbx_Config::get()->site->mail->support_address);
-				$mail->setSubject('Error at '.Bbx_Config::get()->site->location);
-				$mail->send();
-			}
-			catch (Exception $e) {
-			}
-		}*/
-	}
 }
 
 ?>
