@@ -77,8 +77,8 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		else {
 			$this->view->$collectionName = $this->collection;
 		}
-		
-		$this->_setEtag($this->view->$collectionName->etag());
+
+		$this->_setEtag($this->view->$collectionName->etag($this->_helper->contextSwitch()->getCurrentContext()));
 
 		if ($this->_helper->contextSwitch()->getCurrentContext() === 'json') {
 			$this->view->assign($this->view->$collectionName->toArray(array(/*'include'=>$includes,*/'deep'=>true)));
@@ -91,7 +91,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			$modelName = Inflector::underscore(get_class($this->model));
 			$this->view->$modelName = $this->model;
 		
-			$this->_setEtag($this->view->$modelName->etag());
+			$this->_setEtag($this->view->$modelName->etag($this->_helper->contextSwitch()->getCurrentContext()));
 		
 			if ($this->_helper->contextSwitch()->getCurrentContext() === 'json') {
 				$this->view->assign($this->view->$modelName->toArray());
