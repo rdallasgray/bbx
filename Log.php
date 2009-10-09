@@ -39,6 +39,13 @@ class Bbx_Log {
 		
 		return $logger->info($str);
 	}
+	
+	public static function debug($str, $type = 'info', $log = 'main_log') {
+		if (APP_MODE === 'development') {
+			return Bbx_Log::write($str, $type, $log);
+		}
+		return null;
+	}
 
 }
 

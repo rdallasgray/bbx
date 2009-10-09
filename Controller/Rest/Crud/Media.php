@@ -24,7 +24,7 @@ class Bbx_Controller_Rest_Crud_Media extends Bbx_Controller_Rest_Crud {
 			$this->getResponse()->setHttpResponseCode(204)->sendResponse();
 			exit();
 		}
-		
+
 		$model = isset($this->collection) ? $this->collection : $this->model;
 		$mimeType = ($model instanceof Bbx_Model) ? $model->getMimeType() : Bbx_Model::load($model->getModelName())->getMimeType();		
 		
@@ -34,14 +34,15 @@ class Bbx_Controller_Rest_Crud_Media extends Bbx_Controller_Rest_Crud {
 			
 		if ($upload->receive()) {
 			
-			Bbx_Log::write("upload received");
+			Bbx_Log::debug("upload received");
 			
 			$files = $upload->getFileInfo();
 			$media = $files['file_data'];
 			
-			Bbx_Log::write(print_r($media,true));
+			Bbx_Log::debug(print_r($media,true));
 
 			$new_model = $model->create($this->_getBodyData());
+			Bbx_Log::debug(print_r($new_model,true));
 			$new_model->attachMedia($media['tmp_name']);
 			$new_model->save();
 					
@@ -50,7 +51,7 @@ class Bbx_Controller_Rest_Crud_Media extends Bbx_Controller_Rest_Crud {
 			$this->_forward('show',null,null,array('format' => 'json','id' => $new_model->id,'final' => true));
 		}
 		else {
-			Bbx_Log::write('Upload failed: '.implode($upload->getMessages()));
+			Bbx_Log::debug('Upload failed: '.implode($upload->getMessages()));
 			throw new Bbx_Controller_Rest_Exception('Upload failed: '.implode($upload->getMessages()),500);
 		}
 		

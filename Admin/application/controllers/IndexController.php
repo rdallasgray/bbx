@@ -28,7 +28,7 @@ class Admin_IndexController extends Zend_Controller_Action {
 	}
 	
 	public function __call($method,$args) {
-		Bbx_Log::write("Invalid method called on admin/index/: ".$method);
+		Bbx_Log::debug("Invalid method called on admin/index/: ".$method);
 	}
 
 }

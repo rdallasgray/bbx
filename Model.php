@@ -322,7 +322,7 @@ class Bbx_Model implements IteratorAggregate {
 	public function save() {
 		$this->_beforeSave();
 		$this->_rowData()->save();
-		Bbx_Log::write('saved model: ('.get_class($this).') '.print_r($this->toArray(),true));
+		Bbx_Log::debug('saved model: ('.get_class($this).') '.print_r($this->toArray(),true));
 		$this->_afterSave();
 		return $this;
 	}
@@ -350,7 +350,7 @@ class Bbx_Model implements IteratorAggregate {
 	}
 
 	public function delete() {
-		Bbx_Log::write('deleting model: ('.get_class($this).') '.print_r($this->toArray(),true));
+		Bbx_Log::debug('deleting model: ('.get_class($this).') '.print_r($this->toArray(),true));
 		$this->_rowData()->delete();
 	}
 

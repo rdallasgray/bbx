@@ -18,16 +18,24 @@ You should have received a copy of the GNU General Public License along with Bac
 
 class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 	
+	protected $_error;
+	
 	public function init() {
+//		$context = $this->getRequest()->getParam('format');
 		$this->_helper->contextSwitch()->addActionContext('error','json');
-		$this->_helper->contextSwitch()->initContext();
+		$this->_helper->contextSwitch()->initContext('json');
+//		Bbx_Log::debug("Error context: ".$this->_helper->contextSwitch()->getCurrentContext());
+//		Bbx_Log::debug(print_r($this->_getParam('error_handler'),true));
 	}
 
 	public function errorAction() {
+/*		if ($this->_helper->contextSwitch()->getCurrentContext() === 'json') {
+			Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer')->setNoRender(true);
+		}
+*/		
+		$this->_error = $this->_getParam('error_handler');
 
-		$error = $this->_getParam('error_handler');
-
-		switch ($error->type) {
+		switch ($this->_error->type) {
 			case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_CONTROLLER:
 			case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_ACTION:
 			$this->getResponse()->setHttpResponseCode(404);
@@ -37,41 +45,47 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 			break;
 
 			default:
-			if ($error['exception'] instanceof Bbx_Controller_Rest_Exception) {
-				$this->getResponse()->setHttpResponseCode($error['exception']->getCode());
+			if ($this->_error['exception'] instanceof Bbx_Controller_Rest_Exception) {
+				$this->getResponse()->setHttpResponseCode($this->_error['exception']->getCode());
 			}
 			else {
 				$this->getResponse()->setHttpResponseCode(500);
 			}
 			if ($this->getResponse()->getHttpResponseCode() == 500) {
-				$this->_notify($error);
+				$this->_notify();
 			}
 			else {
-				$this->_log($error);
+				$this->_log();
+			}
+			
+			$this->view->error = $this->_error['exception']->getMessage();
+		
+			if (isset($this->_error['exception']->errorVars)) {
+				$this->view->errorVars = $this->_error['exception']->errorVars;
 			}
 			break;
 		}
 		
-		if (!isset($this->view->error)) {
-			$this->view->error = $error['exception']->getMessage();
-		}
-		
-		if (!isset($this->view->errorVars) && isset($error['exception']->errorVars)) {
-			$this->view->errorVars = $error['exception']->errorVars;
+		if ($this->_helper->contextSwitch()->getCurrentContext() === 'json') {
+			$vars = isset($this->view->errorVars) ? $this->view->errorVars : array();
+			$this->getResponse()->setBody($this->view->error."\n\n".implode("\n",$vars));
+			$this->view->clearVars();
+			$this->getResponse()->sendResponse();
+			exit();
 		}
 	}
 
-	protected function _log($error) {
-		Bbx_Log::write($error->exception->getMessage()."::".$error->request->getRequestUri());
+	protected function _log() {
+		Bbx_Log::write($this->_error->exception->getMessage()."::".$this->_error->request->getRequestUri());
 	}
 
-	protected function _notify($error) {
-		Bbx_Log::write(print_r($error,true));
+	protected function _notify() {
+		Bbx_Log::debug(print_r($this->_error,true));
 /*		if (isset(Bbx_Config::get()->site->mail->support_address)) {
 			try {
 				$mail = Bbx_Mail::instance();
 				$mail->setFrom('error@'.Bbx_Config::get()->site->location,Bbx_Config::get()->site->location);
-				$mail->setBodyText(print_r($error,true));
+				$mail->setBodyText(print_r($this->_error,true));
 				$mail->addTo(Bbx_Config::get()->site->mail->support_address);
 				$mail->setSubject('Error at '.Bbx_Config::get()->site->location);
 				$mail->send();
