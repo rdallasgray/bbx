@@ -76,7 +76,7 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 	
 	protected function _createSizedMedia(Bbx_Media_Image $img) {
 		
-		Bbx_Log::write("Creating sized media");
+		Bbx_Log::debug("Creating sized media");
 		
 			foreach($this->_sizes as $size => $values) {
 				list($width,$height) = explode('x',$values);

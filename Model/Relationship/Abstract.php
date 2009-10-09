@@ -143,7 +143,7 @@ class Bbx_Model_Relationship_Abstract {
 				}
 			}
 			else if ($this->_type == 'hasone') {
-				Bbx_Log::write("creating new model");
+				Bbx_Log::debug("creating new model");
 				$current = $this->_collections[$parentModel->id]->create();
 				if (!$forceCollection) {
 					return $current;
