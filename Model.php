@@ -310,6 +310,7 @@ class Bbx_Model implements IteratorAggregate {
 		$this->build($attributes);
 		$this->_afterCreate();
 		$this->save();
+		return $this;
 	}
 	
 	protected function _beforeCreate() {
