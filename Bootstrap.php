@@ -42,7 +42,7 @@ class Bbx_Bootstrap {
 
 
 		require(SHARED_LIB.'/Zend/Loader.php');
-		require(SHARED_LIB.'/Zend/Loader/AutoLoader.php');
+//		require(SHARED_LIB.'/Zend/Loader/AutoLoader.php');
 		require(SHARED_LIB.'/Bbx/Loader.php');
 
 		@Zend_Loader::registerAutoload('Bbx_Loader');
