@@ -24,12 +24,11 @@ class Bbx_ActionHelper_AutoContext extends Zend_Controller_Action_Helper_Abstrac
 		$mime = explode('/',$mainType);
 		
 		
-		if ($mime[1] !== 'html') {
+		if ($mime[1] !== '') {
 			try {
 				if ($this->getRequest()->getParam('format') == '') {
 					$this->getRequest()->setParam('format',$mime[1]);
 				}
-				$this->getActionController()->setDefaultContext($mime[1]);
 			}
 			catch (Exception $e) {
 			}

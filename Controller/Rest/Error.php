@@ -21,18 +21,12 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 	protected $_error;
 	
 	public function init() {
-//		$context = $this->getRequest()->getParam('format');
 		$this->_helper->contextSwitch()->addActionContext('error','json');
-		$this->_helper->contextSwitch()->initContext('json');
-//		Bbx_Log::debug("Error context: ".$this->_helper->contextSwitch()->getCurrentContext());
-//		Bbx_Log::debug(print_r($this->_getParam('error_handler'),true));
+		$this->_helper->contextSwitch()->initContext();
 	}
 
 	public function errorAction() {
-/*		if ($this->_helper->contextSwitch()->getCurrentContext() === 'json') {
-			Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer')->setNoRender(true);
-		}
-*/		
+
 		$this->_error = $this->_getParam('error_handler');
 
 		switch ($this->_error->type) {
