@@ -41,12 +41,15 @@ class Bbx_Model_Relationship_HasAndBelongsToMany extends Bbx_Model_Relationship_
 	}
 	
 	protected function _findCollection(Bbx_Model $parentModel) {
+		
+		$select = $this->_select();
+
 		$rowset = $parentModel->getRowData()->findManyToManyRowset(
 			$this->_model()->getTable(),
 			$this->_joinTable(),
 			$this->_parentClassName,
 			$this->_childClassName,
-			$this->_select()
+			$select
 		);
 		$this->_collections[$parentModel->id] = new Bbx_Model_Collection($parentModel,$rowset,$this);
 	}
@@ -60,6 +63,12 @@ class Bbx_Model_Relationship_HasAndBelongsToMany extends Bbx_Model_Relationship_
 	}
 	
 	public function create(Bbx_Model $parentModel, $attributes = array()) {
+		if (array_key_exists('id',$attributes)) {
+			$model = Bbx_Model::load($this->_childClassName)->find($attributes['id']);
+			if ($model instanceof Bbx_Model) {
+				return $this->append($parentModel, $model);
+			}
+		}
 		$model = Bbx_Model::load($this->_childClassName)->create($attributes);
 		$this->_joinTable()->insert(array($this->_parentRefColumn => $parentModel->id, $this->_childRefColumn => $model->id));
 		unset($this->_collections[$parentModel->id]);
@@ -74,7 +83,8 @@ class Bbx_Model_Relationship_HasAndBelongsToMany extends Bbx_Model_Relationship_
 	public function append(Bbx_Model $parentModel, Bbx_Model $childModel) {
 		unset($this->_collections[$parentModel->id]);
 		echo "Append: Inserting ".$this->_parentRefColumn.": ".$parentModel->id.", ".$this->_childRefColumn.": ".$childModel->id."\n";
-		return $this->_joinTable()->insert(array($this->_parentRefColumn => $parentModel->id, $this->_childRefColumn => $childModel->id));
+		$this->_joinTable()->insert(array($this->_parentRefColumn => $parentModel->id, $this->_childRefColumn => $childModel->id));
+		return $childModel;
 	}
 
 }
