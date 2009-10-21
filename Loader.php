@@ -23,6 +23,18 @@ class Bbx_Loader extends Zend_Loader {
 	}
 
 	public static function autoload($class) {
+		
+		if (substr($class,-10) === 'Controller') {
+			try {
+				self::loadClass($class,array(
+					SITE_ROOT.'/application/modules/'.MODULE_NAME.'/controllers'
+				));
+				return $class;
+			} 
+			catch (Exception $e) {
+			}
+		}
+		
 		try {
 			self::loadClass($class,array(
 				SHARED_LIB.'/Bbx/Vendor',
