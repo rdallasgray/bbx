@@ -20,6 +20,7 @@ class Bbx_Model_Relationship_Abstract {
 	
 	protected $_parentModel;
 	protected $_childName;
+	protected $_childModelName;
 	protected $_parentClassName;
 	protected $_parentRefColumn;
 	protected $_throughName;
@@ -58,10 +59,12 @@ class Bbx_Model_Relationship_Abstract {
 			$this->_polymorphicKey = Inflector::singularize($childName).'_id';
 			$this->_polymorphicType = Inflector::singularize($childName).'_type';
 			$this->_childName = $this->_parentModel->{$this->_polymorphicType};
+			$this->_childModelName = $this->_childName;
 		}
 		else {
 			// could do this out of registry
 			$this->_childName = isset($source) ? $source : $childName;
+			$this->_childModelName = $childName;
 		}
 		
 		if (isset($as)) {
@@ -89,12 +92,12 @@ class Bbx_Model_Relationship_Abstract {
 		$this->_select = $this->_originalSelect;
 	}
 	
-	protected function _model($childName = null) {
-		$childName = $childName ? $childName : $this->_childName;
-		if (!isset($this->_models[$childName])) {
-			$this->_models[$childName] = Bbx_Model::load($childName);
+	protected function _model($childModelName = null) {
+		$childModelName = $childModelName ? $childModelName : $this->_childModelName;
+		if (!isset($this->_models[$childModelName])) {
+			$this->_models[$childModelName] = Bbx_Model::load($childModelName);
 		}
-		return $this->_models[$childName];
+		return $this->_models[$childModelName];
 	}
 	
 	protected function _initialise() {
