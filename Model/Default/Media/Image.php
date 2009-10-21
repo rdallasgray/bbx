@@ -60,14 +60,14 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 		
 		try {
 			$img = Bbx_Media_Image::load($file);
+
 			$img->setResolution(300)->save($this->getMediaPath());
-			
+
 			$this->width = $img->width();
 			$this->height = $img->height();
 			$this->save();
 			
 			$this->_createSizedMedia($img);
-			
 		}
 		catch (Exception $e) {
 			throw new Bbx_Model_Exception('There was a problem attaching media to '.get_class($this));
