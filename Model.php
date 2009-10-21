@@ -458,7 +458,7 @@ class Bbx_Model implements IteratorAggregate {
 	}
 
 	public function __call($method,$arguments) {
-		if (in_array($method,array('belongsTo','hasOne','hasMany','hasAndBelongsToMany','hasManyThrough'))) {
+		if (in_array($method,array('belongsTo','hasOne','hasMany'))) {
 			return Bbx_Model_Registry::get('Relationships')->register(get_class($this),$arguments[0])->key($method);
 		}
 		throw new Bbx_Model_Exception('Unknown method: '.$method);
