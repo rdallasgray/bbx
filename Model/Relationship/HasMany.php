@@ -34,7 +34,7 @@ class Bbx_Model_Relationship_HasMany extends Bbx_Model_Relationship_Abstract {
 			$this->_parentClassName,
 			$this->_select()
 		);
-		$this->_collections[$parentModel->id] = new Bbx_Model_Collection($parentModel,$rowset,$this);
+		$this->_collections[$parentModel->id] = new Bbx_Model_Collection($parentModel,$rowset,$this,$this->_childModelName);
 	}
 	
 	public function create(Bbx_Model $parentModel, $attributes = array()) {
