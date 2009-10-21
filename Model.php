@@ -30,7 +30,6 @@ class Bbx_Model implements IteratorAggregate {
 	protected $_validationsInited = false;
 	protected $_isInitialised = false;
 	protected $_params = array();
-	protected $_foreignParams = array();
 	protected $_iterator;
 	protected $_defaultParams = array();
 
