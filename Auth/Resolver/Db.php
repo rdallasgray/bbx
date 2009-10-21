@@ -27,7 +27,6 @@ class Bbx_Auth_Resolver_Db implements Zend_Auth_Adapter_Http_Resolver_Interface 
 			return null;
 		}
 		$this->_user = $user;
-//		return (md5($username.':'.$realm.':'.$user->password));
 		return ($user->password);
 	}
 	
