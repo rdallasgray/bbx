@@ -33,7 +33,7 @@ class Bbx_Model_Relationship_HasManyThrough extends Bbx_Model_Relationship_Abstr
 		);
 		$rowset = new Bbx_Db_Table_Rowset($config);
 				
-		$this->_collections[$parentModel->id] = new Bbx_Model_Collection($parentModel,$rowset,$this);
+		$this->_collections[$parentModel->id] = new Bbx_Model_Collection($parentModel,$rowset,$this,$this->_childModelName);
 	}
 	
 	protected function _hasManyRowset($select,$parentModel) {
@@ -47,13 +47,13 @@ class Bbx_Model_Relationship_HasManyThrough extends Bbx_Model_Relationship_Abstr
 	}
 	
 	public function create(Bbx_Model $parentModel, $attributes = array()) {
-		$child = Bxs_Model::load($this->_childName)->create($attributes);
+		$child = Bbx_Model::load($this->_childName)->create($attributes);
 		$throughAttributes = array(
 			Inflector::singularize($this->_childName).'_id' => $child->id,
 			$this->_polymorphicType = $this->_parentName,
 			$this->_polymorphicKey = $parentModel->id
 		);
-		$through = Bxs_Model::load($this->_throughName)->create($throughAttributes);
+		$through = Bbx_Model::load($this->_throughName)->create($throughAttributes);
 		return $child;
 	}
 	
@@ -63,7 +63,7 @@ class Bbx_Model_Relationship_HasManyThrough extends Bbx_Model_Relationship_Abstr
 			$this->_polymorphicType = $this->_parentName,
 			$this->_polymorphicKey = $parentModel->id
 		);
-		return Bxs_Model::load($this->_throughName)->find($throughConditions)->delete();
+		return Bbx_Model::load($this->_throughName)->find($throughConditions)->delete();
 	}
 
 }
