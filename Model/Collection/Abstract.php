@@ -60,7 +60,6 @@ abstract class Bbx_Model_Collection_Abstract implements IteratorAggregate,Counta
 		if (array_key_exists($row->{$this->_primary},$this->_models)) {
 			return $this->_models[$row->{$this->_primary}];
 		}
-		$row->setModelName($this->getModelName());
 		$model = Bbx_Model::load($this->getModelName());
 		$model->setRowData($row);
 		$this->_models[$row->{$this->_primary}] = $model;
