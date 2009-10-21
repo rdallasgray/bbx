@@ -30,11 +30,17 @@ class Bbx_Model implements IteratorAggregate {
 	protected $_validationsInited = false;
 	protected $_isInitialised = false;
 	protected $_params = array();
+	protected $_foreignParams = array();
 	protected $_iterator;
+	protected $_defaultParams = array();
 
 	public function __construct() {
 		$this->_tableName = isset($this->_tableName) ? $this->_tableName : Inflector::tableize(get_class($this));
 		$this->_initSelf();
+	}
+
+	public function getDefaultParams() {
+		return $this->_defaultParams;
 	}
 
 	public function getIterator() {
@@ -158,18 +164,25 @@ class Bbx_Model implements IteratorAggregate {
 	}
 
 	public function findAll() {
-		
+
 		$args = func_get_args();
+		$select = $this->select();
 		
+		if (!empty($this->_defaultParams)) {
+			foreach($this->_defaultParams as $key=>$value) {
+				$select->$key($value);
+			}
+		}
 		if (empty($args)) {
-			return new Bbx_Model_Collection($this,$this->_table()->fetchAll());
+			$c = new Bbx_Model_Collection($this,$this->_table()->fetchAll($select));
+			return $c;
 		}
 		if (is_numeric($args[0])) {
 			$c = new Bbx_Model_Collection($this,$this->_table()->find($args[0]));
 			return $c;
 		}
 		if (is_array($args[0])) {
-			return $this->findWithParams($args[0]);
+			return $this->findWithParams($args[0],$select);
 		}
 		if ($args[0] instanceof Zend_Db_Table_Select) {
 			return new Bbx_Model_Collection($this,$this->_table()->fetchAll($args[0]));
@@ -183,21 +196,25 @@ class Bbx_Model implements IteratorAggregate {
 		return $c->current();
 	}
 	
-	public function findWithParams(array $params) {
-		
+	public function findWithParams(array $params,$select = null) {
+
 		$parsedParams = $this->parseParams($params);
 		
-		if (empty($parsedParams)) {
-			return new Bbx_Model_Collection($this,$this->_table()->fetchAll());
+		if ($select === null) {
+			$select = $this->select();
 		}
 		
-		$select = $this->select();
+		if (empty($parsedParams)) {
+			return new Bbx_Model_Collection($this,$this->_table()->fetchAll($select));
+		}
 
 		foreach($parsedParams as $key=>$val) {
-			$select->where("`".$key."` = ?",$val);
+			if (strpos($key,'`') === false) {
+				$key = '`'.$key.'`';
+			}
+			$select->where($key.' = ?',$val);
 		}
 		
-		$t = $this->_table()->fetchAll($select);
 		return new Bbx_Model_Collection($this,$this->_table()->fetchAll($select));
 	}
 	
@@ -418,7 +435,7 @@ class Bbx_Model implements IteratorAggregate {
 		}
 		catch (Exception $e) {
 			try {
-				return $this->_getRelationship($key);
+				return $this->_getRelationship(Inflector::underscore($key));
 			}
 			catch (Exception $e) {
 				throw new Bbx_Model_Exception("Trying to get value of uninitialised variable '$key': ".get_class($this));
@@ -579,19 +596,7 @@ class Bbx_Model implements IteratorAggregate {
 	public function label() {
 		return $this->__toString();
 	}
-/*	
-	public function modificationDate() {
-		
-		$date = new Zend_Date(Zend_Date::ISO_8601);
 
-		$modificationDate = (isset($this->modified_at)) ? $this->modified_at : $date;
-		
-		$date->set($modificationDate,Zend_Date::ISO_8601);
-		
-		return $date->get(Zend_Date::ISO_8601);
-		
-	}
-*/	
 	public function etag($extra = null) {
 		
 		if (isset($this->modified_at)) {
