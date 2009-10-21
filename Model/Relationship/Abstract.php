@@ -29,7 +29,7 @@ class Bbx_Model_Relationship_Abstract {
 	protected $_collections = array();
 	protected $_models = array();
 	protected $_type;
-	protected $_originalSelect;
+	protected $_originalSelect = array();
 	protected $_select = array();
 	protected $_isInitialised = false;
 	protected $_parentRow;
@@ -46,12 +46,14 @@ class Bbx_Model_Relationship_Abstract {
 
 		if (isset($through)) {
 			$this->_throughName = $through;
+			$this->_throughModel = Bbx_Model::load($this->_throughName);
 		}
 		if (isset($select)) {
 			$this->_originalSelect = $select;
 			$this->_select = $select;
 		}
 		if (isset($polymorphic)) {
+			// belongsTo only
 			$this->_polymorphic = true;
 			$this->_polymorphicKey = Inflector::singularize($childName).'_id';
 			$this->_polymorphicType = Inflector::singularize($childName).'_type';
@@ -63,19 +65,28 @@ class Bbx_Model_Relationship_Abstract {
 		}
 		
 		if (isset($as)) {
+			// hasMany(Through) only
 			$this->_polymorphic = true;
-			$this->_polymorphicKey = Inflector::singularize($this->_childName).'_id';
-			$this->_polymorphicType = Inflector::singularize($as).'_type';
+			$this->_polymorphicKey = $as.'_id';
+			$this->_polymorphicType = $as.'_type';
+			$polymorphicTable = isset($this->_throughModel) ? 
+				Inflector::tableize($this->_throughModel->getTable()->info('name')) : 
+				Inflector::tableize($this->_childName);
 			
 			$this->_parentRefColumn = $as.'_id';
-			$type = isset($this->_throughName) ? Inflector::singularize($this->_throughName) : Inflector::singularize($this->_parentName);
-			$typeSelect = array('where'=>array("`".Inflector::tableize($this->_childName)."`.`".$as."_type` = '".$type."'"));
-			$this->_select = array_merge_recursive((array)$this->_select,$typeSelect);
+			$type = Inflector::singularize($this->_parentName);
+			$typeSelect = array('where'=>array("`".$polymorphicTable."`.`".$as."_type` = '".$type."'"));
+			$this->_originalSelect = array_merge_recursive((array)$this->_originalSelect,$typeSelect);
 		}
 		else {
 			$this->_parentRefColumn = Inflector::singularize($this->_parentName).'_id';
 		}
 		$this->_models[$this->_childName] = Bbx_Model::load($this->_childName);
+		$this->_originalSelect = array_merge_recursive(
+			$this->_originalSelect,
+			$this->_convertForSelect($this->_models[$this->_childName]->getDefaultParams())
+		);
+		$this->_select = $this->_originalSelect;
 	}
 	
 	protected function _model($childName = null) {
@@ -97,12 +108,26 @@ class Bbx_Model_Relationship_Abstract {
 	protected function _findCollection(Bbx_Model $parentModel) {
 	}
 	
+	protected function _convertForSelect($params) {
+		$select = array();
+		
+		foreach($params as $key=>$value) {
+			if (is_array($value)) {
+				$value = array('args'=>$value);
+			}
+			$select[$key] = $value;
+		}
+		return $select;
+	}
+	
 	protected function _select() {
 		if (empty($this->_select)) {
 			return null;
 		}
 		$select = $this->_model()->getTable()->select();
+
 		foreach ($this->_select as $keyword=>$condition) {
+			
 			if (!is_array($condition)) {
 				$select->$keyword($condition);
 			}
@@ -126,6 +151,7 @@ class Bbx_Model_Relationship_Abstract {
 	}
 	
 	protected function _selectConditions($conditions) {
+		$this->_select = $this->_originalSelect;
 		$this->_select = array_merge_recursive($this->_select,$conditions);
 	}
 
@@ -143,7 +169,6 @@ class Bbx_Model_Relationship_Abstract {
 				}
 			}
 			else if ($this->_type == 'hasone') {
-				Bbx_Log::debug("creating new model");
 				$current = $this->_collections[$parentModel->id]->create();
 				if (!$forceCollection) {
 					return $current;
@@ -170,13 +195,15 @@ class Bbx_Model_Relationship_Abstract {
 				return;
 			}
 			foreach($parsedParams as $key=>$val) {
+				if (strpos($key,'`') === false) {
+					$key = '`'.$key.'`';
+				}
 				$conditions['where'][] = array('args'=>array($key.' = ?',$val));
 			}
 		}
 		else {
 			$conditions['where'] = $params;
 		}
-
 		$this->_selectConditions($conditions);
 	}
 	
