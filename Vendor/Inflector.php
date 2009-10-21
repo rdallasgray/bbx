@@ -249,7 +249,7 @@ class Inflector
 
 	public static function latinize($word) {
 		$word = preg_replace(
-			array('/[äàá]/ui','/[éè]/ui','/[öóò]/ui','/[ü]/ui','/[ÄÀÁ]/ui','/[ÉÈ]/ui','/[ÖÓÒ]/ui','/[Ü]/ui'),
+			array('/[äàáå]/ui','/[éè]/ui','/[öóò]/ui','/[ü]/ui','/[ÄÀÁ]/ui','/[ÉÈ]/ui','/[ÖÓÒ]/ui','/[Ü]/ui'),
 			array('a','e','o','u','A','E','O','U'),
 			$word
 		);
