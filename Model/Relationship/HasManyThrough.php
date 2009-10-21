@@ -21,13 +21,10 @@ class Bbx_Model_Relationship_HasManyThrough extends Bbx_Model_Relationship_Abstr
 	protected $_throughName;
 
 	protected function _findCollection(Bbx_Model $parentModel) {
-		$r = Bbx_Model_Registry::get('Relationships')->getRelationshipDataFor(get_class($parentModel),$this->_throughName);
-		$type = reset(array_keys($r));
 		$select = isset($this->_select) ? $this->_select() : $this->_model()->getTable()->select();
-		$func = '_'.$type.'Rowset';
 		
-		$stmt = $this->$func($select,$parentModel)->query();
-		
+		$stmt = $this->_hasManyRowset($select,$parentModel)->query();
+
 		$config = array(
             'table'    => $this->_model()->getTable(),
             'data'     => $stmt->fetchAll(Zend_Db::FETCH_ASSOC),
@@ -40,33 +37,33 @@ class Bbx_Model_Relationship_HasManyThrough extends Bbx_Model_Relationship_Abstr
 	}
 	
 	protected function _hasManyRowset($select,$parentModel) {
-		return $select
+		$select
 			->from($this->_childName)
 			->from($this->_throughName,array())
-			->where("`".$this->_childName."`.`".$this->_parentRefColumn."` = `".$this->_throughName."`.`id`")
-			->where("`".$this->_throughName."`.`".Inflector::singularize($this->_parentName)."_id` = ".$parentModel->id)
+			->where("`".$this->_throughName."`.`".$this->_parentRefColumn."` = ".$parentModel->id)
+			->where("`".$this->_throughName."`.`".Inflector::singularize($this->_childName)."_id` = `".$this->_childName."`.`id`")
 			->setIntegrityCheck(false);
-	}
-	
-	protected function _hasAndBelongsToManyRowset($select,$parentModel) {
-		$joinTable = Bbx_Model_JoinTable::findName($this->_parentName,$this->_throughName);
-		
-		return $select
-			->from($this->_childName)
-			->from($joinTable,array())
-			->where("`".$this->_childName."`.`".$this->_parentRefColumn."` = `".$joinTable."`.`".Inflector::singularize($this->_throughName)."_id`")
-			->where("`".$joinTable."`.`".Inflector::singularize($this->_parentName)."_id` = ".$parentModel->id)
-			->setIntegrityCheck(false);
+		return $select;
 	}
 	
 	public function create(Bbx_Model $parentModel, $attributes = array()) {
-		throw new Zend_Exception('HasManyThrough cannot create');
-		// it flipping should be able to
+		$child = Bxs_Model::load($this->_childName)->create($attributes);
+		$throughAttributes = array(
+			Inflector::singularize($this->_childName).'_id' => $child->id,
+			$this->_polymorphicType = $this->_parentName,
+			$this->_polymorphicKey = $parentModel->id
+		);
+		$through = Bxs_Model::load($this->_throughName)->create($throughAttributes);
+		return $child;
 	}
 	
 	public function delete(Bbx_Model $parentModel, $id) {
-		throw new Zend_Exception('HasManyThrough cannot delete');
-		// ditto
+		$throughConditions = array(
+			Inflector::singularize($this->_childName).'_id' => $id,
+			$this->_polymorphicType = $this->_parentName,
+			$this->_polymorphicKey = $parentModel->id
+		);
+		return Bxs_Model::load($this->_throughName)->find($throughConditions)->delete();
 	}
 
 }
