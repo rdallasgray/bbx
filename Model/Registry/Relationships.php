@@ -21,6 +21,7 @@ class Bbx_Model_Registry_Relationships extends Bbx_Model_Registry_Abstract {
 	public function getRelationship(Bbx_Model $parentModel,$childName) {
 		$parentName = get_class($parentModel);
 		$this->endCurrentRegistration();
+
 		if (!$this->_isRegistered($parentName,$childName)) {
 			throw new Zend_Exception('No relationship registered for '.$parentName.'-'.$childName);
 		}
