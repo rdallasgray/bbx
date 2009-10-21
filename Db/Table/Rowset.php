@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License along with Bac
 
 
 
-class Bbx_Db_Table_Rowset extends Zend_Db_Table_Rowset_Abstract {
+class Bbx_Db_Table_Rowset extends Zend_Db_Table_Rowset {
 
 	public function getRawData() {
 		return $this->_data;
