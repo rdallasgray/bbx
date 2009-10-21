@@ -26,8 +26,9 @@ abstract class Bbx_Model_Collection_Abstract implements IteratorAggregate,Counta
 	protected $_string;
 	protected $_iterator;
 
-	public function __construct(Bbx_Model $parentModel, Bbx_Db_Table_Rowset $rowset, $relationship = null) {
+	public function __construct(Bbx_Model $parentModel, Bbx_Db_Table_Rowset $rowset, $relationship = null, $childModelName = null) {
 		$this->_parentModel = $parentModel;
+		$this->_childModelName = $childModelName ? $childModelName : get_class($parentModel);
 		$this->_rowset = $rowset;
 		$this->_relationship = $relationship;
 		$this->_table = $this->_rowset->getTable();
@@ -44,7 +45,7 @@ abstract class Bbx_Model_Collection_Abstract implements IteratorAggregate,Counta
 	}
 	
 	public function getModelName() {
-		return Inflector::classify($this->_table->info('name'));
+		return $this->_childModelName;
 	}
 	
 	public function getRowset() {
@@ -59,7 +60,8 @@ abstract class Bbx_Model_Collection_Abstract implements IteratorAggregate,Counta
 		if (array_key_exists($row->{$this->_primary},$this->_models)) {
 			return $this->_models[$row->{$this->_primary}];
 		}
-		$model = Bbx_Model::load(Inflector::classify($this->_table->info('name')));
+		$row->setModelName($this->getModelName());
+		$model = Bbx_Model::load($this->getModelName());
 		$model->setRowData($row);
 		$this->_models[$row->{$this->_primary}] = $model;
 		return $model;
@@ -189,25 +191,7 @@ abstract class Bbx_Model_Collection_Abstract implements IteratorAggregate,Counta
 			$this->_rowset = $c->getRowset();
 		}
 	}
-/*	
-	public function modificationDate() {
-		
-		$data = $this->getRowset()->getRawData();
-		$date = new Zend_Date();
 
-//		if (count($data) === 0) {
-			return $date->get(Zend_Date::ISO_8601);
-//		}
-		
-		$sortFunc = create_function('$a,$b','return $a["modified_at"] < $b["modified_at"];');
-		
-		usort($data,$sortFunc);
-
-		$date->set($data[0]['modified_at'],Zend_Date::ISO_8601);
-		
-		return $date->get(Zend_Date::ISO_8601);
-	}
-*/	
 	public function etag($extra = null) {
 		
 		$data = $this->getRowset()->getRawData();
