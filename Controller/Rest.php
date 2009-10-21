@@ -28,7 +28,7 @@ class Bbx_Controller_Rest extends Zend_Controller_Action {
 	);
 
 	public function init() {
-		$this->_helper->contextSwitch()->initContext($this->_defaultContext);
+		$this->_helper->contextSwitch()->initContext();
 	}
 
 	protected function _setEtag($etag) {
