@@ -23,6 +23,10 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 	public function init() {
 		$this->_helper->contextSwitch()->addActionContext('error','json');
 		$this->_helper->contextSwitch()->initContext();
+		$front = Zend_Controller_Front::getInstance();
+		if ($plugin = Zend_Controller_Front::getInstance()->getPlugin('Bbx_ControllerPlugin_NestedLayouts')) {
+			$plugin->clearLayouts();
+		}
 	}
 
 	public function errorAction() {
