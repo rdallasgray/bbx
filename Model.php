@@ -49,21 +49,32 @@ class Bbx_Model implements IteratorAggregate {
 		return $this->_iterator;
 	}
 
-	public static function load($name) {
+	public static function load($name,$forceInit = false) {
 		$class = Inflector::classify($name);
 		if (Zend_Registry::isRegistered('models::'.$class)) {
-			return new $class;
+			$model = new $class;
 		}
 		if (@class_exists($class)) {
 			Zend_Registry::set('models::'.$class,"");
-			return new $class;
+			$model = new $class;
 		}
-		$class = 'Bbx_Model_Default_'.$class;
+/*		$class = 'Bbx_Model_Default_'.$class;
 		if (@class_exists($class)) {
 			Zend_Registry::set('models::'.$class,"");
-			return new $class;
-		}	
+			$model = new $class;
+		}*/
+		if (isset($model)) {
+			if ($forceInit) {
+				return $model->forceInit();
+			}
+			return $model;
+		}
 		throw new Bbx_Model_Exception('No model was found named '.$name);
+	}
+	
+	public function forceInit() {
+		$this->_init();
+		return $this;
 	}
 	
 	public function columns() {
@@ -90,6 +101,10 @@ class Bbx_Model implements IteratorAggregate {
 
 	public function getTable() {
 		return $this->_table();
+	}
+
+	public function getTableName() {
+		return $this->_tableName;
 	}
 
 	public function getPrimary() {
@@ -388,14 +403,16 @@ class Bbx_Model implements IteratorAggregate {
 	
 	protected function _dbise($key,$value) {
 		$metadata = $this->_table()->info('metadata');
-		
 		$value = trim($value);
 		
 		if ($metadata[$key]['DATA_TYPE'] === 'tinyint') {
 			$value = (int) $value;
 		}
 		if ($metadata[$key]['DATA_TYPE'] === 'date') {
-			$value = Bbx_Date::fixFormat($value);
+			$value = Bbx_Date::fixDateFormat($value);
+		}
+		if ($metadata[$key]['DATA_TYPE'] === 'datetime') {
+			$value = Bbx_Date::fixDateTimeFormat($value);
 		}
 		if ($value === '') {
 			$value = null;
