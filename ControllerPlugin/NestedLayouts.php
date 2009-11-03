@@ -29,8 +29,7 @@ class Bbx_ControllerPlugin_NestedLayouts extends Zend_Controller_Plugin_Abstract
 		$mvcLayout = Zend_Layout::getMvcInstance();
 		$mvcContentKey = $mvcLayout->getContentKey();
 		
-		$this->_layoutsAtPostDispatch = array_reverse($this->_layouts);
-		
+		$this->_layoutsAtShutdown = array_reverse($this->_layouts);
 		$view = $this->_cloneView();
 
 		$layout = new Zend_Layout(array(
@@ -46,15 +45,15 @@ class Bbx_ControllerPlugin_NestedLayouts extends Zend_Controller_Plugin_Abstract
 			$this->getResponse()->setBody($body);
 		}
 		
-		$newLayouts = array_diff($this->_layouts,$this->_layoutsAtPostDispatch);
+		$newLayouts = array_diff($this->_layouts,$this->_layoutsAtShutdown);
 		
 		if (count($newLayouts) > 0) {
-			$this->_layouts = array_diff($this->_layouts,$this->_layoutsAtPostDispatch);
+			$this->_layouts = array_diff($this->_layouts,$this->_layoutsAtShutdown);
 			$this->_renderLayouts();
 		}
 	}
 
-	public function postDispatch() {
+	public function dispatchLoopShutdown() {
 		$this->_renderLayouts();
 	}
 	
@@ -63,6 +62,10 @@ class Bbx_ControllerPlugin_NestedLayouts extends Zend_Controller_Plugin_Abstract
         $view->clearVars();
         return $view;
     }
+
+	public function clearLayouts() {
+		$this->_layouts = array();
+	}
 
 }
 
