@@ -59,7 +59,6 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			case 'PUT':
 			case 'DELETE':
 			case 'OPTIONS':
-
 			$this->_authenticate();
 			
 			$method = '_'.Inflector::underscore($request->getMethod());
@@ -139,7 +138,6 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 	}
 	
 	protected function _head() {
-//TODO return only proper headers
 	}
 	
 	protected function _options() {
