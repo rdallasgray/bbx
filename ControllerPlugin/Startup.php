@@ -37,12 +37,15 @@ class Bbx_ControllerPlugin_Startup extends Zend_Controller_Plugin_Abstract {
 
 			default:
 			$view = Bbx_View::get();
+			
+			$view->setUseStreamWrapper(true);
 
 			$modelHelper = new Bbx_ActionHelper_Model;
 			$urlHelper = new Zend_Controller_Action_Helper_Url;
 
 			Zend_Controller_Action_HelperBroker::addHelper($modelHelper);
 			Zend_Controller_Action_HelperBroker::addHelper($urlHelper);
+			$contextHelper->addContext('html',array());
 
 			$view->addHelperPath(SHARED_LIB.'/Bbx/View/Helper','Bbx_View_Helper');
 			$view->addHelperPath($path.'/helpers','ViewHelper');
