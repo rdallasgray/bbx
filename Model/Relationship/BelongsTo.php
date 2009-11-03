@@ -21,7 +21,7 @@ class Bbx_Model_Relationship_BelongsTo extends Bbx_Model_Relationship_Abstract {
 	protected $_foreignKey;
 	
 	protected function _initialise() {
-		$this->_foreignKey = isset($this->_polymorphicKey) ? $this->_polymorphicKey : Inflector::singularize($this->_childName).'_id';
+		$this->_foreignKey = isset($this->_polymorphicKey) ? $this->_polymorphicKey : Inflector::singularize($this->_childTableName).'_id';
 	}
 
 	protected function _findCollection(Bbx_Model $parentModel) {
@@ -29,21 +29,42 @@ class Bbx_Model_Relationship_BelongsTo extends Bbx_Model_Relationship_Abstract {
 		$this->_collections[$parentModel->id] = $this->_model($polyType)->findAll($parentModel->{$this->_foreignKey});
 	}
 	
+	public static function getExternalConditions($select,$parentModel,$childName,$attributes) {
+
+		$parentModelName = get_class($parentModel);
+		$parentTableName = $parentModel->getTableName();
+		
+		$childName = array_key_exists('source',$attributes) ? attributes('source') : $childName;
+		$childModelName = Inflector::classify($childName);
+		$childTableName = Bbx_Model::load($childModelName)->getTableName();
+		
+		$refColumn = Inflector::singularize($childTableName).'_id';
+		
+		if (!array_key_exists($childTableName,$select->getPart('from'))) {
+			$select->from($childTableName,array());
+		}
+		
+		$select->where("`".$parentTableName."`.`".$refColumn."` = `".$childTableName."`.`id`");
+		
+		return $select;
+	}
+	
+/* SHOULD NOT BE CREATING OR DELETING BELONGS_TO MODELS	
 	public function create(Bbx_Model $parentModel, $attributes = array()) {
 		if ($this->_polymorphic) {
-			$attributes[$this->_polymorphicType] = Inflector::lowercase($this->_parentClassName);
+			$attributes[$this->_polymorphicType] = Inflector::underscore($this->_parentModelName);
 			$attributes[$this->_polymorphicKey] = $parentModel->id;
 		}
-		$model = Bbx_Model::load(Inflector::classify($this->_childName))->create($attributes);
+		$model = Bbx_Model::load($this->_childModelName)->create($attributes);
 		unset($this->_collections[$parentModel->id]);
 		return $model;
 	}
 	
 	public function delete(Bbx_Model $parentModel, $id) {
 		unset($this->_collections[$parentModel->id]);
-		$model = Bbx_Model::load(Inflector::classify($this->_childName))->find($id)->delete();
+		$model = Bbx_Model::load($this->_childModelName)->find($id)->delete();
 	}
-
+*/
 }
 
 ?>

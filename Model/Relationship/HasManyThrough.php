@@ -18,12 +18,37 @@ You should have received a copy of the GNU General Public License along with Bac
 
 class Bbx_Model_Relationship_HasManyThrough extends Bbx_Model_Relationship_Abstract {
 
-	protected $_throughName;
-
 	protected function _findCollection(Bbx_Model $parentModel) {
-		$select = isset($this->_select) ? $this->_select() : $this->_model()->getTable()->select();
 		
-		$stmt = $this->_hasManyRowset($select,$parentModel)->query();
+		$select = (isset($this->_select) && !empty($this->_select)) ? $this->_select() : $this->_model()->getTable()->select();
+
+		$this->_parentRelationship = Bbx_Model_Registry::get('Relationships')->getRelationshipDataFor(
+			$this->_parentModelName,$this->_throughName);
+			
+		$parentType = reset(array_keys($this->_parentRelationship));		
+		$parentAttributes = $this->_parentRelationship[$parentType];
+		$relationshipType = 'Bbx_Model_Relationship_'.ucwords($parentType);
+		if (array_key_exists('through',$parentAttributes)) {
+			$relationshipType .= 'Through';
+		}
+		
+		$select->from($this->_childTableName);
+		$select = $relationshipType::getExternalConditions($select,$parentModel,$this->_throughName,$parentAttributes);
+
+		$this->_throughRelationship = Bbx_Model_Registry::get('Relationships')->getRelationshipDataFor(
+			$this->_throughModelName,$this->_childName);
+			
+		$throughType = reset(array_keys($this->_throughRelationship));
+		$throughAttributes = $this->_throughRelationship[$throughType];
+		$throughRelationshipType = 'Bbx_Model_Relationship_'.ucwords($throughType);
+		
+		if ($throughType == 'belongsTo') {
+			$this->_childName = Inflector::singularize($this->_childName);
+		}
+
+		$select = $throughRelationshipType::getExternalConditions($select,$this->_throughModel,$this->_childName,$throughAttributes);
+
+		$stmt = $select->query();
 
 		$config = array(
             'table'    => $this->_model()->getTable(),
@@ -36,34 +61,65 @@ class Bbx_Model_Relationship_HasManyThrough extends Bbx_Model_Relationship_Abstr
 		$this->_collections[$parentModel->id] = new Bbx_Model_Collection($parentModel,$rowset,$this,$this->_childModelName);
 	}
 	
-	protected function _hasManyRowset($select,$parentModel) {
-		$select
-			->from($this->_childName)
-			->from($this->_throughName,array())
-			->where("`".$this->_throughName."`.`".$this->_parentRefColumn."` = ".$parentModel->id)
-			->where("`".$this->_throughName."`.`".Inflector::singularize($this->_childName)."_id` = `".$this->_childName."`.`id`")
-			->setIntegrityCheck(false);
-		return $select;
-	}
-	
 	public function create(Bbx_Model $parentModel, $attributes = array()) {
-		$child = Bbx_Model::load($this->_childName)->create($attributes);
-		$throughAttributes = array(
-			Inflector::singularize($this->_childName).'_id' => $child->id,
-			$this->_polymorphicType = $this->_parentName,
-			$this->_polymorphicKey = $parentModel->id
-		);
-		$through = Bbx_Model::load($this->_throughName)->create($throughAttributes);
+		$child = Bbx_Model::load($this->_childModelName)->create($attributes);
+		$through = Bbx_Model::load($this->_throughModelName)->create($this->_getThroughConditions($parentModel, $child->id));
 		return $child;
 	}
 	
-	public function delete(Bbx_Model $parentModel, $id) {
+	public function delete(Bbx_Model $parentModel, $childId) {
+		return Bbx_Model::load($this->_throughModelName)->find($this->_getThroughConditions($parentModel,$childId))->delete();
+	}
+	
+	protected function _getThroughConditions($parentModel, $childId) {
 		$throughConditions = array(
-			Inflector::singularize($this->_childName).'_id' => $id,
-			$this->_polymorphicType = $this->_parentName,
-			$this->_polymorphicKey = $parentModel->id
+			Inflector::singularize($this->_childTableName).'_id' => $childId,
+			$this->_parentRefColumn => $parentModel->id
 		);
-		return Bbx_Model::load($this->_throughName)->find($throughConditions)->delete();
+		if (isset($this->_polymorphicType)) {
+			$throughConditions[$this->_polymorphicType] = Inflector::singularize(Inflector::underscore($this->_parentModelName));
+		}
+		
+		return $throughConditions;
+	}
+	
+	public static function getExternalConditions($select,$parentModel,$childName,$attributes) {
+		
+		$parentModelName = get_class($parentModel);
+		$parentTableName = $parentModel->getTableName(); //artists
+
+		$childName = array_key_exists('source',$attributes) ? attributes('source') : $childName;
+		$childModelName = Inflector::classify($childName);
+		$childTableName = Bbx_Model::load($childModelName)->getTableName(); //exhibitions
+
+		$throughName = $attributes['through']; //artist_showings
+		$throughModelName = Inflector::classify($throughName);
+		$throughTableName = Bbx_Model::load($throughModelName)->getTableName();
+		
+		if (!array_key_exists($childTableName,$select->getPart('from'))) {
+			$select->from($childTableName,array()); // exhibitions
+		}
+		
+		if (array_key_exists('as',$attributes)) {
+			$refColumn = $attributes['as'].'_id';
+			$polyType = $attributes['as'].'_type';
+		}
+		else {
+			$refColumn = Inflector::singularize($parentTableName).'_id';
+		}
+
+		$select
+			->from($throughTableName,array()) // artist_showings
+			->where("`".$throughTableName."`.`".$refColumn."` = ".$parentModel->id) // artist_showings.artist_id = {id}
+			->where("`".$throughTableName."`.`".Inflector::singularize($childTableName)."_id` = `".$childTableName."`.id");
+			// artist_showings.exhibition_id = exhibitions.id
+		if (array_key_exists('as',$attributes)) {
+			$select
+				->where("`".$throughTableName."`.`".$polyType."` = '".Inflector::singularize($parentTableName)."'");
+				// artist_showings.subject_type = artist
+		}
+
+		return $select;
 	}
 
 }

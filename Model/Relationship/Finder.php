@@ -20,18 +20,33 @@ class Bbx_Model_Relationship_Finder implements IteratorAggregate,Countable {
 	
 	protected $_relationship;
 	protected $_parentModel;
-	protected $_collection;
+	protected $_collection = null;
+	protected $_clearFlag = false;
+	protected $_sig;
 	
-	public function __construct(Bbx_Model_Relationship_Abstract $relationship,Bbx_Model $parentModel) {
+	public function __construct(Bbx_Model_Relationship_Abstract $relationship) {
 		$this->_relationship = $relationship;
+		$this->_sig = substr(md5(microtime()),-3);
+	}
+	
+	public function setParentModel(Bbx_Model $parentModel) {
+		if (isset($this->_parentModel) && ($this->_parentModel->id !== $parentModel->id)) {
+			$this->_setClearFlag(true);
+		}
 		$this->_parentModel = $parentModel;
+		$this->_collection = null;
 	}
 	
 	protected function _collection() {
-		if (!isset($this->_collection)) {
-			$this->_collection = $this->_relationship->getCollection($this->_parentModel);
+		if ($this->_collection === null || $this->_clearFlag) {
+			$this->_collection = $this->_relationship->getCollection($this->_parentModel,$this->_clearFlag);
 		}
+		$this->_setClearFlag(false);
 		return $this->_collection;
+	}
+	
+	protected function _setClearFlag($bool) {
+		$this->_clearFlag = $bool;
 	}
 	
 	public function getIterator() {
@@ -58,11 +73,22 @@ class Bbx_Model_Relationship_Finder implements IteratorAggregate,Countable {
 		if ($params !== 'all' && !empty($params)) {
 			$this->_relationship->setFindParams($params);
 		}
-		return $this->_collection();
+		$this->_setClearFlag(true);
+		$c = $this->_collection();
+		$this->_setClearFlag(true);
+		return $c;
 	}
 	
 	public function find($params) {
 		return $this->findAll($params)->current();
+	}
+	
+	public function select($conditions) {
+		$this->_relationship->select($conditions);
+		$this->_setClearFlag(true);
+		$c = $this->_collection();
+		$this->_setClearFlag(true);
+		return $c;
 	}
 	
 	public function __toString() {

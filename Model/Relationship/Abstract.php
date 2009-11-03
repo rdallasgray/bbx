@@ -18,12 +18,15 @@ You should have received a copy of the GNU General Public License along with Bac
 
 class Bbx_Model_Relationship_Abstract {
 	
-	protected $_parentModel;
 	protected $_childName;
 	protected $_childModelName;
-	protected $_parentClassName;
+	protected $_childTableName;
+	protected $_parentModelName;
 	protected $_parentRefColumn;
+	protected $_throughModelName;
 	protected $_throughName;
+	protected $_throughModel;
+	protected $_throughTableName;
 	protected $_polymorphic;
 	protected $_polymorphicKey;
 	protected $_polymorphicType;
@@ -34,21 +37,18 @@ class Bbx_Model_Relationship_Abstract {
 	protected $_select = array();
 	protected $_isInitialised = false;
 	protected $_parentRow;
-	protected $_parentName;
+	protected $_parentTableName;
+	protected $_finder;
 	
 	public function __construct(Bbx_Model $parentModel,$childName,array $attributes) {
-		$this->_parentModel = $parentModel;
+		$this->_childName = $childName;
 		
 		extract($attributes);
 		
-		$this->_parentName = $this->_parentModel->getTable()->info('name');
-		$this->_parentClassName = get_class($this->_parentModel);
+		$this->_parentTableName = $parentModel->getTable()->info('name');
+		$this->_parentModelName = get_class($parentModel);
 		$this->_type = Inflector::variablize(substr(get_class($this),22));
 
-		if (isset($through)) {
-			$this->_throughName = $through;
-			$this->_throughModel = Bbx_Model::load($this->_throughName);
-		}
 		if (isset($select)) {
 			$this->_originalSelect = $select;
 			$this->_select = $select;
@@ -58,36 +58,41 @@ class Bbx_Model_Relationship_Abstract {
 			$this->_polymorphic = true;
 			$this->_polymorphicKey = Inflector::singularize($childName).'_id';
 			$this->_polymorphicType = Inflector::singularize($childName).'_type';
-			$this->_childName = $this->_parentModel->{$this->_polymorphicType};
-			$this->_childModelName = $this->_childName;
+			$this->_childModelName = Inflector::classify($parentModel->{$this->_polymorphicType});
 		}
 		else {
 			// could do this out of registry
 			$this->_childName = isset($source) ? $source : $childName;
-			$this->_childModelName = $childName;
+			$this->_childModelName = Inflector::classify($this->_childName);
 		}
-		
+		$this->_childTableName = Bbx_Model::load($this->_childModelName)->getTableName();
+
+		if (isset($through)) {
+			$this->_throughName = $through;
+			$this->_throughModelName = Inflector::classify($through);
+			$this->_throughModel = Bbx_Model::load($this->_throughModelName,true);
+			$this->_throughTableName = $this->_throughModel->getTableName();
+		}
 		if (isset($as)) {
 			// hasMany(Through) only
 			$this->_polymorphic = true;
 			$this->_polymorphicKey = $as.'_id';
 			$this->_polymorphicType = $as.'_type';
-			$polymorphicTable = isset($this->_throughModel) ? 
-				Inflector::tableize($this->_throughModel->getTable()->info('name')) : 
-				Inflector::tableize($this->_childName);
+			$polymorphicTable = isset($this->_throughTableName) ? 
+				$this->_throughTableName : $this->_childTableName;
 			
 			$this->_parentRefColumn = $as.'_id';
-			$type = Inflector::singularize($this->_parentName);
+			$type = Inflector::singularize(Inflector::underscore($this->_parentModelName));
 			$typeSelect = array('where'=>array("`".$polymorphicTable."`.`".$as."_type` = '".$type."'"));
 			$this->_originalSelect = array_merge_recursive((array)$this->_originalSelect,$typeSelect);
 		}
 		else {
-			$this->_parentRefColumn = Inflector::singularize($this->_parentName).'_id';
+			$this->_parentRefColumn = Inflector::singularize($this->_parentTableName).'_id';
 		}
-		$this->_models[$this->_childName] = Bbx_Model::load($this->_childName);
+		$this->_models[$this->_childModelName] = Bbx_Model::load($this->_childModelName);
 		$this->_originalSelect = array_merge_recursive(
 			$this->_originalSelect,
-			$this->_convertForSelect($this->_models[$this->_childName]->getDefaultParams())
+			$this->_convertForSelect($this->_models[$this->_childModelName]->getDefaultParams())
 		);
 		$this->_select = $this->_originalSelect;
 	}
@@ -104,7 +109,7 @@ class Bbx_Model_Relationship_Abstract {
 	}
 
 	protected function _initCollection(Bbx_Model $parentModel) {
-		$this->_collections[$parentModel->id] = null;
+		$this->_clearCollection($parentModel->id);
 		$this->_findCollection($parentModel);
 	}
 	
@@ -121,6 +126,10 @@ class Bbx_Model_Relationship_Abstract {
 			$select[$key] = $value;
 		}
 		return $select;
+	}
+	
+	public function select($conditions) {
+		$this->_select = array_merge_recursive($this->_select,$this->_convertForSelect($conditions));
 	}
 	
 	protected function _select() {
@@ -150,6 +159,7 @@ class Bbx_Model_Relationship_Abstract {
 				}
 			}
 		}
+
 		return $select;
 	}
 	
@@ -162,9 +172,13 @@ class Bbx_Model_Relationship_Abstract {
 		if (!$this->_isInitialised) {
 			$this->_initialise();
 		}
-		if ((!array_key_exists($parentModel->id,$this->_collections)) || ($forceReload === true)) {
+		if ($forceReload === true) {
+			$this->_clearCollection($parentModel->id);
+		}
+		if (!array_key_exists($parentModel->id,$this->_collections)) {
 			$this->_initCollection($parentModel);
 		}
+		$this->_clearSelect();
 		if ($this->_type == 'belongsto' || $this->_type == 'hasone') {
 			if (($this->_collections[$parentModel->id]->current() instanceof Bbx_Model)) {
 				if (!$forceCollection) {
@@ -182,7 +196,11 @@ class Bbx_Model_Relationship_Abstract {
 	}
 	
 	public function getFinder(Bbx_Model $parentModel) {
-		return new Bbx_Model_Relationship_Finder($this,$parentModel);
+		if (!isset($this->_finder)) {
+			$this->_finder = new Bbx_Model_Relationship_Finder($this);
+		}
+		$this->_finder->setParentModel($parentModel);
+		return $this->_finder;
 	}
 	
 	public function setFindParams($params) {
@@ -210,15 +228,19 @@ class Bbx_Model_Relationship_Abstract {
 		$this->_selectConditions($conditions);
 	}
 	
-	protected function _clear() {
+	protected function _clearCollection($id) {
+		unset($this->_collections[$id]);
+	}
+	
+	protected function _clearSelect() {
 		$this->_select = $this->_originalSelect;
-		$this->_collections = array();
 	}
 	
 	public function isActiveFor(Zend_Db_Table_Row $parentRow) {
 		$this->_selectConditions(array('limit'=>'1'));
 		$c = $this->getCollection($parentRow);
-		$this->_clear();
+		$this->_clearCollection($parentRow->id);
+		$this->_clearSelect();
 		return ($c instanceof Bbx_Model || $c->count() > 0);
 	}
 	

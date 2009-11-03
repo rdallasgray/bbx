@@ -20,7 +20,7 @@ class Bbx_Model_Relationship_HasMany extends Bbx_Model_Relationship_Abstract {
 		
 	protected function _initialise() {		
 		$this->_model()->getTable()->setReferences(array(
-			$this->_parentClassName => array(
+			$this->_parentModelName => array(
 				'columns' => array($this->_parentRefColumn),
 				'refTableClass' => 'Bbx_Db_Table',
 				'refColumns' => 'id'
@@ -31,7 +31,7 @@ class Bbx_Model_Relationship_HasMany extends Bbx_Model_Relationship_Abstract {
 	protected function _findCollection(Bbx_Model $parentModel) {
 		$rowset = $parentModel->getRowData()->findDependentRowset(
 			$this->_model()->getTable(),
-			$this->_parentClassName,
+			$this->_parentModelName,
 			$this->_select()
 		);
 		$this->_collections[$parentModel->id] = new Bbx_Model_Collection($parentModel,$rowset,$this,$this->_childModelName);
@@ -40,16 +40,51 @@ class Bbx_Model_Relationship_HasMany extends Bbx_Model_Relationship_Abstract {
 	public function create(Bbx_Model $parentModel, $attributes = array()) {
 		$attributes[$this->_parentRefColumn] = $parentModel->id;
 		if ($this->_polymorphic) {
-			$attributes[$this->_polymorphicType] = Inflector::underscore($this->_parentClassName);
+			$attributes[$this->_polymorphicType] = Inflector::underscore($this->_parentModelName);
 		}
-		$model = Bbx_Model::load(Inflector::classify($this->_childName))->create($attributes);
+		$model = Bbx_Model::load($this->_childModelName)->create($attributes);
 		unset($this->_collections[$parentModel->id]);
 		return $model;
 	}
 	
 	public function delete(Bbx_Model $parentModel, $id) {
 		unset($this->_collections[$parentModel->id]);
-		return Bbx_Model::load(Inflector::classify($this->_childName))->find($id)->delete();
+		return Bbx_Model::load($this->_childModelName)->find($id)->delete();
+	}
+	
+	public static function getExternalConditions($select,$parentModel,$childName,$attributes) {
+		
+		$parentModelName = get_class($parentModel);
+		$parentTableName = $parentModel->getTableName(); // exhibitions
+		
+		$childName = array_key_exists('source',$attributes) ? attributes('source') : $childName;
+		$childModelName = Inflector::classify($childName);
+		$childTableName = Bbx_Model::load($childModelName)->getTableName(); // images
+		
+		if (!array_key_exists($childTableName,$select->getPart('from'))) {
+			$select->from($childTableName,array()); // images
+		}
+
+		if (array_key_exists('as',$attributes)) {
+			$refColumn = $attributes['as'].'_id';
+			$polyType = $attributes['as'].'_type';
+		}
+		else {
+			$refColumn = Inflector::singularize($parentTableName).'_id';
+		}
+		
+		try {
+			$parentModel->getRowData();
+			$select->where("`".$childTableName."`.`".$refColumn."` = ".$parentModel->id); // images.subject_id = 
+		}
+		catch (Exception $e) {
+			$select->where("`".$childTableName."`.`".$refColumn."` = `".$parentTableName."`.`id`"); // images.subject_id = 
+		}
+		
+		if (isset($polyType)) {
+			$select->where("`".$childTableName."`.`".$polyType."` = '".Inflector::underscore($parentModelName)."'");
+		}
+		return $select;
 	}
 
 }
