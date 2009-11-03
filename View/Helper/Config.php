@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License along with Bac
 
 
 
-class Bbx_View_Helper_config {
+class Bbx_View_Helper_Config {
 	
 	public function setView(Zend_View_Interface $view) {
 		$this->view = $view;
