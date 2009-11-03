@@ -43,12 +43,12 @@ class Bbx_Media_Image extends Bbx_Media_Abstract {
 			$this->_processor = new $procName();
 			return $this->_processor;
 		}
-// TODO use try/catch here
-		if (class_exists('Imagick')) {
+
+		if (@class_exists('Imagick')) {
 			$this->_processor = new Bbx_Media_Image_Processor_Imagick;
 			Zend_Registry::set('ImageProcessor','Bbx_Media_Image_Processor_Imagick');
 		}
-		else if (function_exists('NewMagickWand')) {
+		else if (@function_exists('NewMagickWand')) {
 			$this->_processor = new Bbx_Media_Image_Processor_Magickwand;
 			Zend_Registry::set('ImageProcessor','Bbx_Media_Image_Processor_Magickwand');
 		}
