@@ -42,7 +42,7 @@ class Admin_AuthController extends Bbx_Controller_Rest {
 			$session->close();
 		}
 		catch (Exception $e) {
-			Bbx_Log::debug("Unable to close session");
+			Bbx_Log::debug("Unable to close session: ".$e->getMessage());
 		}
 	}
 
