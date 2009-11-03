@@ -82,7 +82,7 @@ class Bbx_Bootstrap {
 		Zend_Session::setOptions(array(
 			'strict'=>true,
 			'name'=>md5(Bbx_Config::get()->env->site->location)
-			));
+		));
 
 		// CACHE
 
@@ -220,12 +220,15 @@ class Bbx_Bootstrap {
 		* Start Front Controller 
 		*
 		*/
-
-		$front->dispatch();
+		if (!defined("NO_DISPATCH")) {
+			$front->dispatch();
+		}
 
 	}
 
 }
+
+
 
 Bbx_Bootstrap::run();
 
