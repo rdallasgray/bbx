@@ -19,6 +19,7 @@ You should have received a copy of the GNU General Public License along with Bac
 class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 	
 	protected $_mediaPath = '/www/media/images/:size';
+	protected $_mediaUrl = '/media/images/:size';
 	protected $_mimeType = 'image/jpeg';
 	protected $_extension = 'jpg';
 	protected $_tableName = 'images';
@@ -54,8 +55,16 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 		return SITE_ROOT.str_replace(':size',$size,$this->_mediaPath).'/'.$this->id.'.'.$this->_extension;
 	}
 	
+	public function getMediaUrl($size = null,$absolute = false) {
+		if ($size === null) {
+			$size = $this->getSize();
+		}
+		$absolutePath = $absolute ? 'http://'.$_SERVER['SERVER_NAME'] : '';
+		return $absolutePath.str_replace(':size',$size,$this->_mediaUrl).'/'.$this->id.'.'.$this->_extension;
+	}
+	
 	public function attachMedia($file) {
-
+		Bbx_Log::debug("trying to attach media to image");
 		$this->setSize('original');
 		
 		try {
