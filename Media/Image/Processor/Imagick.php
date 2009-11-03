@@ -70,7 +70,7 @@ class Bbx_Media_Image_Processor_Imagick extends Bbx_Media_Image_Processor_Abstra
 	
 	protected function _save($writePath) {
 		try {
-			$this->_resource->setImageCompressionQuality(85);
+			$this->_resource->setImageCompressionQuality(90);
 			$this->_resource->writeImage($writePath);
 		}
 		catch (Exception $e) {
