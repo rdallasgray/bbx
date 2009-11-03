@@ -19,63 +19,67 @@ You should have received a copy of the GNU General Public License along with Bac
 class Bbx_Model_Registry_Relationships extends Bbx_Model_Registry_Abstract {
 
 	public function getRelationship(Bbx_Model $parentModel,$childName) {
-		$parentName = get_class($parentModel);
+		$parentModelName = get_class($parentModel);
 		$this->endCurrentRegistration();
 
-		if (!$this->_isRegistered($parentName,$childName)) {
-			throw new Zend_Exception('No relationship registered for '.$parentName.'-'.$childName);
+		if (!$this->_isRegistered($parentModelName,$childName)) {
+			throw new Zend_Exception('No relationship registered for '.$parentModelName.'-'.$childName);
 		}
-		if (!$this->_isInstantiated($parentName,$childName)) {
+		if (!$this->_isInstantiated($parentModelName,$childName)) {
 			$this->_instantiate($parentModel,$childName);
 		}
 
-		return $this->_data[$parentName][$childName]['model']->getFinder($parentModel);
+		return $this->_data[$parentModelName][$childName]['model']->getFinder($parentModel);
 	}
 	
 	public function getActiveRelationshipsFor(Bbx_Model $parentModel,Zend_Db_Table_Row $parentRow) {
-		$parentName = get_class($parentModel);
+		$parentModelName = get_class($parentModel);
 		$self = $this;
-		if (!isset($self->_data[$parentName])) {
-			throw new Zend_Exception($parentName." is not registered");
+		if (!isset($self->_data[$parentModelName])) {
+			throw new Zend_Exception($parentModelName." is not registered");
 		}
 		$active = array();
-		foreach (array_keys($self->_data[$parentName]) as $childName) {
-			if (!$self->_isInstantiated($parentName,$childName)) {
+		foreach (array_keys($self->_data[$parentModelName]) as $childName) {
+			if (!$self->_isInstantiated($parentModelName,$childName)) {
 				$self->_instantiate($parentModel,$childName);
 			}
-			if ($self->_data[$parentName][$childName]['model']->isActiveFor($parentModel)) {
+			if ($self->_data[$parentModelName][$childName]['model']->isActiveFor($parentModel)) {
 				$active[] = $childName;
 			}
 		}
 		return $active;
 	}
 	
-	public function getRelationshipDataFor($parentName,$childName = null) {
+	public function getRelationshipDataFor($parentModelName,$childName = null) {
 		$self = $this;
-		if (isset($self->_data[$parentName])) {
+
+		if (isset($self->_data[$parentModelName])) {
 			if ($childName == null) {
-				return $self->_data[$parentName];
+				return $self->_data[$parentModelName];
 			}
 		}
-		if (isset($self->_data[$parentName][$childName])) {
-			return $self->_data[$parentName][$childName];
+		if (isset($self->_data[$parentModelName][$childName])) {
+			return $self->_data[$parentModelName][$childName];
 		}
-		throw new Zend_Exception('No relationship registered for '.$parentName.'-'.$childName);
+		if (isset($self->_data[$parentModelName][Inflector::singularize($childName)])) {
+			return $self->_data[$parentModelName][Inflector::singularize($childName)];
+		}
+		throw new Zend_Exception('No relationship registered for '.$parentModelName.'-'.$childName);
 	}
 	
 	protected function _instantiate(Bbx_Model $parentModel,$childName) {
-		$parentName = get_class($parentModel);
-		$type = reset(array_keys($this->_data[$parentName][$childName]));
+		$parentModelName = get_class($parentModel);
+		$type = reset(array_keys($this->_data[$parentModelName][$childName]));
 		$class = 'Bbx_Model_Relationship_'.ucwords($type);
-		if (array_key_exists('through',$this->_data[$parentName][$childName][$type])) {
+		if (array_key_exists('through',$this->_data[$parentModelName][$childName][$type])) {
 			$class .= 'Through';
 		}
-		$rel = new $class($parentModel,$childName,$this->_data[$parentName][$childName][$type]);
-		$this->_data[$parentName][$childName]['model'] = $rel;
+		$rel = new $class($parentModel,$childName,$this->_data[$parentModelName][$childName][$type]);
+		$this->_data[$parentModelName][$childName]['model'] = $rel;
 	}
 	
-	protected function _isInstantiated($parentName,$childName) {
-		return array_key_exists('model',$this->_data[$parentName][$childName]);
+	protected function _isInstantiated($parentModelName,$childName) {
+		return array_key_exists('model',$this->_data[$parentModelName][$childName]);
 	}
 
 }
