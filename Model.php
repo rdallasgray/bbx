@@ -489,10 +489,10 @@ class Bbx_Model implements IteratorAggregate {
 
 	protected function _stringifier() {
 		return trim(preg_replace_callback(
-			"/:\w*/",
+			"/:\w+/",
 		array($this,'_stringifierCallback'),
 			$this->_to_string_pattern
-		));
+		)," \t\n\r\0\x0b,");
 	}
 
 	protected function _stringifierCallback($matches) {
