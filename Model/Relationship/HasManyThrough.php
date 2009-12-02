@@ -63,8 +63,14 @@ class Bbx_Model_Relationship_HasManyThrough extends Bbx_Model_Relationship_Abstr
 	
 	public function create(Bbx_Model $parentModel, $attributes = array()) {
 		$child = Bbx_Model::load($this->_childModelName)->create($attributes);
-		$through = Bbx_Model::load($this->_throughModelName)->create($this->_getThroughConditions($parentModel, $child->id));
-		return $child;
+		try {
+			$through = Bbx_Model::load($this->_throughModelName)->create($this->_getThroughConditions($parentModel, $child->id));
+			return $child;
+		}
+		catch (Exception $e) {
+			$child->delete();
+			throw $e;
+		}
 	}
 	
 	public function delete(Bbx_Model $parentModel, $childId) {
