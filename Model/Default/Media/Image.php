@@ -63,12 +63,12 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 		return $absolutePath.str_replace(':size',$size,$this->_mediaUrl).'/'.$this->id.'.'.$this->_extension;
 	}
 	
-	public function attachMedia($file) {
+	public function attachMedia($filePath) {
 		Bbx_Log::debug("trying to attach media to image");
 		$this->setSize('original');
 		
 		try {
-			$img = Bbx_Media_Image::load($file);
+			$img = Bbx_Media_Image::load($filePath);
 
 			$img->setResolution(300)->save($this->getMediaPath());
 
@@ -83,6 +83,16 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 		}
 	}
 	
+	public function deleteMedia() {
+		
+		$sizes = array_keys($this->_sizes);
+		$sizes[] = 'original';
+		
+		foreach ($sizes as $size) {
+			unlink($this->getMediaPath($size));
+		}
+	}
+	
 	protected function _createSizedMedia(Bbx_Media_Image $img) {
 		
 		Bbx_Log::debug("Creating sized media");
@@ -91,19 +101,6 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 				list($width,$height) = explode('x',$values);
 				$img->resize($width,$height)->save($this->getMediaPath($size));
 			}
-	}
-	
-	public function deleteMedia() {
-		
-		try {		
-			foreach($this->_sizes as $size => $values) {
-				unlink($this->_getMediaPath($size));
-			}
-			
-		}
-		catch (Exception $e) {
-			throw new Bbx_Model_Exception('There was a problem deleting media from '.get_class($this).' '.$this->id);
-		}
 	}
 	
 }
