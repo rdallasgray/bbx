@@ -30,10 +30,27 @@ class Bbx_Model_Default_Media extends Bbx_Model {
 		return SITE_ROOT.$this->_mediaPath.'/'.$this->id.'.'.$this->_extension;
 	}
 	
-	public function attachMedia($file) {
-		
+	public function attachMedia($filePath) {
+	}
+	
+	public function deleteMedia() {
+		try {
+			unlink($this->getMediaPath());
+		}
+		catch (Exception $e) {
+			Bbx_Log::write('Unable to delete media '.$this->_getMediaPath());
+		}
 	}
 
+	public function delete() {
+		try {
+			$this->deleteMedia();
+		}
+		catch (Exception $e) {
+			Bbx_Log::write('Unable to delete media '.get_class($this).' id '.$this->id.' - '.$e->getMessage());
+		}
+		parent::delete();
+	}
 }
 
 ?>
