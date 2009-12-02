@@ -42,9 +42,14 @@ class Bbx_Controller_Rest_Crud_Media extends Bbx_Controller_Rest_Crud {
 			Bbx_Log::debug(print_r($media,true));
 
 			$new_model = $model->create($this->_getBodyData());
-			Bbx_Log::debug(print_r($new_model,true));
-			$new_model->attachMedia($media['tmp_name']);
-			$new_model->save();
+			try {
+				$new_model->attachMedia($media['tmp_name']);
+				$new_model->save();
+			}
+			catch (Exception $e) {
+				$new_model->delete();
+				throw $e;
+			}
 					
 			$this->getResponse()->setHttpResponseCode(201)->setHeader('Location',$new_model->url(true));
 		
