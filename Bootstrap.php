@@ -93,7 +93,7 @@ class Bbx_Bootstrap {
 			'File',
 		array(
 			'lifetime' => 120,
-			'debug_header' => (APP_MODE === 'development'),
+			'debug_header' => (APP_MODE !== 'production'),
 			'regexps' => $regExps
 			),
 		array(
@@ -174,7 +174,7 @@ class Bbx_Bootstrap {
 		$front->setControllerDirectory(array(
 			'default'=>SITE_ROOT.'/application/modules/'.MODULE_NAME.'/controllers',
 			'admin'=>SHARED_LIB.'/Bbx/Admin/application/controllers'
-			));
+		));
 
 		$front->setRouter($router);
 
@@ -193,7 +193,7 @@ class Bbx_Bootstrap {
 		*
 		*/
 //TODO better way to find media path -- set as constant or method in Model
-		set_include_path(get_include_path().':'.SITE_ROOT.'/application/modules/'.MODULE_NAME.'/media/');
+		set_include_path(get_include_path().':'.SITE_ROOT.'/application/modules/'.MODULE_NAME.'/media');
 		
 		
 		/**
