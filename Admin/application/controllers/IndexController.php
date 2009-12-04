@@ -26,10 +26,6 @@ class Admin_IndexController extends Zend_Controller_Action {
 	public function indexAction() {
 		$this->_helper->getHelper('Redirector')->gotoUrl('/Bxs/app/xul/main.xul');
 	}
-	
-	public function __call($method,$args) {
-		Bbx_Log::debug("Invalid method called on admin/index/: ".$method);
-	}
 
 }
 
