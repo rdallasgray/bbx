@@ -33,7 +33,12 @@ class Bbx_Model_Relationship_HasManyThrough extends Bbx_Model_Relationship_Abstr
 		}
 		
 		$select->from($this->_childTableName);
-		$select = $relationshipType::getExternalConditions($select,$parentModel,$this->_throughName,$parentAttributes);
+		
+		$select = call_user_func_array(
+			array($relationshipType,'getExternalConditions'),
+			array($select,$parentModel,$this->_throughName,$parentAttributes)
+		);
+//		$select = $relationshipType::getExternalConditions($select,$parentModel,$this->_throughName,$parentAttributes);
 
 		$this->_throughRelationship = Bbx_Model_Registry::get('Relationships')->getRelationshipDataFor(
 			$this->_throughModelName,$this->_childName);
@@ -45,8 +50,12 @@ class Bbx_Model_Relationship_HasManyThrough extends Bbx_Model_Relationship_Abstr
 		if ($throughType == 'belongsTo') {
 			$this->_childName = Inflector::singularize($this->_childName);
 		}
-
-		$select = $throughRelationshipType::getExternalConditions($select,$this->_throughModel,$this->_childName,$throughAttributes);
+		
+		$select = call_user_func_array(
+			array($throughRelationshipType,'getExternalConditions'),
+			array($select,$this->_throughModel,$this->_childName,$throughAttributes)
+		);
+//		$select = $throughRelationshipType::getExternalConditions($select,$this->_throughModel,$this->_childName,$throughAttributes);
 
 		$stmt = $select->query();
 
