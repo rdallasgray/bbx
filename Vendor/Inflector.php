@@ -223,6 +223,9 @@ class Inflector
     public static function camelize($word,$ucfirst = true)
     {
 		$word = self::latinize($word);
+		if (preg_match('/[^A-Z^a-z^0-9]+/',$word) == 0) {
+			return $ucfirst ? utf8_ucfirst($word) : $word;
+		}
         $word = str_replace(' ','',utf8_ucwords(preg_replace('/[^A-Z^a-z^0-9]+/',' ',$word)));
 		if (!$ucfirst) {
 			$word = substr_replace($word,strtolower(substr($word,0,1)),0,1);
