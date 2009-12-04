@@ -69,7 +69,7 @@ class Bbx_Model implements IteratorAggregate {
 			}
 			return $model;
 		}
-		throw new Bbx_Model_Exception('No model was found named '.$name);
+		throw new Bbx_Model_Exception('No model was found named '.$class);
 	}
 	
 	public function forceInit() {
@@ -454,6 +454,7 @@ class Bbx_Model implements IteratorAggregate {
 				return $this->_getRelationship(Inflector::underscore($key));
 			}
 			catch (Exception $e) {
+				Bbx_Log::write($e->getMessage());
 				throw new Bbx_Model_Exception("Trying to get value of uninitialised variable '$key': ".get_class($this));
 			}
 		}
