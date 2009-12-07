@@ -238,7 +238,7 @@ class Bbx_Date {
 			}
 			if ($dateParts[1] === "02") {
 				$day_count = 28;
-				if (date(strtotime($dateParts[0].'-01-01'),'L') === 1) {
+				if (date('L',strtotime($dateParts[0].'-01-01')) === 1) {
 					$day_count = 29;
 				}
 			}
