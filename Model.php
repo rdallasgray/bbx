@@ -32,6 +32,7 @@ class Bbx_Model implements IteratorAggregate {
 	protected $_params = array();
 	protected $_iterator;
 	protected $_defaultParams = array();
+	protected $_oldData = array();
 
 	public function __construct() {
 		$this->_tableName = isset($this->_tableName) ? $this->_tableName : Inflector::tableize(get_class($this));
@@ -375,6 +376,7 @@ class Bbx_Model implements IteratorAggregate {
 			$attributes['modified_at'] = $date->get(Zend_Date::ISO_8601);
 		}
 
+		$this->_oldData = $this->_rowData()->toArray();
 		$this->_rowData()->setFromArray($attributes);
 		
 		return $this->save();
