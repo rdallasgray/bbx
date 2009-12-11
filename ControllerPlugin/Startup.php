@@ -25,6 +25,9 @@ class Bbx_ControllerPlugin_Startup extends Zend_Controller_Plugin_Abstract {
 		$autoContextHelper = new Bbx_ActionHelper_AutoContext;
 		Zend_Controller_Action_HelperBroker::addHelper($autoContextHelper);
 		
+		$csvHelper = new Bbx_ActionHelper_Csv;
+		Zend_Controller_Action_HelperBroker::addHelper($csvHelper);
+		
 		$viewRenderer = Zend_Controller_Action_HelperBroker::getExistingHelper('viewRenderer');
 		
 		$module = $request->getModuleName();
@@ -45,7 +48,20 @@ class Bbx_ControllerPlugin_Startup extends Zend_Controller_Plugin_Abstract {
 
 			Zend_Controller_Action_HelperBroker::addHelper($modelHelper);
 			Zend_Controller_Action_HelperBroker::addHelper($urlHelper);
-			$contextHelper->addContext('html',array());
+			
+			$contextHelper->addContexts(
+				array(
+					'html' => array(),
+					'csv'  => array(
+	                    'suffix'    => 'csv',
+	                    'headers'   => array('Content-Type' => 'application/csv; charset=iso-8859-1'),
+	                    'callbacks' => array(
+	                        'init' => array($csvHelper,'initContext'),
+	                        'post' => array($csvHelper,'postContext'),
+						)
+					)
+				)
+			);
 
 			$view->addHelperPath(SHARED_LIB.'/Bbx/View/Helper','Bbx_View_Helper');
 			$view->addHelperPath($path.'/helpers','ViewHelper');
@@ -67,7 +83,6 @@ class Bbx_ControllerPlugin_Startup extends Zend_Controller_Plugin_Abstract {
 //				ini_set('display_errors',1);
 			}
 		}
-
 	}
 
 }
