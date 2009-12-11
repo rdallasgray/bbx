@@ -53,7 +53,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		
 		switch ($request->getMethod()) {
 			case 'GET':
-			return;
+			break;
 			
 			case 'POST':
 			case 'PUT':
@@ -63,6 +63,10 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			
 			$method = '_'.Inflector::underscore($request->getMethod());
 			$this->$method();
+		}
+		
+		if ($this->_context === 'csv') {
+			$this->_authenticate();
 		}
 	}
 
@@ -78,9 +82,9 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		}
 
 		$this->_setEtag($this->view->$collectionName->etag($this->_helper->contextSwitch()->getCurrentContext()));
-
-		if ($this->_helper->contextSwitch()->getCurrentContext() === 'json') {
-			$this->view->assign($this->view->$collectionName->toArray(array(/*'include'=>$includes,*/'deep'=>true)));
+		if ($this->_context === 'json' || $this->_context === 'csv') {
+			$options = ($this->_context === 'json') ? array('deep' => true) : null;
+			$this->view->assign($this->view->$collectionName->toArray($options));
 			unset($this->view->$collectionName);
 		}
 	}
