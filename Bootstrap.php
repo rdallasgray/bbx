@@ -14,8 +14,6 @@ You should have received a copy of the GNU General Public License along with Bac
 
 */
 
-
-
 class Bbx_Bootstrap {
 
 	public static function run() {
@@ -227,8 +225,6 @@ class Bbx_Bootstrap {
 	}
 
 }
-
-
 
 Bbx_Bootstrap::run();
 
