@@ -20,15 +20,17 @@ class Bbx_Controller_Rest extends Zend_Controller_Action {
 	
 	protected $_resolver;
 	protected $_lastModified;
+	protected $_context;
 	
 	public $contexts = array(
-		'index' => array('json'),
-		'show'  => array('json'),
+		'index' => array('json','csv'),
+		'show'  => array('json','csv'),
 		'new'   => array('json')
 	);
 
 	public function init() {
 		$this->_helper->contextSwitch()->initContext();
+		$this->_context = $this->_helper->contextSwitch()->getCurrentContext();
 	}
 
 	protected function _setEtag($etag) {
