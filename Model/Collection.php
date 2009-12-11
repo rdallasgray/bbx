@@ -57,12 +57,14 @@ class Bbx_Model_Collection implements IteratorAggregate,Countable {
 	}
 	
 	protected function _instantiateRowModel(Zend_Db_Table_Row $row) {
-		if (array_key_exists($row->{$this->_primary},$this->_models)) {
+//		KEEPING REFERENCES TO THE MODELS INCREASES MEM USAGE * 5
+/*		if (array_key_exists($row->{$this->_primary},$this->_models)) {
+			error_log("model exists, returning ".$row->id.": ".memory_get_usage());
 			return $this->_models[$row->{$this->_primary}];
 		}
-		$model = Bbx_Model::load($this->getModelName());
+*/		$model = Bbx_Model::load($this->getModelName());
 		$model->setRowData($row);
-		$this->_models[$row->{$this->_primary}] = $model;
+//		$this->_models[$row->{$this->_primary}] = $model;
 		return $model;
 	}
 	
@@ -192,7 +194,6 @@ class Bbx_Model_Collection implements IteratorAggregate,Countable {
 	}
 
 	public function etag($extra = null) {
-		
 		$data = $this->getRowset()->getRawData();
 		
 		return md5(serialize($data).$extra);
