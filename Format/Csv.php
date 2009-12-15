@@ -51,7 +51,7 @@ class Bbx_Format_Csv {
 				$a[] = $model->$col;
 			}
 		}
-		
+		$model = null;
 		return $header.self::_encodeArrayRow($a);
 	}
 	
@@ -65,6 +65,7 @@ class Bbx_Format_Csv {
 				$headerEncoded = true;
 			}
 			$csvArr[] = self::_encodeModel($c);
+			$c = null;
 		}
 		
 		return implode("\n",$csvArr);
@@ -79,7 +80,7 @@ class Bbx_Format_Csv {
 		$csvArr = array();
 		$headerEncoded = false;
 
-		foreach ($a as $key => $row) {
+		while ($row = array_shift($a)) {
 			if (is_array($row)) {
 				$csvArr[] = self::_encodeArrayRow($row);
 			}
@@ -106,6 +107,7 @@ class Bbx_Format_Csv {
 				$a[$key] = $val;
 			}
 		}
+		$model = null;
 		return self::_encodeArrayRow($a);
 	}
 }
