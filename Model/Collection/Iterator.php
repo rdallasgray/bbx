@@ -62,7 +62,7 @@ class Bbx_Model_Collection_Iterator implements SeekableIterator {
 	}
 	
 	public function __destruct() {
-		unset($this->_collection);
+		$this->_collection = null;
 	}
 
 }

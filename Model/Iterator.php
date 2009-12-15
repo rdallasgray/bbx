@@ -52,7 +52,7 @@ class Bbx_Model_Iterator implements Iterator {
 	}
 	
 	public function __destruct() {
-		unset($this->_model);
+		$this->_model = null;
 	}
 
 }
