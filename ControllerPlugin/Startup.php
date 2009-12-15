@@ -63,7 +63,7 @@ class Bbx_ControllerPlugin_Startup extends Zend_Controller_Plugin_Abstract {
 				)
 			);
 
-			$view->addHelperPath(SHARED_LIB.'/Bbx/View/Helper','Bbx_View_Helper');
+			$view->addHelperPath(SITE_ROOT.'/library/Bbx/View/Helper','Bbx_View_Helper');
 			$view->addHelperPath($path.'/helpers','ViewHelper');
 
 			if (file_exists($path.'/layouts')) {

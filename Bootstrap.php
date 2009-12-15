@@ -38,12 +38,12 @@ class Bbx_Bootstrap {
 		*/
 
 
-		set_include_path(get_include_path().':'.SHARED_LIB);
+		set_include_path(get_include_path().':'.SITE_ROOT.'/library');
 
 
-		require(SHARED_LIB.'/Zend/Loader.php');
-//		require(SHARED_LIB.'/Zend/Loader/AutoLoader.php');
-		require(SHARED_LIB.'/Bbx/Loader.php');
+		require(SITE_ROOT.'/library/Zend/Loader.php');
+//		require(SITE_ROOT.'library/Zend/Loader/AutoLoader.php');
+		require(SITE_ROOT.'library/Bbx/Loader.php');
 
 		@Zend_Loader::registerAutoload('Bbx_Loader');
 		//TODO THIS NEEDS TO BE CHANGED TO WORK WITH ZEND_LOADER_AUTOLOADER BEFORE V2.0
@@ -68,7 +68,7 @@ class Bbx_Bootstrap {
 		*
 		*/
 
-		require(SHARED_LIB.'/Bbx/Common/lib.php');
+		require(SITE_ROOT.'/library/Bbx/Common/lib.php');
 		
 		
 
@@ -173,7 +173,7 @@ class Bbx_Bootstrap {
 
 		$front->setControllerDirectory(array(
 			'default'=>SITE_ROOT.'/application/modules/'.MODULE_NAME.'/controllers',
-			'admin'=>SHARED_LIB.'/Bbx/Admin/application/controllers'
+			'admin'=>SITE_ROOT.'/library/Bbx/Admin/application/controllers'
 		));
 
 		$front->setRouter($router);
@@ -183,7 +183,7 @@ class Bbx_Bootstrap {
 		*
 		*/
 
-		Zend_Controller_Action_HelperBroker::addPath(SHARED_LIB.'/Bbx/ActionHelper','Bbx_ActionHelper');
+		Zend_Controller_Action_HelperBroker::addPath(SITE_ROOT.'/library/Bbx/ActionHelper','Bbx_ActionHelper');
 
 		$front->registerPlugin(new Bbx_ControllerPlugin_Startup);
 

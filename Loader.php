@@ -37,8 +37,8 @@ class Bbx_Loader extends Zend_Loader {
 		
 		try {
 			self::loadClass($class,array(
-				SHARED_LIB.'/Bbx/Vendor',
-				SHARED_LIB,
+				SITE_ROOT.'/library/Bbx/Vendor',
+				SITE_ROOT.'/library',
 				SITE_ROOT.'/application/modules/'.MODULE_NAME.'/models'
 			));
 			return $class;
