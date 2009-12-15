@@ -52,11 +52,7 @@ class Bbx_Model implements IteratorAggregate {
 
 	public static function load($name,$forceInit = false) {
 		$class = Inflector::classify($name);
-		if (Zend_Registry::isRegistered('models::'.$class)) {
-			$model = new $class;
-		}
 		if (@class_exists($class)) {
-			Zend_Registry::set('models::'.$class,"");
 			$model = new $class;
 		}
 /*		$class = 'Bbx_Model_Default_'.$class;
@@ -446,12 +442,26 @@ class Bbx_Model implements IteratorAggregate {
 	}
 
 	public function __get($key) {
-		try {
+		if (isset($this->_rowData()->$key)) {
+			$value = $this->_rowData()->$key;
+			$viewised = $this->_viewise($key,$value);
+			return $viewised[1];
+		}
+/*		try {
 			$value = $this->_rowData()->$key;
 			$viewised = $this->_viewise($key,$value);
 			return $viewised[1];
 		}
 		catch (Exception $e) {
+			try {
+				return $this->_getRelationship(Inflector::underscore($key));
+			}
+			catch (Exception $e) {
+				Bbx_Log::write($e->getMessage());
+				throw new Bbx_Model_Exception("Trying to get value of uninitialised variable '$key': ".get_class($this));
+			}
+		}*/
+		else {
 			try {
 				return $this->_getRelationship(Inflector::underscore($key));
 			}
