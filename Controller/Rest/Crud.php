@@ -80,11 +80,13 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		else {
 			$this->view->$collectionName = $this->collection;
 		}
-
+		
 		$this->_setEtag($this->view->$collectionName->etag($this->_helper->contextSwitch()->getCurrentContext()));
+		
 		if ($this->_context === 'json' || $this->_context === 'csv') {
 			$options = ($this->_context === 'json') ? array('deep' => true) : null;
 			$this->view->assign($this->view->$collectionName->toArray($options));
+			$this->view->$collectionName = null;
 			unset($this->view->$collectionName);
 		}
 	}
