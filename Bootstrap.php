@@ -43,7 +43,7 @@ class Bbx_Bootstrap {
 
 		require(SITE_ROOT.'/library/Zend/Loader.php');
 //		require(SITE_ROOT.'library/Zend/Loader/AutoLoader.php');
-		require(SITE_ROOT.'library/Bbx/Loader.php');
+		require(SITE_ROOT.'/library/Bbx/Loader.php');
 
 		@Zend_Loader::registerAutoload('Bbx_Loader');
 		//TODO THIS NEEDS TO BE CHANGED TO WORK WITH ZEND_LOADER_AUTOLOADER BEFORE V2.0
