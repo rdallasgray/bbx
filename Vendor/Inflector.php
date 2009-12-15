@@ -83,17 +83,17 @@ class Inflector
         'sex' => 'sexes',
         'move' => 'moves');
 
-        $lowercased_word = utf8_strtolower($word);
+        $lowercased_word = mb_strtolower($word);
 
         foreach ($uncountable as $_uncountable){
-            if(utf8_substr($lowercased_word,(-1*strlen($_uncountable))) == $_uncountable){
+            if(mb_substr($lowercased_word,(-1*strlen($_uncountable))) == $_uncountable){
                 return $word;
             }
         }
 
         foreach ($irregular as $_plural=> $_singular){
             if (preg_match('/('.$_plural.')$/i', $word, $arr)) {
-                return preg_replace('/('.$_plural.')$/i', utf8_substr($arr[0],0,1).utf8_substr($_singular,1), $word);
+                return preg_replace('/('.$_plural.')$/i', mb_substr($arr[0],0,1).mb_substr($_singular,1), $word);
             }
         }
 
@@ -155,16 +155,16 @@ class Inflector
         'sex' => 'sexes',
         'move' => 'moves');
 
-        $lowercased_word = utf8_strtolower($word);
+        $lowercased_word = mb_strtolower($word);
         foreach ($uncountable as $_uncountable){
-            if(utf8_substr($lowercased_word,(-1*strlen($_uncountable))) == $_uncountable){
+            if(mb_substr($lowercased_word,(-1*strlen($_uncountable))) == $_uncountable){
                 return $word;
             }
         }
 
         foreach ($irregular as $_plural=> $_singular){
             if (preg_match('/('.$_singular.')$/i', $word, $arr)) {
-                return preg_replace('/('.$_singular.')$/i', utf8_substr($arr[0],0,1).utf8_substr($_plural,1), $word);
+                return preg_replace('/('.$_singular.')$/i', mb_substr($arr[0],0,1).mb_substr($_plural,1), $word);
             }
         }
 
@@ -251,6 +251,10 @@ class Inflector
     */
 
 	public static function latinize($word) {
+		// TODO there are more diaresised characters than this
+		if (preg_match('/[äàáåéèöóòüÄÀÁÉÈÖÓÒÜ]/',$word) === 0) {
+			return $word;
+		}
 		$word = preg_replace(
 			array('/[äàáå]/ui','/[éè]/ui','/[öóò]/ui','/[ü]/ui','/[ÄÀÁ]/ui','/[ÉÈ]/ui','/[ÖÓÒ]/ui','/[Ü]/ui'),
 			array('a','e','o','u','A','E','O','U'),
@@ -262,7 +266,7 @@ class Inflector
     public static function underscore($word)
 	{
 		$word = self::latinize($word);
-		return trim(utf8_strtolower(preg_replace('/[^A-Z^a-z^0-9^\/]+/','_',
+		return trim(mb_strtolower(preg_replace('/[^A-Z^a-z^0-9^\/]+/','_',
 			preg_replace('/([a-z\d])([A-Z])/','\1_\2',
 			preg_replace('/([A-Z]+)([A-Z][a-z])/','\1_\2',
 			preg_replace('/::/', '/',$word))))));
@@ -271,7 +275,7 @@ class Inflector
     public static function interscore($word)
     {
 		$word = self::latinize($word);
-		return trim(utf8_strtolower(preg_replace('/[^A-Z^a-z^0-9^\/]+/','-',
+		return trim(mb_strtolower(preg_replace('/[^A-Z^a-z^0-9^\/]+/','-',
 			preg_replace('/([a-z\d])([A-Z])/','\1_\2',
 			preg_replace('/([A-Z]+)([A-Z][a-z])/','\1_\2',
 			preg_replace('/::/', '/',$word))))));
@@ -322,7 +326,7 @@ class Inflector
     public static function variablize($word)
     {
         $word = self::camelize($word);
-        return utf8_strtolower($word[0]).utf8_substr($word,1);
+        return mb_strtolower($word[0]).mb_substr($word,1);
     }
 
     // }}}
