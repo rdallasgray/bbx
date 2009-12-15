@@ -19,7 +19,7 @@ You should have received a copy of the GNU General Public License along with Bac
 class Bbx_ControllerPlugin_NestedLayouts extends Zend_Controller_Plugin_Abstract {
 
 	protected $_layouts = array();
-	protected $_layoutsAtPostDispatch = array();
+	protected $_layoutsAtShutdown = array();
 
 	public function addLayout($layout) {
 		$this->_layouts = array_merge($this->_layouts,array_diff($layout,$this->_layouts));
@@ -53,7 +53,9 @@ class Bbx_ControllerPlugin_NestedLayouts extends Zend_Controller_Plugin_Abstract
 		}
 	}
 
-	public function dispatchLoopShutdown() {
+	public function postDispatch() {
+		//TODO there was a reason this couldn't be postDispatch and had to be dispatchLoopShutdown. I can't remember the reason.
+		// Something to do with ErrorHandler maybe? Seems OK now though ...
 		$this->_renderLayouts();
 	}
 	
