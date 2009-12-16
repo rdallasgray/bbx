@@ -78,7 +78,7 @@ class Bbx_Model implements IteratorAggregate {
 	
 	protected function _metadata() {
 		if (!Zend_Registry::isRegistered("tables:".$this->_tableName.":metadata")) {
-			Zend_Registry::set("tables:".$this->_tableName.":columns",$this->_table()->info('metadata'));
+			Zend_Registry::set("tables:".$this->_tableName.":metadata",$this->_table()->info('metadata'));
 		}
 		return Zend_Registry::get("tables:".$this->_tableName.":metadata");
 	}
