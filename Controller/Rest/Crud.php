@@ -51,6 +51,10 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			return;
 		}
 		
+		if ($this->_context === 'csv') {
+			$this->_authenticate();
+		}
+		
 		switch ($request->getMethod()) {
 			case 'GET':
 			break;
@@ -63,10 +67,6 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			
 			$method = '_'.Inflector::underscore($request->getMethod());
 			$this->$method();
-		}
-		
-		if ($this->_context === 'csv') {
-			$this->_authenticate();
 		}
 	}
 
