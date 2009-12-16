@@ -42,7 +42,6 @@ class Bbx_Bootstrap {
 
 
 		require(SITE_ROOT.'/library/Zend/Loader.php');
-//		require(SITE_ROOT.'library/Zend/Loader/AutoLoader.php');
 		require(SITE_ROOT.'/library/Bbx/Loader.php');
 
 		@Zend_Loader::registerAutoload('Bbx_Loader');
@@ -70,51 +69,7 @@ class Bbx_Bootstrap {
 
 		require(SITE_ROOT.'/library/Bbx/Common/lib.php');
 		
-		
 
-		/**
-		* Register global log, caches, view, db, dict, mail
-		*
-		*/
-
-
-		// CACHE
-/*
-		$regExps = array('admin'=>array('cache'=>false));
-
-		$page_cache = Zend_Cache::factory(
-			'Page',
-			'File',
-		array(
-			'lifetime' => 120,
-			'debug_header' => (APP_MODE !== 'production'),
-			'regexps' => $regExps
-			),
-		array(
-			'cache_dir' => SITE_ROOT.'/cache/'
-			)
-			);
-		if (APP_MODE === 'production') {
-			$page_cache->start();
-		}
-
-
-		$table_cache_lifetime = (APP_MODE === 'production') ? 300 : null;
-
-		$table_cache = Zend_Cache::factory(
-			'Core',
-			'File',
-		array(
-			'lifetime' => $table_cache_lifetime,
-			'automatic_serialization' => true
-			),
-		array(
-			'cache_dir' => SITE_ROOT.'/cache/'
-			)
-			);
-
-		Zend_Db_Table_Abstract::setDefaultMetadataCache($table_cache);
-*/
 
 		// LOCALE
 
