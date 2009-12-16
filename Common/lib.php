@@ -18,7 +18,6 @@ You should have received a copy of the GNU General Public License along with Bac
 
 require('utf8.php');
 require('smartypants.php');
-require('markdown.php');
 
 function encode_email($email) {
     $encoded = bin2hex($email);
@@ -35,10 +34,6 @@ function h($string) {
 	return bbx_escape($string);
 }
 
-function hh($string) {
-	return bbx_text_format($string);
-}
-
 function bbx_smart_escape($string) {
 	return bbx_smart_format(bbx_escape($string));
 }
@@ -51,50 +46,6 @@ function bbx_smart_format($string) {
 	$string = str_replace('&','&#38;',$string);
 	$string = SmartyPants($string,2);
 	return $string;
-}
-
-function bbx_text_format($string) {
-	return bbx_smart_format(MarkDown($string));
-}
-
-function entity($ent) {
-	return html_entity_decode($ent,ENT_COMPAT,$cfg->locale->charset);
-}
-
-function sort_by_prop($array,$prop,$direction = SORT_ASC) {
-	$sortArr = array();
-	foreach ($array as $key=>$obj) {
-		$sortArr[$key] = $obj->$prop;
-	}
-	array_multisort($sortArr,$direction,$array);
-	return $array;
-}
-
-function sort_by_method($array,$method,$direction = SORT_ASC) {
-	$sortArr = array();
-	foreach ($array as $key=>$obj) {
-		$sortArr[$key] = $obj->$method();
-	}
-	array_multisort($sortArr,$direction,$array);
-	return $array;
-}
-
-function genpassword($length = 8){
-	$password = '';
-	srand((double)microtime()*1000000);
-
-	$vowels = array("a", "e", "i", "o", "u");
-	$cons = array("b", "c", "d", "g", "h", "j", "k", "l", "m", "n", "p", "r", "s", "t", "u", "v", "w", "tr",
-	"cr", "br", "fr", "th", "dr", "ch", "ph", "wr", "st", "sp", "sw", "pr", "sl", "cl");
-
-	$num_vowels = count($vowels);
-	$num_cons = count($cons);
-
-	for($i = 0; $i < $length; $i++){
-		$password .= $cons[rand(0, $num_cons - 1)] . $vowels[rand(0, $num_vowels - 1)];
-	}
-
-	return substr($password, 0, $length);
 }
 
 function balance_tags($text) {
