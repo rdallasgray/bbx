@@ -55,11 +55,6 @@ class Bbx_Model implements IteratorAggregate {
 		if (@class_exists($class)) {
 			$model = new $class;
 		}
-/*		$class = 'Bbx_Model_Default_'.$class;
-		if (@class_exists($class)) {
-			Zend_Registry::set('models::'.$class,"");
-			$model = new $class;
-		}*/
 		if (isset($model)) {
 			if ($forceInit) {
 				return $model->forceInit();
@@ -80,6 +75,14 @@ class Bbx_Model implements IteratorAggregate {
 		}
 		return Zend_Registry::get("tables:".$this->_tableName.":columns");
 	}
+	
+	protected function _metadata() {
+		if (!Zend_Registry::isRegistered("tables:".$this->_tableName.":metadata")) {
+			Zend_Registry::set("tables:".$this->_tableName.":columns",$this->_table()->info('metadata'));
+		}
+		return Zend_Registry::get("tables:".$this->_tableName.":metadata");
+	}
+
 	
 	protected function _initSelf() {
 	}
@@ -388,7 +391,7 @@ class Bbx_Model implements IteratorAggregate {
 	}
 	
 	protected function _viewise($key,$value) {
-		$metadata = $this->_table()->info('metadata');
+		$metadata = $this->_metadata();
 		
 		if ($metadata[$key]['DATA_TYPE'] === 'tinyint') {
 			$value = !!$value;
@@ -400,7 +403,7 @@ class Bbx_Model implements IteratorAggregate {
 	}
 	
 	protected function _dbise($key,$value) {
-		$metadata = $this->_table()->info('metadata');
+		$metadata = $this->_metadata();
 		$value = trim($value);
 		
 		if ($metadata[$key]['DATA_TYPE'] === 'tinyint') {
@@ -447,20 +450,6 @@ class Bbx_Model implements IteratorAggregate {
 			$viewised = $this->_viewise($key,$value);
 			return $viewised[1];
 		}
-/*		try {
-			$value = $this->_rowData()->$key;
-			$viewised = $this->_viewise($key,$value);
-			return $viewised[1];
-		}
-		catch (Exception $e) {
-			try {
-				return $this->_getRelationship(Inflector::underscore($key));
-			}
-			catch (Exception $e) {
-				Bbx_Log::write($e->getMessage());
-				throw new Bbx_Model_Exception("Trying to get value of uninitialised variable '$key': ".get_class($this));
-			}
-		}*/
 		else {
 			try {
 				return $this->_getRelationship(Inflector::underscore($key));
@@ -576,7 +565,7 @@ class Bbx_Model implements IteratorAggregate {
 		}
 
 		$cols = $this->columns();
-		$metadata = $this->_table()->info('metadata');
+		$metadata = $this->_metadata();
 		$schema = array();
 		foreach ($cols as $col) {
 		
