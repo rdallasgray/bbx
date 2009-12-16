@@ -97,7 +97,7 @@ class Bbx_Bootstrap {
 		if (APP_MODE === 'production') {
 			$page_cache->start();
 		}
-*/
+
 
 		$table_cache_lifetime = (APP_MODE === 'production') ? 300 : null;
 
@@ -114,7 +114,7 @@ class Bbx_Bootstrap {
 			);
 
 		Zend_Db_Table_Abstract::setDefaultMetadataCache($table_cache);
-
+*/
 
 		// LOCALE
 
