@@ -77,15 +77,9 @@ class Bbx_Bootstrap {
 		*
 		*/
 
-		// SESSION
-
-		Zend_Session::setOptions(array(
-			'strict'=>true,
-			'name'=>md5(Bbx_Config::get()->env->site->location)
-		));
 
 		// CACHE
-
+/*
 		$regExps = array('admin'=>array('cache'=>false));
 
 		$page_cache = Zend_Cache::factory(
@@ -103,33 +97,7 @@ class Bbx_Bootstrap {
 		if (APP_MODE === 'production') {
 			$page_cache->start();
 		}
-
-		$db_cache_lifetime = (APP_MODE === 'production') ? 300 : null;
-
-		$db_cache = Zend_Cache::factory(
-			'Core',
-			'File',
-		array(
-			'lifetime' => $db_cache_lifetime,
-			'automatic_serialization' => true
-			),
-		array(
-			'cache_dir' => SITE_ROOT.'/cache/'
-			)
-			);
-
-		$output_cache_lifetime = (APP_MODE === 'production') ? 300 : null;
-
-		$output_cache = Zend_Cache::factory(
-			'Output',
-			'File',
-		array(
-			'lifetime' => $output_cache_lifetime,
-			),
-		array(
-			'cache_dir' => SITE_ROOT.'/cache/'
-			)
-			);
+*/
 
 		$table_cache_lifetime = (APP_MODE === 'production') ? 300 : null;
 
@@ -146,11 +114,6 @@ class Bbx_Bootstrap {
 			);
 
 		Zend_Db_Table_Abstract::setDefaultMetadataCache($table_cache);
-
-		Zend_Registry::set('page_cache',$page_cache);
-		Zend_Registry::set('db_cache',$db_cache);
-		Zend_Registry::set('output_cache',$output_cache);
-		Zend_Registry::set('table_cache',$table_cache);
 
 
 		// LOCALE
