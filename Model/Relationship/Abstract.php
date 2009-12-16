@@ -178,16 +178,15 @@ class Bbx_Model_Relationship_Abstract {
 	}
 
 	public function getCollection(Bbx_Model $parentModel, $forceReload = false, $forceCollection = false) {
-		if (!$this->_isInitialised) {
-			$this->_initialise();
-		}
 		if ($forceReload === true) {
 			$this->_clearCollection($parentModel->id);
 		}
 		if (!array_key_exists($parentModel->id,$this->_collections)) {
 			$this->_initCollection($parentModel);
 		}
+		
 		$this->_clearSelect();
+		
 		if ($this->_type == 'belongsto' || $this->_type == 'hasone') {
 			if (($this->_collections[$parentModel->id]->current() instanceof Bbx_Model)) {
 				if (!$forceCollection) {
@@ -201,6 +200,7 @@ class Bbx_Model_Relationship_Abstract {
 				}
 			}
 		}
+		
 		return $this->_collections[$parentModel->id];
 	}
 	

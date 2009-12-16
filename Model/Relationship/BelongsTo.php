@@ -20,12 +20,11 @@ class Bbx_Model_Relationship_BelongsTo extends Bbx_Model_Relationship_Abstract {
 	
 	protected $_foreignKey;
 	
-	protected function _initialise() {
-		$this->_foreignKey = isset($this->_polymorphicKey) ? $this->_polymorphicKey : Inflector::singularize($this->_childTableName).'_id';
-	}
-
 	protected function _findRowset(Bbx_Model $parentModel) {
+		
+		$this->_foreignKey = isset($this->_polymorphicKey) ? $this->_polymorphicKey : Inflector::singularize($this->_childTableName).'_id';
 		$polyType = isset($this->_polymorphicType) ? $parentModel->{$this->_polymorphicType} : null;
+		
 		return $this->_model($polyType)->getTable()->find($parentModel->{$this->_foreignKey});
 	}
 	

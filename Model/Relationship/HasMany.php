@@ -17,8 +17,9 @@ You should have received a copy of the GNU General Public License along with Bac
 
 
 class Bbx_Model_Relationship_HasMany extends Bbx_Model_Relationship_Abstract {
-		
-	protected function _initialise() {		
+	
+	protected function _findRowset(Bbx_Model $parentModel) {
+
 		$this->_model()->getTable()->setReferences(array(
 			$this->_parentModelName => array(
 				'columns' => array($this->_parentRefColumn),
@@ -26,9 +27,7 @@ class Bbx_Model_Relationship_HasMany extends Bbx_Model_Relationship_Abstract {
 				'refColumns' => 'id'
 			)
 		));
-	}
-	
-	protected function _findRowset(Bbx_Model $parentModel) {
+
 		return $parentModel->getRowData()->findDependentRowset(
 			$this->_model()->getTable(),
 			$this->_parentModelName,

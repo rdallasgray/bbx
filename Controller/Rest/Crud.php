@@ -86,7 +86,6 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		if ($this->_context === 'json' || $this->_context === 'csv') {
 			$options = ($this->_context === 'json') ? array('deep' => true) : null;
 			$this->view->assign($this->view->$collectionName->toArray($options));
-			$this->view->$collectionName = null;
 			unset($this->view->$collectionName);
 		}
 	}

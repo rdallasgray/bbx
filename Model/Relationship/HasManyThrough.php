@@ -38,7 +38,6 @@ class Bbx_Model_Relationship_HasManyThrough extends Bbx_Model_Relationship_Abstr
 			array($relationshipType,'getExternalConditions'),
 			array($select,$parentModel,$this->_throughName,$parentAttributes)
 		);
-//		$select = $relationshipType::getExternalConditions($select,$parentModel,$this->_throughName,$parentAttributes);
 
 		$this->_throughRelationship = Bbx_Model_Registry::get('Relationships')->getRelationshipDataFor(
 			$this->_throughModelName,$this->_childName);
@@ -55,7 +54,6 @@ class Bbx_Model_Relationship_HasManyThrough extends Bbx_Model_Relationship_Abstr
 			array($throughRelationshipType,'getExternalConditions'),
 			array($select,$this->_throughModel,$this->_childName,$throughAttributes)
 		);
-//		$select = $throughRelationshipType::getExternalConditions($select,$this->_throughModel,$this->_childName,$throughAttributes);
 
 		$stmt = $select->query();
 
@@ -100,18 +98,18 @@ class Bbx_Model_Relationship_HasManyThrough extends Bbx_Model_Relationship_Abstr
 	public static function getExternalConditions($select,$parentModel,$childName,$attributes) {
 		
 		$parentModelName = get_class($parentModel);
-		$parentTableName = $parentModel->getTableName(); //artists
+		$parentTableName = $parentModel->getTableName(); 
 
 		$childName = array_key_exists('source',$attributes) ? attributes('source') : $childName;
 		$childModelName = Inflector::classify($childName);
-		$childTableName = Bbx_Model::load($childModelName)->getTableName(); //exhibitions
+		$childTableName = Bbx_Model::load($childModelName)->getTableName(); 
 
-		$throughName = $attributes['through']; //artist_showings
+		$throughName = $attributes['through']; 
 		$throughModelName = Inflector::classify($throughName);
 		$throughTableName = Bbx_Model::load($throughModelName)->getTableName();
 		
 		if (!array_key_exists($childTableName,$select->getPart('from'))) {
-			$select->from($childTableName,array()); // exhibitions
+			$select->from($childTableName,array()); 
 		}
 		
 		if (array_key_exists('as',$attributes)) {
@@ -123,14 +121,13 @@ class Bbx_Model_Relationship_HasManyThrough extends Bbx_Model_Relationship_Abstr
 		}
 
 		$select
-			->from($throughTableName,array()) // artist_showings
-			->where("`".$throughTableName."`.`".$refColumn."` = ".$parentModel->id) // artist_showings.artist_id = {id}
+			->from($throughTableName,array()) 
+			->where("`".$throughTableName."`.`".$refColumn."` = ".$parentModel->id) 
 			->where("`".$throughTableName."`.`".Inflector::singularize($childTableName)."_id` = `".$childTableName."`.id");
-			// artist_showings.exhibition_id = exhibitions.id
+
 		if (array_key_exists('as',$attributes)) {
 			$select
 				->where("`".$throughTableName."`.`".$polyType."` = '".Inflector::singularize($parentTableName)."'");
-				// artist_showings.subject_type = artist
 		}
 
 		return $select;
