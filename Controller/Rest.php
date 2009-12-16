@@ -19,7 +19,6 @@ You should have received a copy of the GNU General Public License along with Bac
 class Bbx_Controller_Rest extends Zend_Controller_Action {
 	
 	protected $_resolver;
-	protected $_lastModified;
 	protected $_context;
 	
 	public $contexts = array(
@@ -68,7 +67,13 @@ class Bbx_Controller_Rest extends Zend_Controller_Action {
 	protected function _getBodyData() {
 		return Zend_Json::decode($this->getRequest()->getRawBody());
 	}
-
+	
+	protected function _head() {
+	}
+	
+	protected function _options() {
+//TODO set header for allowed methods etc.
+	}
 }
 
 ?>
