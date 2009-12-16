@@ -20,6 +20,7 @@ class Bbx_Controller_Rest extends Zend_Controller_Action {
 	
 	protected $_resolver;
 	protected $_context;
+	protected $_authenticated;
 	
 	public $contexts = array(
 		'index' => array('json','csv'),
@@ -44,6 +45,10 @@ class Bbx_Controller_Rest extends Zend_Controller_Action {
 	}
 	
 	protected function _authenticate() {
+		if ($this->_authenticated === true) {
+			return true;
+		}
+		
 		$config = array(
 			'accept_schemes' => 'digest',
 			'realm'          => Bbx_Config::get()->env->site->location,
@@ -62,6 +67,7 @@ class Bbx_Controller_Rest extends Zend_Controller_Action {
 		if (!$result->isValid()) {
 			throw new Bbx_Controller_Rest_Exception(null,401);
 		}
+		$this->_authenticated = true;
 	}
 	
 	protected function _getBodyData() {
