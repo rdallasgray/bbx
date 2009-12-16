@@ -632,7 +632,7 @@ class Bbx_Model implements IteratorAggregate {
 	}
 	
 	public function __destruct() {
-		unset($this->_iterator);
+		$this->_iterator = null;
 	}
 
 }
