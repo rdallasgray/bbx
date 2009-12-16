@@ -30,7 +30,7 @@ class Bbx_Bootstrap {
 
 		ini_set("short_open_tag","0");
 		
-//		set_time_limit(240); For testing CSV/other long jobs
+		set_time_limit(240);
 
 		/**
 		* Get config info and set basic include paths 
