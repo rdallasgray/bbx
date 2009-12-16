@@ -175,15 +175,6 @@ class Bbx_Model_Collection implements IteratorAggregate,Countable {
 		return $this;
 	}
 	
-	public function append(Bbx_Model $model) {
-		if (isset($this->_relationship)) {
-			$this->_relationship->append($this->_parentModel,$model);
-			$this->_reload($model);
-			return $this;
-		}
-		throw new Bbx_Model_Exception("No relationship loaded for ".$this->_table->info('name')."-".$model->getTable()->info('name'));
-	}
-	
 	protected function _reload(Bbx_Model $model) {
 		$this->_models = array();
 		if (isset($this->_relationship)) {
@@ -200,6 +191,7 @@ class Bbx_Model_Collection implements IteratorAggregate,Countable {
 	
 	public function __destruct() {
 		$this->_iterator = null;
+		$this->_relationship = null;
 	}
 
 }

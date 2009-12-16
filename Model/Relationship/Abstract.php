@@ -253,6 +253,7 @@ class Bbx_Model_Relationship_Abstract {
 	
 	public function __destruct() {
 		$this->_finder = null;
+		$this->_collections = null;
 	}
 
 }
