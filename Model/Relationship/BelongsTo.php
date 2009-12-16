@@ -49,22 +49,6 @@ class Bbx_Model_Relationship_BelongsTo extends Bbx_Model_Relationship_Abstract {
 		return $select;
 	}
 	
-/* SHOULD NOT BE CREATING OR DELETING BELONGS_TO MODELS	
-	public function create(Bbx_Model $parentModel, $attributes = array()) {
-		if ($this->_polymorphic) {
-			$attributes[$this->_polymorphicType] = Inflector::underscore($this->_parentModelName);
-			$attributes[$this->_polymorphicKey] = $parentModel->id;
-		}
-		$model = Bbx_Model::load($this->_childModelName)->create($attributes);
-		unset($this->_collections[$parentModel->id]);
-		return $model;
-	}
-	
-	public function delete(Bbx_Model $parentModel, $id) {
-		unset($this->_collections[$parentModel->id]);
-		$model = Bbx_Model::load($this->_childModelName)->find($id)->delete();
-	}
-*/
 }
 
 ?>

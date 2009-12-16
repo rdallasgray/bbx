@@ -89,7 +89,7 @@ class Bbx_Model_Relationship_Abstract {
 		else {
 			$this->_parentRefColumn = Inflector::singularize($this->_parentTableName).'_id';
 		}
-		$this->_models[$this->_childModelName] = Bbx_Model::load($this->_childModelName);
+//		$this->_models[$this->_childModelName] = Bbx_Model::load($this->_childModelName);
 		$this->_originalSelect = array_merge_recursive(
 			$this->_originalSelect,
 			$this->_convertForSelect($this->_models[$this->_childModelName]->getDefaultParams())
@@ -99,10 +99,11 @@ class Bbx_Model_Relationship_Abstract {
 	
 	protected function _model($childModelName = null) {
 		$childModelName = $childModelName ? $childModelName : $this->_childModelName;
-		if (!isset($this->_models[$childModelName])) {
+		return Bbx_Model::load($childModelName);
+/*		if (!isset($this->_models[$childModelName])) {
 			$this->_models[$childModelName] = Bbx_Model::load($childModelName);
 		}
-		return $this->_models[$childModelName];
+		return $this->_models[$childModelName];*/
 	}
 	
 	protected function _initialise() {
@@ -249,6 +250,10 @@ class Bbx_Model_Relationship_Abstract {
 	
 	public function delete(Bbx_Model $parentModel, $id) {
 		// is_dependent?
+	}
+	
+	public function __destruct() {
+		$this->_finder = null;
 	}
 
 }

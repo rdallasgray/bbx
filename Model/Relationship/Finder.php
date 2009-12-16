@@ -94,6 +94,10 @@ class Bbx_Model_Relationship_Finder implements IteratorAggregate,Countable {
 	public function __toString() {
 		return $this->_collection()->__toString();
 	}
+	
+	public function __destruct() {
+		$this->_relationship = null;
+	}
 
 }
 
