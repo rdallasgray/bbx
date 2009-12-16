@@ -24,9 +24,9 @@ class Bbx_Model_Relationship_BelongsTo extends Bbx_Model_Relationship_Abstract {
 		$this->_foreignKey = isset($this->_polymorphicKey) ? $this->_polymorphicKey : Inflector::singularize($this->_childTableName).'_id';
 	}
 
-	protected function _findCollection(Bbx_Model $parentModel) {
+	protected function _findRowset(Bbx_Model $parentModel) {
 		$polyType = isset($this->_polymorphicType) ? $parentModel->{$this->_polymorphicType} : null;
-		$this->_collections[$parentModel->id] = $this->_model($polyType)->findAll($parentModel->{$this->_foreignKey});
+		return $this->_model($polyType)->getTable()->find($parentModel->{$this->_foreignKey});
 	}
 	
 	public static function getExternalConditions($select,$parentModel,$childName,$attributes) {

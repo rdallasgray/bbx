@@ -18,7 +18,7 @@ You should have received a copy of the GNU General Public License along with Bac
 
 class Bbx_Model_Relationship_HasManyThrough extends Bbx_Model_Relationship_Abstract {
 
-	protected function _findCollection(Bbx_Model $parentModel) {
+	protected function _findRowset(Bbx_Model $parentModel) {
 		
 		$select = (isset($this->_select) && !empty($this->_select)) ? $this->_select() : $this->_model()->getTable()->select();
 
@@ -65,9 +65,8 @@ class Bbx_Model_Relationship_HasManyThrough extends Bbx_Model_Relationship_Abstr
             'readOnly' => false,
             'stored'   => true
 		);
-		$rowset = new Bbx_Db_Table_Rowset($config);
-				
-		$this->_collections[$parentModel->id] = new Bbx_Model_Collection($parentModel,$rowset,$this,$this->_childModelName);
+
+		return new Bbx_Db_Table_Rowset($config);
 	}
 	
 	public function create(Bbx_Model $parentModel, $attributes = array()) {

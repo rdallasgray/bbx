@@ -114,6 +114,15 @@ class Bbx_Model_Relationship_Abstract {
 	}
 	
 	protected function _findCollection(Bbx_Model $parentModel) {
+		$this->_collections[$parentModel->id] = new Bbx_Model_Collection(
+			$parentModel,
+			$this->_findRowset($parentModel),
+			$this,
+			$this->_childModelName
+		);
+	}
+	
+	protected function _findRowset(Bbx_Model $parentModel) {
 	}
 	
 	protected function _convertForSelect($params) {

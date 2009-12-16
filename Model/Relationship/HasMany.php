@@ -28,13 +28,12 @@ class Bbx_Model_Relationship_HasMany extends Bbx_Model_Relationship_Abstract {
 		));
 	}
 	
-	protected function _findCollection(Bbx_Model $parentModel) {
-		$rowset = $parentModel->getRowData()->findDependentRowset(
+	protected function _findRowset(Bbx_Model $parentModel) {
+		return $parentModel->getRowData()->findDependentRowset(
 			$this->_model()->getTable(),
 			$this->_parentModelName,
 			$this->_select()
 		);
-		$this->_collections[$parentModel->id] = new Bbx_Model_Collection($parentModel,$rowset,$this,$this->_childModelName);
 	}
 	
 	public function create(Bbx_Model $parentModel, $attributes = array()) {
