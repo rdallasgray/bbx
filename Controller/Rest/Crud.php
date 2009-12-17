@@ -20,6 +20,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 
 	public function init() {
 		parent::init();
+		Bbx_Log::write(print_r($this->getRequest(),true));
 	}
 
 	public function preDispatch() {
@@ -125,8 +126,8 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		
 		$new_model = $model->create($this->_getBodyData());
 		
-		$this->getResponse()->setHttpResponseCode(201)->setHeader('Location',$new_model->url(true)."?format=json")->sendResponse();
-//		$this->_forward('show',null,null,array('format' => 'json','id' => $new_model->id,'final' => true));
+		$this->getResponse()->setHttpResponseCode(201)->setHeader('Location',$new_model->url(true));
+		$this->_forward('show',null,null,array('format' => 'json','id' => $new_model->id,'final' => true));
 	}
 
 	protected function _put() {
