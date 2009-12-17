@@ -20,6 +20,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 
 	public function init() {
 		parent::init();
+		Bbx_Log::write(print_r($this->getRequest(),true));
 	}
 
 	public function preDispatch() {
