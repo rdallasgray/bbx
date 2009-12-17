@@ -145,7 +145,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		}
 		$model = $this->_helper->Model->getModel();
 		$model->delete($model->id);
-		$this->getResponse()->setHttpResponseCode(204);
+		$this->getResponse()->setHttpResponseCode(204)->sendResponse();
 	}
 	
 	protected function _head() {
