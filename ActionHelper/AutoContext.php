@@ -17,7 +17,6 @@ You should have received a copy of the GNU General Public License along with Bac
 class Bbx_ActionHelper_AutoContext extends Zend_Controller_Action_Helper_Abstract {
 	
 	public function init() {
-		Bbx_Log::write(print_r($this->getRequest(),true));
 		$req = $this->getRequest();
 		$accept = $req->getHeader('Accept');
 		$types = explode(',',$accept);
