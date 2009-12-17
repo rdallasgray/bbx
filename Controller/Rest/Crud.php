@@ -79,7 +79,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			$collection = $collection->findAll($params);
 		}
 
-		$collectionName = Inflector::tableize(get_class($this->model));
+		$collectionName = Inflector::tableize(get_class($collection));
 		$this->view->$collectionName = $collection;
 		
 		$this->_setEtag($this->view->$collectionName->etag($this->_helper->contextSwitch()->getCurrentContext()));
