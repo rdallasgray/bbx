@@ -33,6 +33,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		if (isset($params['rel'])) {
 			$rel_id = isset($params['rel_id']) ? $params['rel_id'] : null;
 			$userParams = $this->_helper->Model->parseParams($params);
+			$parentModel = $this->_helper->Model->getModel();
 			$request
 				->setControllerName($params['rel'])
 				->setParams(array(
@@ -40,7 +41,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 					'rel_id'=>null,
 					'controller'=>$params['rel'],
 					'id'=>$rel_id,
-					'parentModel'=>$this->_helper->Model->getModel()
+					'parentModel'=>$parentModel
 				))
 				->setDispatched(false);
 				
