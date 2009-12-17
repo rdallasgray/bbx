@@ -51,9 +51,12 @@ class Bbx_Controller_Rest_Crud_Media extends Bbx_Controller_Rest_Crud {
 				throw $e;
 			}
 					
-			$this->getResponse()->setHttpResponseCode(201)->setHeader('Location',$new_model->url(true));
-		
-			$this->_forward('show',null,null,array('format' => 'json','id' => $new_model->id,'final' => true));
+			$this->getResponse()->setHttpResponseCode(201)
+				->setHeader('Location',$new_model->url(true))
+				->setBody(Zend_Json::encode($new_model->toArray()))
+				->sendResponse();
+			
+			exit();
 		}
 		else {
 			Bbx_Log::debug('Upload failed: '.implode($upload->getMessages()));
