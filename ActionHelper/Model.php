@@ -32,7 +32,6 @@ class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 	}
 
 	public function getModel() {
-		
 		$controller = $this->getActionController();
 		$request = $this->getRequest();
 		$controllerName = $request->getControllerName();
@@ -57,7 +56,7 @@ class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 				}
 			}
 		}
-		
+		Bbx_Log::write(get_class($model));
 		return $model;
 	}
 
