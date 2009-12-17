@@ -126,7 +126,8 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		$new_model = $model->create($this->_getBodyData());
 		
 		$this->getResponse()->setHttpResponseCode(201)->setHeader('Location',$new_model->url(true));
-		$this->_forward('show',null,null,array('format' => 'json','id' => $new_model->id,'final' => true));
+//		$this->_forward('show',null,null,array('format' => 'json','id' => $new_model->id,'final' => true));
+		$this->_forward('show',null,null,array('format' => 'json','id' => '5','final' => true));
 	}
 
 	protected function _put() {
