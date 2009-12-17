@@ -43,7 +43,6 @@ class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 		if ($parentModel = $request->getParam('parentModel')) {
 			$params = $this->parseParams($request->getUserParams());
 			$model = $parentModel->$controllerName->findAll($params);
-//			$controller->collection = $parentModel->$controllerName->findAll($params);
 		}
 		
 		else {
@@ -56,7 +55,7 @@ class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 				}
 			}
 		}
-		Bbx_Log::write(get_class($model));
+		
 		return $model;
 	}
 
