@@ -96,7 +96,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		
 		if($model instanceof Bbx_Model) {
 			$modelName = Inflector::underscore(get_class($model));
-			$this->view->$modelName = $this->model;
+			$this->view->$modelName = $model;
 	
 			$this->_setEtag($this->view->$modelName->etag($this->_helper->contextSwitch()->getCurrentContext()));
 	
@@ -145,7 +145,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			throw $e;
 		}
 		$model = $this->_helper->Model->getModel();
-		$model->delete($this->model->id);
+		$model->delete($model->id);
 		$this->getResponse()->setHttpResponseCode(204);
 	}
 	
