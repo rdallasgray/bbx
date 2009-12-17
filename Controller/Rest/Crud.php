@@ -20,7 +20,6 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 
 	public function init() {
 		parent::init();
-		$this->model = $this->_helper->Model->getModel();
 	}
 
 	public function preDispatch() {
@@ -40,7 +39,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 					'rel_id'=>null,
 					'controller'=>$params['rel'],
 					'id'=>$rel_id,
-					'parentModel'=>$this->model
+					'parentModel'=>$this->_helper->Model->getModel()
 				))
 				->setDispatched(false);
 				
@@ -72,14 +71,14 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 
 	public function indexAction() {
 		$params = $this->_helper->Model->parseParams($this->_getAllParams());
+		$collection = $this->_helper->Model->getModel();
+		
+		if (!$collection instanceof Bbx_Model_Collection) {
+			$collection = $collection->findAll($params);
+		}
 
 		$collectionName = Inflector::tableize(get_class($this->model));
-		if (!isset($this->collection)) {
-			$this->view->$collectionName = $this->model->findAll($params);
-		}
-		else {
-			$this->view->$collectionName = $this->collection;
-		}
+		$this->view->$collectionName = $collection;
 		
 		$this->_setEtag($this->view->$collectionName->etag($this->_helper->contextSwitch()->getCurrentContext()));
 		
@@ -91,23 +90,29 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 	}
 
 	public function showAction() {
-		if (isset($this->model)) {
-			$modelName = Inflector::underscore(get_class($this->model));
+		$model = $this->_helper->Model->getModel();
+		
+		if($model instanceof Bbx_Model) {
+			$modelName = Inflector::underscore(get_class($model));
 			$this->view->$modelName = $this->model;
-		
+	
 			$this->_setEtag($this->view->$modelName->etag($this->_helper->contextSwitch()->getCurrentContext()));
-		
+	
 			if ($this->_helper->contextSwitch()->getCurrentContext() === 'json') {
 				$this->view->assign($this->view->$modelName->toArray());
 				unset($this->view->$modelName);
 			}
 		}
+		else {
+			throw new Bbx_Controller_Rest_Exception(null,404);
+		}
 	}
 	
 	public function newAction() {
 		$this->_authenticate();
-		if (isset($this->model) && $this->model instanceof Bbx_Model) {		
-			$this->view->assign($this->model->schema());
+		$model = $this->_helper->Model->getModel();
+		if ($model instanceof Bbx_Model) {		
+			$this->view->assign($model->schema());
 		}
 		else {
 			throw new Bbx_Controller_Rest_Exception(null,404);
@@ -115,7 +120,8 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 	}
 
 	protected function _post() {
-		$model = isset($this->collection) ? $this->collection : $this->model;
+		$model = $this->_helper->Model->getModel();
+		
 		$new_model = $model->create($this->_getBodyData());
 		
 		$this->getResponse()->setHttpResponseCode(201)->setHeader('Location',$new_model->url(true));
@@ -128,7 +134,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			$e = new Bbx_Controller_Rest_Exception(null,405,array('allowed_methods'=>'GET,POST'));
 			throw $e;
 		}
-		$this->model->update($this->_getBodyData());
+		$this->_helper->Model->getModel()->update($this->_getBodyData());
 	}
 
 	protected function _delete() {
@@ -136,9 +142,8 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			$e = new Bbx_Controller_Rest_Exception(null,405,array('allowed_methods'=>'GET,POST'));
 			throw $e;
 		}
-		$model = isset($this->collection) ? $this->collection : $this->model;
+		$model = $this->_helper->Model->getModel();
 		$model->delete($this->model->id);
-		unset($this->model);
 		$this->getResponse()->setHttpResponseCode(204);
 	}
 	

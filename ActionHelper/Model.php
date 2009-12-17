@@ -41,18 +41,21 @@ class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 			return;
 		}
 		
-		$model = Bbx_Model::load($controllerName);
-		
-		if ($id = $request->getParam('id')) {
-			$model = $model->find((int)$id);
-			if (!$model instanceof Bbx_Model) {
-				throw new Bbx_Controller_Rest_Exception(null,404);
-			}
-		}
-		
 		if ($parentModel = $request->getParam('parentModel')) {
 			$params = $this->parseParams($request->getUserParams());
-			$controller->collection = $parentModel->$controllerName->findAll($params);
+			$model = $parentModel->$controllerName->findAll($params);
+//			$controller->collection = $parentModel->$controllerName->findAll($params);
+		}
+		
+		else {
+			$model = Bbx_Model::load($controllerName);
+		
+			if ($id = $request->getParam('id')) {
+				$model = $model->find((int)$id);
+				if (!$model instanceof Bbx_Model) {
+					throw new Bbx_Controller_Rest_Exception(null,404);
+				}
+			}
 		}
 		
 		return $model;
