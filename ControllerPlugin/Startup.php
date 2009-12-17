@@ -78,10 +78,6 @@ class Bbx_ControllerPlugin_Startup extends Zend_Controller_Plugin_Abstract {
 			$view->addScriptPath($path.'/scripts');
 
 			$viewRenderer->setView($view);
-
-			if (APP_MODE === 'development') {
-//				ini_set('display_errors',1);
-			}
 		}
 	}
 
