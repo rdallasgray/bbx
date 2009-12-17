@@ -18,6 +18,7 @@ class Bbx_ActionHelper_AutoContext extends Zend_Controller_Action_Helper_Abstrac
 	
 	public function init() {
 		$req = $this->getRequest();
+		Bbx_Log::write(print_r($req,true));
 		$accept = $req->getHeader('Accept');
 		$types = explode(',',$accept);
 		$mainType = trim($types[0]);
