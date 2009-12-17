@@ -20,16 +20,19 @@ class Bbx_Controller_Rest_Crud_Node extends Bbx_Controller_Rest_Crud {
 	
 	public function init() {
 		parent::init();
-		$this->model = $this->_helper->Model->getModel();
-		if (isset($this->collection) && $this->collection instanceof Bbx_Model) {
-			$this->model = $this->collection;
-		}
-		else {
-			$this->model = $this->_createModel();
-		}
 	}
 
 	protected function _createModel() {
+	}
+	
+	protected function _getModel() {
+		try {
+			$model = $this->_helper->Model->getModel();
+		}
+		catch (Exception $e) {
+			$model = $this->_createModel();
+		}
+		return $model;
 	}
 
 	public function indexAction() {
@@ -37,8 +40,9 @@ class Bbx_Controller_Rest_Crud_Node extends Bbx_Controller_Rest_Crud {
 	}
 
 	public function showAction() {
-		$this->view->text = $this->model->text;
-		$this->_setEtag($this->model->etag());
+		$model = $this->_getModel();
+		$this->view->text = $model->text;
+		$this->_setEtag($model->etag());
 	}
 
 	protected function _post() {
@@ -47,7 +51,8 @@ class Bbx_Controller_Rest_Crud_Node extends Bbx_Controller_Rest_Crud {
 	}
 
 	protected function _put() {
-		$this->model->update($this->_getBodyData());
+		$model = $this->_getModel();
+		$model->update($this->_getBodyData());
 	}
 
 	protected function _delete() {
