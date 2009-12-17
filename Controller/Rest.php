@@ -29,7 +29,6 @@ class Bbx_Controller_Rest extends Zend_Controller_Action {
 	);
 
 	public function init() {
-		Bbx_Log::write(print_r($this->getRequest(),true));
 		$this->_helper->contextSwitch()->initContext();
 		$this->_context = $this->_helper->contextSwitch()->getCurrentContext();
 	}
