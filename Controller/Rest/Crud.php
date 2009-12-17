@@ -131,7 +131,6 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			->sendResponse();
 			
 		exit();
-//		$this->_forward('show',null,null,array('format' => 'json','id' => $new_model->id,'final' => true));
 	}
 
 	protected function _put() {
