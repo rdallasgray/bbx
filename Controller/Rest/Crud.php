@@ -129,7 +129,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			->setHeader('Location',$new_model->url(true))
 			->setBody(Zend_Json::encode($new_model->toArray()))
 			->sendResponse();
-			
+		//TODO if we exit, we can't use postDispatch hooks ...	also, this presumes we always want to respond with JSON
 		exit();
 	}
 
