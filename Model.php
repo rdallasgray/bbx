@@ -518,16 +518,11 @@ class Bbx_Model implements IteratorAggregate {
 		if (isset($this->_url)) {
 			return ($this->_url);
 		}
-		try {
-			if ($this->url != '') {
+		if (isset($this->url)) {
 				$this->_url = 'http://'.$this->url;
 				$external = true;
-			}
-			else {
-				$this->_url = $this->_defaultRoute();
-			}
 		}
-		catch (Exception $e) {
+		else {
 			$this->_url = $this->_defaultRoute();
 		}
 		return $absolute && !$external ? 'http://'.$_SERVER['SERVER_NAME'].'/'.$this->_url : $this->_url;

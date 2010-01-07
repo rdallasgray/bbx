@@ -26,6 +26,7 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 		$front = Zend_Controller_Front::getInstance();
 		if ($plugin = Zend_Controller_Front::getInstance()->getPlugin('Bbx_ControllerPlugin_NestedLayouts')) {
 			$plugin->clearLayouts();
+			$plugin->setErrorDetected(true);
 		}
 	}
 

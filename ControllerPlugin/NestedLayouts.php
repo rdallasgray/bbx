@@ -20,9 +20,14 @@ class Bbx_ControllerPlugin_NestedLayouts extends Zend_Controller_Plugin_Abstract
 
 	protected $_layouts = array();
 	protected $_layoutsAtShutdown = array();
+	protected $_errorDetected = false;
 
 	public function addLayout($layout) {
 		$this->_layouts = array_merge($this->_layouts,array_diff($layout,$this->_layouts));
+	}
+	
+	public function setErrorDetected($bool = true) {
+		$this->_errorDetected = $bool;
 	}
 
 	protected function _renderLayouts() {
@@ -30,6 +35,7 @@ class Bbx_ControllerPlugin_NestedLayouts extends Zend_Controller_Plugin_Abstract
 		$mvcContentKey = $mvcLayout->getContentKey();
 		
 		$this->_layoutsAtShutdown = array_reverse($this->_layouts);
+		
 		$view = $this->_cloneView();
 
 		$layout = new Zend_Layout(array(
@@ -54,9 +60,9 @@ class Bbx_ControllerPlugin_NestedLayouts extends Zend_Controller_Plugin_Abstract
 	}
 
 	public function postDispatch() {
-		//TODO there was a reason this couldn't be postDispatch and had to be dispatchLoopShutdown. I can't remember the reason.
-		// Something to do with ErrorHandler maybe? Seems OK now though ...
-		$this->_renderLayouts();
+		if (!$this->_errorDetected) {
+			$this->_renderLayouts();
+		}
 	}
 	
     protected function _cloneView() {
@@ -66,6 +72,7 @@ class Bbx_ControllerPlugin_NestedLayouts extends Zend_Controller_Plugin_Abstract
     }
 
 	public function clearLayouts() {
+		Bbx_Log::write("clearing layouts");
 		$this->_layouts = array();
 	}
 

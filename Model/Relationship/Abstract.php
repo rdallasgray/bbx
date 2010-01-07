@@ -114,18 +114,6 @@ class Bbx_Model_Relationship_Abstract {
 	}
 	
 	protected function _findCollection(Bbx_Model $parentModel) {
-/*		if ($this->_polymorphic) {
-			try {
-				$childModelName = $parentModel->{$this->_polymorphicType};
-			}
-			catch (Exception $e) {
-				$childModelName = $this->_childModelName;
-			}
-		}
-		else {
-			$childModelName = $this->_childModelName;
-		}
-*/		
 		$this->_collections[$parentModel->id] = new Bbx_Model_Collection(
 			$parentModel,
 			$this->_findRowset($parentModel),
