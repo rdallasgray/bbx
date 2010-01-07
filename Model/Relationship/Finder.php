@@ -22,11 +22,9 @@ class Bbx_Model_Relationship_Finder implements IteratorAggregate,Countable {
 	protected $_parentModel;
 	protected $_collection = null;
 	protected $_clearFlag = false;
-	protected $_sig;
 	
 	public function __construct(Bbx_Model_Relationship_Abstract $relationship) {
 		$this->_relationship = $relationship;
-		$this->_sig = substr(md5(microtime()),-3);
 	}
 	
 	public function setParentModel(Bbx_Model $parentModel) {

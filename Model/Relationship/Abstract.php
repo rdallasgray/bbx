@@ -78,8 +78,7 @@ class Bbx_Model_Relationship_Abstract {
 			$this->_polymorphic = true;
 			$this->_polymorphicKey = $as.'_id';
 			$this->_polymorphicType = $as.'_type';
-			$polymorphicTable = isset($this->_throughTableName) ? 
-				$this->_throughTableName : $this->_childTableName;
+			$polymorphicTable = isset($this->_throughTableName) ? $this->_throughTableName : $this->_childTableName;
 			
 			$this->_parentRefColumn = $as.'_id';
 			$type = Inflector::singularize(Inflector::underscore($this->_parentModelName));
@@ -114,11 +113,23 @@ class Bbx_Model_Relationship_Abstract {
 	}
 	
 	protected function _findCollection(Bbx_Model $parentModel) {
+		if ($this->_polymorphic) {
+			try {
+				$childModelName = $parentModel->{$this->_polymorphicType};
+			}
+			catch (Exception $e) {
+				$childModelName = $this->_childModelName;
+			}
+		}
+		else {
+			$childModelName = $this->_childModelName;
+		}
+		
 		$this->_collections[$parentModel->id] = new Bbx_Model_Collection(
 			$parentModel,
 			$this->_findRowset($parentModel),
 			$this,
-			$this->_childModelName
+			$childModelName
 		);
 	}
 	
@@ -188,12 +199,13 @@ class Bbx_Model_Relationship_Abstract {
 		$this->_clearSelect();
 		
 		if ($this->_type == 'belongsto' || $this->_type == 'hasone') {
-			if (($this->_collections[$parentModel->id]->current() instanceof Bbx_Model)) {
+			if ($this->_collections[$parentModel->id]->current() instanceof Bbx_Model) {
 				if (!$forceCollection) {
 					return $this->_collections[$parentModel->id]->current();
 				}
 			}
 			else if ($this->_type == 'hasone') {
+				// TODO Should NOT be doing this here -- do in controller.
 				$current = $this->_collections[$parentModel->id]->create();
 				if (!$forceCollection) {
 					return $current;
