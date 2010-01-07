@@ -78,11 +78,11 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			$collection = $collection->findAll($params);
 		}
 
-		$collectionName = Inflector::tableize(get_class($collection));
+		$collectionName = Inflector::tableize($collection->getModelName());
 		$this->view->$collectionName = $collection;
-		
+
 		$this->_setEtag($this->view->$collectionName->etag($this->_helper->contextSwitch()->getCurrentContext()));
-		
+
 		if ($this->_context === 'json' || $this->_context === 'csv') {
 			$options = ($this->_context === 'json') ? array('deep' => true) : null;
 			$this->view->assign($this->view->$collectionName->toArray($options));
