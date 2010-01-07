@@ -98,6 +98,7 @@ class Bbx_Model_Relationship_Abstract {
 	
 	protected function _model($childModelName = null) {
 		$childModelName = $childModelName ? $childModelName : $this->_childModelName;
+		$this->_childModelName = $childModelName;
 		if (!isset($this->_models[$childModelName])) {
 			$this->_models[$childModelName] = Bbx_Model::load($childModelName);
 		}
@@ -113,7 +114,7 @@ class Bbx_Model_Relationship_Abstract {
 	}
 	
 	protected function _findCollection(Bbx_Model $parentModel) {
-		if ($this->_polymorphic) {
+/*		if ($this->_polymorphic) {
 			try {
 				$childModelName = $parentModel->{$this->_polymorphicType};
 			}
@@ -124,12 +125,12 @@ class Bbx_Model_Relationship_Abstract {
 		else {
 			$childModelName = $this->_childModelName;
 		}
-		
+*/		
 		$this->_collections[$parentModel->id] = new Bbx_Model_Collection(
 			$parentModel,
 			$this->_findRowset($parentModel),
 			$this,
-			$childModelName
+			$this->_childModelName
 		);
 	}
 	
