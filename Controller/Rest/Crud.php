@@ -78,6 +78,8 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			case 'OPTIONS':
 			$this->_authenticate();
 			
+//			case 'HEAD':
+			
 			$method = '_'.Inflector::underscore($request->getMethod());
 			$this->$method();
 		}
@@ -155,6 +157,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 	}
 	
 	protected function _head() {
+		Bbx_Log::write("received HEAD request");
 	}
 	
 	protected function _options() {
