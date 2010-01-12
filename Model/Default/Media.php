@@ -30,6 +30,10 @@ class Bbx_Model_Default_Media extends Bbx_Model {
 		return SITE_ROOT.$this->_mediaPath.'/'.$this->id.'.'.$this->_extension;
 	}
 	
+	public function getExtension() {
+		return $this->_extension;
+	}
+	
 	public function attachMedia($filePath) {
 	}
 	

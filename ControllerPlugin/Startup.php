@@ -31,8 +31,6 @@ class Bbx_ControllerPlugin_Startup extends Zend_Controller_Plugin_Abstract {
 		$viewRenderer = Zend_Controller_Action_HelperBroker::getExistingHelper('viewRenderer');
 		
 		$module = $request->getModuleName();
-		
-		$path = SITE_ROOT.'/application/modules/'.MODULE_NAME.'/views';
 
 		switch ($module) {
 			case 'admin':
@@ -62,6 +60,8 @@ class Bbx_ControllerPlugin_Startup extends Zend_Controller_Plugin_Abstract {
 					)
 				)
 			);
+		
+			$path = SITE_ROOT.'/application/modules/'.MODULE_NAME.'/views';
 
 			$view->addHelperPath(SITE_ROOT.'/library/Bbx/View/Helper','Bbx_View_Helper');
 			$view->addHelperPath($path.'/helpers','ViewHelper');

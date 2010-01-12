@@ -31,8 +31,6 @@ class Bbx_ActionHelper_Csv extends Zend_Controller_Action_Helper_Abstract {
 			if(method_exists($view, 'getVars')) {
 				$vars = Bbx_Format_Csv::encode($view->getVars());
 				$this->getResponse()->setBody($vars);
-				$this->getResponse()->setHeader('Content-disposition','attachment; filename='
-					.Bbx_ActionHelper_Filename::fromUrl($this->getRequest()->getRequestUri()).'.csv', true);
 			} 
 			else {
 				throw new Zend_Controller_Action_Exception('View does not implement the getVars() method needed to encode the view into CSV');

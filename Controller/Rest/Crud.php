@@ -55,6 +55,19 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			$this->_authenticate();
 		}
 		
+		if (@$params['download'] === "true") {
+			$this->_authenticate();
+			$model = $this->_helper->Model->getModel();
+			if ($model instanceof Bbx_Model_Default_Media) {
+				$extension = $model->getExtension();
+			}
+			else {
+				$extension = $this->_context;
+			}
+			$this->getResponse()->setHeader('Content-disposition','attachment; filename='
+				.Bbx_ActionHelper_Filename::fromUrl($this->getRequest()->getRequestUri()).'.'.$extension, true);
+		}
+		
 		switch ($request->getMethod()) {
 			case 'GET':
 			break;
@@ -71,13 +84,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 	}
 
 	public function indexAction() {
-		$params = $this->_helper->Model->parseParams($this->_getAllParams());
-		$collection = $this->_helper->Model->getModel();
-		
-		if (!$collection instanceof Bbx_Model_Collection) {
-			$collection = $collection->findAll($params);
-		}
-
+		$collection = $this->_helper->Model->getCollection();
 		$collectionName = Inflector::tableize($collection->getModelName());
 		$this->view->$collectionName = $collection;
 
@@ -92,20 +99,15 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 
 	public function showAction() {
 		$model = $this->_helper->Model->getModel();
-		
-		if($model instanceof Bbx_Model) {
-			$modelName = Inflector::underscore(get_class($model));
-			$this->view->$modelName = $model;
 	
-			$this->_setEtag($this->view->$modelName->etag($this->_helper->contextSwitch()->getCurrentContext()));
-	
-			if ($this->_helper->contextSwitch()->getCurrentContext() === 'json') {
-				$this->view->assign($this->view->$modelName->toArray());
-				unset($this->view->$modelName);
-			}
-		}
-		else {
-			throw new Bbx_Controller_Rest_Exception(null,404);
+		$modelName = Inflector::underscore(get_class($model));
+		$this->view->$modelName = $model;
+
+		$this->_setEtag($this->view->$modelName->etag($this->_helper->contextSwitch()->getCurrentContext()));
+
+		if ($this->_helper->contextSwitch()->getCurrentContext() === 'json') {
+			$this->view->assign($this->view->$modelName->toArray());
+			unset($this->view->$modelName);
 		}
 	}
 	

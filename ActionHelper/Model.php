@@ -46,7 +46,12 @@ class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 		}
 		
 		else {
-			$model = Bbx_Model::load($controllerName);
+			try {
+				$model = Bbx_Model::load($controllerName);
+			}
+			catch (Exception $e) {
+				throw new Bbx_Controller_Rest_Exception(null,404);
+			}
 		
 			if ($id = $request->getParam('id')) {
 				$model = $model->find((int)$id);
@@ -57,6 +62,17 @@ class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 		}
 		
 		return $model;
+	}
+	
+	public function getCollection() {
+		$params = $this->parseParams($this->getRequest()->getParams());
+		$collection = $this->getModel();
+		
+		if (!$collection instanceof Bbx_Model_Collection) {
+			$collection = $collection->findAll($params);
+		}
+		
+		return $collection;
 	}
 
 }

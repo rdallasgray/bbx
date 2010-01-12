@@ -17,6 +17,12 @@ You should have received a copy of the GNU General Public License along with Bac
 
 
 class Bbx_Controller_Rest_Crud_Media extends Bbx_Controller_Rest_Crud {
+	
+	public function showAction() {
+		if ($this->getRequest()->getParam('download') === "true") {
+		
+		}
+	}
 
 	protected function _post() {
 		
@@ -62,7 +68,6 @@ class Bbx_Controller_Rest_Crud_Media extends Bbx_Controller_Rest_Crud {
 			Bbx_Log::debug('Upload failed: '.implode($upload->getMessages()));
 			throw new Bbx_Controller_Rest_Exception('Upload failed: '.implode($upload->getMessages()),500);
 		}
-		
 	}
 
 }
