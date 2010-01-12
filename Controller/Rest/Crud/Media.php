@@ -20,6 +20,7 @@ class Bbx_Controller_Rest_Crud_Media extends Bbx_Controller_Rest_Crud {
 	
 	public function showAction() {
 		if ($this->getRequest()->getParam('download') === "true") {
+		Zend_Controller_Action_HelperBroker::getExistingHelper('viewRenderer')->setNoRender(true);
 			$model = $this->_helper->Model->getModel();
 			try {
 				$this->getResponse()
@@ -27,7 +28,7 @@ class Bbx_Controller_Rest_Crud_Media extends Bbx_Controller_Rest_Crud {
 					->setHeader('Content-length',filesize($model->getMediaPath()))
 					->setBody(readfile($model->getMediaPath()))
 					->sendResponse();
-				exit();
+				exit(); //TODO want to try and avoid this ... why is exit() necessary?
 			}
 			catch (Exception $e) {
 				throw new Bbx_Controller_Rest_Exception("Couldn't read file information for download: "
