@@ -76,10 +76,11 @@ class Bbx_Controller_Rest extends Zend_Controller_Action {
 	}
 	
 	protected function _head() {
+		Bbx_Log::write("received HEAD request");
 	}
 	
 	protected function _options() {
-//TODO set header for allowed methods etc.
+		Bbx_Log::write("received OPTIONS request");
 	}
 }
 

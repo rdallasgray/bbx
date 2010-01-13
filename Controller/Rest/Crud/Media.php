@@ -20,15 +20,15 @@ class Bbx_Controller_Rest_Crud_Media extends Bbx_Controller_Rest_Crud {
 	
 	public function showAction() {
 		if ($this->getRequest()->getParam('download') === "true") {
-		Zend_Controller_Action_HelperBroker::getExistingHelper('viewRenderer')->setNoRender(true);
+			Zend_Controller_Action_HelperBroker::getExistingHelper('viewRenderer')->setNoRender(true);
 			$model = $this->_helper->Model->getModel();
 			try {
-				$this->getResponse()
-					->setHeader('Content-type',$model->getMimeType())
-					->setHeader('Content-length',filesize($model->getMediaPath()))
-					->setBody(readfile($model->getMediaPath()))
-					->sendResponse();
-				exit(); //TODO want to try and avoid this ... why is exit() necessary?
+				$this->getResponse()->setHeader('Content-type',$model->getMimeType());
+				if(!$this->getRequest()->isHead()) {
+					$this->getResponse()
+						->setHeader('Content-length',filesize($model->getMediaPath()))
+						->setBody(readfile($model->getMediaPath()));
+				}
 			}
 			catch (Exception $e) {
 				throw new Bbx_Controller_Rest_Exception("Couldn't read file information for download: "
@@ -74,7 +74,6 @@ class Bbx_Controller_Rest_Crud_Media extends Bbx_Controller_Rest_Crud {
 				->setHeader('Location',$new_model->url(true))
 				->setBody(Zend_Json::encode($new_model->toArray()))
 				->sendResponse();
-			
 			exit();
 		}
 		else {

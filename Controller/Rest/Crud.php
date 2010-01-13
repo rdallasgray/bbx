@@ -78,7 +78,8 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			case 'OPTIONS':
 			$this->_authenticate();
 			
-//			case 'HEAD':
+			case 'HEAD':
+			case 'OPTIONS':
 			
 			$method = '_'.Inflector::underscore($request->getMethod());
 			$this->$method();
@@ -154,14 +155,6 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		$model->delete($this->_getParam('id'));
 		$this->getResponse()->setHttpResponseCode(204)->sendResponse();
 		exit();
-	}
-	
-	protected function _head() {
-		Bbx_Log::write("received HEAD request");
-	}
-	
-	protected function _options() {
-//TODO set header for allowed methods etc.
 	}
 
 }
