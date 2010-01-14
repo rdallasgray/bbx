@@ -35,6 +35,9 @@ class Bbx_Controller_Rest_Crud_Media extends Bbx_Controller_Rest_Crud {
 					.$this->getRequest()->getRequestUri(),500);
 			}
 		}
+		else {
+			parent::showAction();
+		}
 	}
 
 	protected function _post() {
