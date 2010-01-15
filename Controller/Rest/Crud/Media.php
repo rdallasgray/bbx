@@ -48,7 +48,8 @@ class Bbx_Controller_Rest_Crud_Media extends Bbx_Controller_Rest_Crud {
 		}
 
 		$model = $this->_helper->Model->getModel();
-		$mimeType = ($model instanceof Bbx_Model) ? $model->getMimeType() : Bbx_Model::load($model->getModelName())->getMimeType();		
+		$mimeType = ($model instanceof Bbx_Model) 
+			? $model->getMimeType() : Bbx_Model::load($model->getModelName())->getMimeType();		
 		
 		$upload = new Zend_File_Transfer_Adapter_Http();
 		$upload->addValidator('Count', false, array('min' => 1, 'max' => 1))
