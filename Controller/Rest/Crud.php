@@ -87,6 +87,9 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 	}
 
 	public function indexAction() {
+		if ($this->getRequest()->isHead()) {
+			return;
+		}
 		$collection = $this->_helper->Model->getCollection();
 		$collectionName = Inflector::tableize($collection->getModelName());
 		$this->view->$collectionName = $collection;
@@ -101,6 +104,9 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 	}
 
 	public function showAction() {
+		if ($this->getRequest()->isHead()) {
+			return;
+		}
 		$model = $this->_helper->Model->getModel();
 	
 		$modelName = Inflector::underscore(get_class($model));
@@ -116,6 +122,9 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 	
 	public function newAction() {
 		$this->_authenticate();
+		if ($this->getRequest()->isHead()) {
+			return;
+		}
 		$model = $this->_helper->Model->getModel();
 		if ($model instanceof Bbx_Model) {		
 			$this->view->assign($model->schema());
