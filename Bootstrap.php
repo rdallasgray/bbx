@@ -104,14 +104,6 @@ class Bbx_Bootstrap {
 		Zend_Controller_Action_HelperBroker::addPath(SITE_ROOT.'/library/Bbx/ActionHelper','Bbx_ActionHelper');
 
 		$front->registerPlugin(new Bbx_ControllerPlugin_Startup);
-
-
-		/**
-		* Set media path
-		*
-		*/
-//TODO better way to find media path -- set as constant or method in Model
-		set_include_path(get_include_path().':'.SITE_ROOT.'/application/modules/'.MODULE_NAME.'/media');
 		
 		
 		/**
