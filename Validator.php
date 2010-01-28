@@ -34,9 +34,6 @@ class Bbx_Validator {
 	}
 	
 	public function getMessage($error,$field) {
-		if (isset(Site_Config::$lang['multi'])) {
-			$field = Bbx_View::get()->translate->_($field);
-		}
 		return str_replace('%field%',$field,$this->_messages[$error]);
 	}
 	
