@@ -23,14 +23,14 @@ class Bbx_Controller_Rest_Crud_Media extends Bbx_Controller_Rest_Crud {
 			Zend_Controller_Action_HelperBroker::getExistingHelper('viewRenderer')->setNoRender(true);
 			$model = $this->_helper->Model->getModel();
 			try {
-				$this->getResponse()->setHeader('Content-type',$model->getMimeType());
+				$this->getResponse()->setHeader('Content-Type',$model->getMimeType());
 				if ($this->getRequest()->isHead()) {
-					$this->getResponse()->setHeader('Content-length',0)->sendResponse();
+					$this->getResponse()->setHeader('Content-Length',0)->sendResponse();
 					exit();
 				}
 				else {
 					$this->getResponse()
-						->setHeader('Content-length',filesize($model->getMediaPath()))
+						->setHeader('Content-Length',filesize($model->getMediaPath()))
 						->setBody(readfile($model->getMediaPath()))->sendResponse();
 					exit();
 				}
