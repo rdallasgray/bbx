@@ -295,7 +295,9 @@ class Bbx_Model implements IteratorAggregate {
 		}
 		if (!empty($validationErrors)) {
 			$e = new Bbx_Model_Exception('Validation error');
-			$e->errorVars = $validationErrors;
+			foreach ($validationErrors as $key => $value) {
+				$e->errorVars[] = $key.': '.implode('; ',$value);
+			}
 			throw $e;
 		}
 	}

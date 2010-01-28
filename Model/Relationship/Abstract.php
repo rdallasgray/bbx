@@ -89,9 +89,9 @@ class Bbx_Model_Relationship_Abstract {
 			$this->_parentRefColumn = Inflector::singularize($this->_parentTableName).'_id';
 		}
 		$this->_models[$this->_childModelName] = Bbx_Model::load($this->_childModelName);
-		$this->_originalSelect = array_merge_recursive(
-			$this->_originalSelect,
-			$this->_convertForSelect($this->_models[$this->_childModelName]->getDefaultParams())
+		$this->_originalSelect = $this->_mergeSelects(
+			$this->_convertForSelect($this->_models[$this->_childModelName]->getDefaultParams()),
+			$this->_originalSelect
 		);
 		$this->_select = $this->_originalSelect;
 	}
@@ -125,13 +125,34 @@ class Bbx_Model_Relationship_Abstract {
 	protected function _findRowset(Bbx_Model $parentModel) {
 	}
 	
+	protected function _mergeSelects() {
+		$selects = func_get_args();
+		$merged = array();
+		foreach ($selects as $s) {
+			foreach ($s as $keyword => $value) {
+				if ($keyword === 'order') {
+					$merged['order'] = $value;
+				}
+				else {
+					if (!array_key_exists($keyword,$merged)) {
+						$merged[$keyword] = array();
+					}
+					if (!is_array($value)) {
+						$merged[$keyword][] = $value;
+					}
+					else {
+						$merged[$keyword] = array_merge_recursive($merged[$keyword],$value);
+					}
+				}
+			}
+		}
+		return $merged;
+	}
+	
 	protected function _convertForSelect($params) {
 		$select = array();
 		
 		foreach($params as $key=>$value) {
-			if (is_array($value)) {
-				$value = array('args'=>$value);
-			}
 			$select[$key] = $value;
 		}
 		return $select;
@@ -148,27 +169,16 @@ class Bbx_Model_Relationship_Abstract {
 		$select = $this->_model()->getTable()->select();
 
 		foreach ($this->_select as $keyword=>$condition) {
-			
 			if (!is_array($condition)) {
 				$select->$keyword($condition);
 			}
 			else {
-				if (array_key_exists('args',$condition)) {
-					call_user_func_array(array($select,$keyword),$condition['args']);
-				}
-				else {
-					foreach ($condition as $c) {
-						if (is_array($c) && array_key_exists('args',$c)) {
-							call_user_func_array(array($select,$keyword),$c['args']);
-						}
-						else {
-							$select->$keyword($c);
-						}
-					}
+				foreach ($condition as $c) {
+					Bbx_Log::write(print_r($c,true));
+					$select->$keyword($c);
 				}
 			}
 		}
-
 		return $select;
 	}
 	
@@ -229,7 +239,7 @@ class Bbx_Model_Relationship_Abstract {
 				if (strpos($key,'`') === false) {
 					$key = '`'.$key.'`';
 				}
-				$conditions['where'][] = array('args'=>array($key.' = ?',$val));
+				$conditions['where'][] = Zend_Registry::get('db')->quoteInto($key.' = '.$val);
 			}
 		}
 		else {
