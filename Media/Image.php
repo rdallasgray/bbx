@@ -80,10 +80,6 @@ class Bbx_Media_Image extends Bbx_Media_Abstract {
 		return $this->_processor()->getHeight();
 	}
 	
-	public function download() {
-		
-	}
-	
 }
 
 ?>
