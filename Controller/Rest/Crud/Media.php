@@ -86,8 +86,12 @@ class Bbx_Controller_Rest_Crud_Media extends Bbx_Controller_Rest_Crud {
 			exit();
 		}
 		else {
-			Bbx_Log::debug('Upload failed: '.implode($upload->getMessages()));
-			throw new Bbx_Controller_Rest_Exception('Upload failed: '.implode($upload->getMessages()),500);
+			$msgs = $upload->getMessages();
+			if (empty($msgs)) {
+				$msgs = array('unknown failure -- please contact support.');
+			}
+			Bbx_Log::debug('Upload failed: '.implode($msgs));
+			throw new Bbx_Controller_Rest_Exception('Upload failed: '.implode($msgs),500);
 		}
 	}
 
