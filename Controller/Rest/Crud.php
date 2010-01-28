@@ -54,7 +54,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		if ($this->_context === 'csv') {
 			$this->_authenticate();
 		}
-		
+		// TODO should maybe do this in a helper
 		if (@$params['download'] === "true") {
 			$this->_authenticate();
 			$model = $this->_helper->Model->getModel();

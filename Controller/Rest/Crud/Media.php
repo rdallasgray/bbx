@@ -24,10 +24,15 @@ class Bbx_Controller_Rest_Crud_Media extends Bbx_Controller_Rest_Crud {
 			$model = $this->_helper->Model->getModel();
 			try {
 				$this->getResponse()->setHeader('Content-type',$model->getMimeType());
-				if(!$this->getRequest()->isHead()) {
+				if ($this->getRequest()->isHead()) {
+					$this->getResponse()->setHeader('Content-length',0)->sendResponse();
+					exit();
+				}
+				else {
 					$this->getResponse()
 						->setHeader('Content-length',filesize($model->getMediaPath()))
-						->setBody(readfile($model->getMediaPath()));
+						->setBody(readfile($model->getMediaPath()))->sendResponse();
+					exit();
 				}
 			}
 			catch (Exception $e) {
