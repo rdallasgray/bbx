@@ -341,8 +341,8 @@ class Bbx_Model implements IteratorAggregate {
 		$this->_beforeCreate();
 		unset($attributes['id']);
 		$this->build($attributes);
-		$this->_afterCreate();
 		$this->save();
+		$this->_afterCreate();
 		return $this;
 	}
 	
