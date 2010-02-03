@@ -35,7 +35,7 @@ class Bbx_Controller_Rest extends Zend_Controller_Action {
 
 	protected function _setEtag($etag) {
 		
-		if ($this->_context === 'html' || $this->_context === '') {
+		if ($this->_context === 'html' || $this->_context == '') {
 			return;
 		}
 
