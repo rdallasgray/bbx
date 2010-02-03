@@ -72,7 +72,6 @@ class Bbx_ControllerPlugin_NestedLayouts extends Zend_Controller_Plugin_Abstract
     }
 
 	public function clearLayouts() {
-		Bbx_Log::write("clearing layouts");
 		$this->_layouts = array();
 	}
 

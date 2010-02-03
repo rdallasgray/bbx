@@ -174,7 +174,6 @@ class Bbx_Model_Relationship_Abstract {
 			}
 			else {
 				foreach ($condition as $c) {
-					Bbx_Log::write(print_r($c,true));
 					$select->$keyword($c);
 				}
 			}
