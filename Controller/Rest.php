@@ -34,6 +34,10 @@ class Bbx_Controller_Rest extends Zend_Controller_Action {
 	}
 
 	protected function _setEtag($etag) {
+		
+		if ($this->_context === 'html' || $this->_context === '') {
+			return;
+		}
 
 		if (($ifNoneMatch = $this->getRequest()->getHeader('If-None-Match'))) {
 			if ($ifNoneMatch === $etag) {
