@@ -61,6 +61,10 @@ class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 			}
 		}
 		
+		if ($request->getParam('list') === 'true') {
+			$model->renderAsList();
+		}
+		
 		return $model;
 	}
 	
@@ -72,6 +76,10 @@ class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 			$collection = $collection->findAll($params);
 		}
 		
+		if (@$params['list'] === 'true') {
+			$collection->renderAsList();
+		}
+
 		return $collection;
 	}
 
