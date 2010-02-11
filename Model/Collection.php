@@ -25,6 +25,7 @@ class Bbx_Model_Collection implements IteratorAggregate,Countable {
 	protected $_primary;
 	protected $_string;
 	protected $_iterator;
+	protected $_renderAsList = false;
 
 	public function __construct(Bbx_Model $parentModel, Bbx_Db_Table_Rowset $rowset, $relationship = null, $childModelName = null) {
 		$this->_parentModel = $parentModel;
@@ -64,7 +65,7 @@ class Bbx_Model_Collection implements IteratorAggregate,Countable {
 */		$model = Bbx_Model::load($this->getModelName());
 		$model->setRowData($row);
 //		$this->_models[$row->{$this->_primary}] = $model;
-		return $model;
+		return $this->_renderAsList ? array('id' => $model->id, 'label' => $model->__toString()) : $model;
 	}
 	
 	public function first() {
@@ -115,7 +116,7 @@ class Bbx_Model_Collection implements IteratorAggregate,Countable {
 		
 		foreach ($this as $model) {
 			if (isset($options['deep']) && $options['deep'] === true) {
-				$a[] = $model->toArray($options);
+				$a[] = $model instanceof Bbx_Model ? $model->toArray() : $model;
 			}
 			else {
 				$a[] = $model;
@@ -123,6 +124,10 @@ class Bbx_Model_Collection implements IteratorAggregate,Countable {
 		}
 		
 		return $a;
+	}
+	
+	public function renderAsList($option = true) {
+		$this->_renderAsList = $option;
 	}
 	
 	protected function _toRowArray() {
