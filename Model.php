@@ -517,7 +517,13 @@ class Bbx_Model implements IteratorAggregate {
 			return array('id' => $this->id, 'label' => $this->__toString());
 		}
 		
-		return $this->_rowData()->toArray();
+		$a = array();
+		
+		foreach($this->columns() as $c) {
+			$a[$c] = $this->$c;
+		}
+		
+		return $a;
 	}
 
 	public function url($absolute = false) {
