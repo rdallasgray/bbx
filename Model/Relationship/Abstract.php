@@ -223,9 +223,6 @@ class Bbx_Model_Relationship_Abstract {
 	}
 	
 	public function setFindParams($params) {
-		if ($params instanceof Zend_Db_Table_Select) {
-			// can it be?
-		}
 		
 		$conditions = array();
 		
@@ -238,7 +235,7 @@ class Bbx_Model_Relationship_Abstract {
 				if (strpos($key,'`') === false) {
 					$key = '`'.$key.'`';
 				}
-				$conditions['where'][] = Zend_Registry::get('db')->quoteInto($key.' = '.$val);
+				$conditions['where'][] = Zend_Registry::get('db')->quoteInto($key.' = ?',$val);
 			}
 		}
 		else {
