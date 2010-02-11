@@ -33,6 +33,7 @@ class Bbx_Model implements IteratorAggregate {
 	protected $_iterator;
 	protected $_defaultParams = array();
 	protected $_oldData = array();
+	protected $_renderAsList = false;
 
 	public function __construct() {
 		$this->_tableName = isset($this->_tableName) ? $this->_tableName : Inflector::tableize(get_class($this));
@@ -504,15 +505,19 @@ class Bbx_Model implements IteratorAggregate {
 		return $this->$key;
 	}
 	
-	public function toArray($options = array()) {
+	public function toArray() {
 		try {
 			$this->_rowData();
 		}
 		catch (Exception $e) {
 			throw new Bbx_Model_Exception('Model has no data: '.get_class($this));
 		}
+
+		if ($this->_renderAsList) {
+			return array('id' => $this->id, 'label' => $this->__toString());
+		}
 		
-		return Bbx_Model_ArrayBuilder::getArray($this,$options);
+		return $this->_rowData()->toArray();
 	}
 
 	public function url($absolute = false) {
@@ -604,12 +609,12 @@ class Bbx_Model implements IteratorAggregate {
 		return $schema;
 	}
 	
-	public function toStringPattern() {
-		return $this->_to_string_pattern;
+	public function renderAsList($option = true) {
+		$this->_renderAsList = $option;
 	}
 	
-	public function label() {
-		return $this->__toString();
+	public function toStringPattern() {
+		return $this->_to_string_pattern;
 	}
 
 	public function etag($extra = null) {
