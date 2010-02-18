@@ -35,20 +35,19 @@ class Bbx_Mail extends Zend_Mail {
 		return $quotedValue;
 	}
 
-	static public function instance($args = null) {
-		$args = isset($args) ? func_get_args() : array();
+	static public function instance() {
+		$args = func_get_args();
 		if (self::$_instance === null) {
 			$transport = new Zend_Mail_Transport_Smtp(
-				Site_Config::$site['mail']['smtp_server'],
+				Bbx_Config::get()->env->site->smtp_server,
 				array(
 					'auth'=>'login',
-					'username'=>Site_Config::$site['mail']['smtp_username'],
-					'password'=>Site_Config::$site['mail']['smtp_password']
+					'username'=>Bbx_Config::get()->env->site->smtp_username,
+					'password'=>Bbx_Config::get()->env->site->smtp_password
 				)
 			);
 			Zend_Mail::setDefaultTransport($transport);
-			$mail = new ReflectionClass('Bbx_Mail');
-			self::$_instance = $mail->newInstanceArgs($args);
+			self::$_instance = new Bbx_Mail();
 		}
 		return self::$_instance;
 	}
