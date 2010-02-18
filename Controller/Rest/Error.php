@@ -79,19 +79,23 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 	}
 
 	protected function _notify() {
-		Bbx_Log::debug(print_r($this->_error,true));
-/*		if (isset(Bbx_Config::get()->site->mail->support_address)) {
+		if (isset(Bbx_Config::get()->env->site->support_address)) {
 			try {
 				$mail = Bbx_Mail::instance();
-				$mail->setFrom('error@'.Bbx_Config::get()->site->location,Bbx_Config::get()->site->location);
+				$mail->setFrom('error@'.Bbx_Config::get()->env->site->location,Bbx_Config::get()->env->site->location);
 				$mail->setBodyText(print_r($this->_error,true));
-				$mail->addTo(Bbx_Config::get()->site->mail->support_address);
-				$mail->setSubject('Error at '.Bbx_Config::get()->site->location);
+				$mail->addTo(Bbx_Config::get()->env->site->support_address);
+				$mail->setSubject('Error at '.Bbx_Config::get()->env->site->location);
 				$mail->send();
 			}
 			catch (Exception $e) {
+				Bbx_Log::write(print_r($this->_error,true));
+				Bbx_Log::write("Couldn't send mail: ".$e->getMessage());
 			}
-		}*/
+		}
+		else {
+			
+		}
 	}
 }
 
