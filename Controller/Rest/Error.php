@@ -94,7 +94,7 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 			}
 		}
 		else {
-			
+			Bbx_Log::write(print_r($this->_error,true));
 		}
 	}
 }
