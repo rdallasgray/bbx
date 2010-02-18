@@ -35,6 +35,7 @@ class Bbx_Config {
 	}
 
 //TODO deal with this later	
+/*
 	public static function locale() {
 		if (isset($this->env->locale)) {
 			if (!Zend_Registry::isRegistered('locale')) {
@@ -48,6 +49,8 @@ class Bbx_Config {
 		}
 		return Site_Config::$lang['locale'].'.'.Site_Config::$lang['charset'];
 	}
+*/
+	
 }
 
 ?>
