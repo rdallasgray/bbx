@@ -29,6 +29,7 @@ class Bbx_Model_Default_User extends Bbx_Model {
 	
 	protected function _afterCreate() {
 		$this->password = md5($this->username.':'.Bbx_Config::get()->env->site->location.':'.$this->password);
+		$this->save();
 	}
 	
 	protected function _beforeSave() {
