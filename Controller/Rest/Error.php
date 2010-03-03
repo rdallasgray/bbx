@@ -31,7 +31,6 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 	}
 
 	public function errorAction() {
-
 		$this->_error = $this->_getParam('error_handler');
 
 		switch ($this->_error->type) {

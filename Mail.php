@@ -44,8 +44,7 @@ class Bbx_Mail extends Zend_Mail {
 					'auth'=>'login',
 					'username'=>Bbx_Config::get()->env->site->smtp_username,
 					'password'=>Bbx_Config::get()->env->site->smtp_password
-				)
-
+				);
 			}
 			$transport = new Zend_Mail_Transport_Smtp(Bbx_Config::get()->env->site->smtp_server,$options);
 			Zend_Mail::setDefaultTransport($transport);
