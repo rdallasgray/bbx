@@ -31,24 +31,7 @@ class Bbx_Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 			mb_internal_encoding(Bbx_Config::get()->locale->charset);
 		}
 	}
-	
-	protected function _initRouter() {
-		$this->bootstrap('FrontController');
-		$front = $this->getResource('FrontController');
 
-		$router = new Zend_Controller_Router_Rewrite();
-		$router->removeDefaultRoutes();
-		
-		include(APPLICATION_PATH.'/routes.php');
-
-		$front->setControllerDirectory(array(
-			'default'=>APPLICATION_PATH.'/modules/default/controllers',
-			'admin'=>APPLICATION_PATH.'/../library/Bbx/Admin/application/controllers'
-		));
-		
-		$front->setRouter($router);
-	}
-	
 	protected function _initContext() {
 		$autoContextHelper = new Bbx_ActionHelper_AutoContext;
 		Zend_Controller_Action_HelperBroker::addHelper($autoContextHelper);
