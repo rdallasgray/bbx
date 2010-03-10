@@ -70,6 +70,10 @@ class Bbx_Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$db = $this->getResource('Db');
 		$db->query('SET NAMES utf8');
 	}
+	
+	protected function _initRegistry() {
+		Zend_Registry::set('db',$this->getResource('Db'));
+	}
 
 }
 
