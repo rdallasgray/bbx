@@ -29,7 +29,7 @@ class Bbx_Model_Default_User extends Bbx_Model {
 	
 	protected function _beforeSave() {
 		if (empty($this->_oldData) || ($this->password !== $this->_oldData['password'])) {
-			$this->password = md5($this->username.':'.Bbx_Config::get()->env->site->location.':'.$this->password);
+			$this->password = md5($this->username.':'.Bbx_Config::get()->site->location.':'.$this->password);
 		}
 	}
 }

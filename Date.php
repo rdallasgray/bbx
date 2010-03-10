@@ -109,7 +109,7 @@ class Bbx_Date {
 	
 	protected static function _getFinalDate($timestamp,$parts,$format) {
 		if ($format === null) {
-			$format = Bbx_Config::get()->env->locale->datetime_format;
+			$format = Bbx_Config::get()->locale->datetime_format;
 		}
 		$formatArray = self::_parseFormat($format);
 		$finalFormatArray = array();

@@ -18,13 +18,10 @@ You should have received a copy of the GNU General Public License along with Bac
 
 class Bbx_Config {
 
-	public $db;
-	public $env;
 	private static $_instance = null;
+	private $_ini = null;
 	
 	private function __construct() {
-		$this->env = new Zend_Config_Ini(SITE_ROOT.'/application/modules/'.MODULE_NAME.'/config/env.ini',APP_MODE);
-		$this->db = new Zend_Config_Ini(SITE_ROOT.'/application/modules/'.MODULE_NAME.'/config/db.ini',APP_MODE);
 	}
 
 	public static function get() {
@@ -33,23 +30,15 @@ class Bbx_Config {
 		}
 		return self::$_instance;
 	}
-
-//TODO deal with this later	
-/*
-	public static function locale() {
-		if (isset($this->env->locale)) {
-			if (!Zend_Registry::isRegistered('locale')) {
-				return Site_Config::$lang[Site_Config::$lang['default']]['locale'].'.'.Site_Config::$lang['charset'];
-			}
-			$locale = Zend_Registry::get('locale');
-			if ($locale->getLanguage() == Site_Config::$lang['default'] || in_array($locale->getLanguage(),Site_Config::$lang['translations'])) {
-				return $locale->toString();
-			}
-			return Site_Config::$lang[Site_Config::$lang['default']]['locale'].'.'.Site_Config::$lang['charset'];
+	
+	public function __get($param) {
+		if ($this->_ini === null) {
+			$this->_ini = new Zend_Config_Ini(
+				APPLICATION_PATH.'/config/application.ini',APPLICATION_ENV
+			);
 		}
-		return Site_Config::$lang['locale'].'.'.Site_Config::$lang['charset'];
+		return $this->_ini->$param;
 	}
-*/
 	
 }
 

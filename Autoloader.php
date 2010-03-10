@@ -16,38 +16,36 @@ You should have received a copy of the GNU General Public License along with Bac
 
 
 
-class Bbx_Loader extends Zend_Loader {
+class Bbx_Autoloader implements Zend_Loader_Autoloader_Interface {
 
-	public static function loadClass($class,$dirs = null) {
-		parent::loadClass($class,$dirs);
-	}
-
-	public static function autoload($class) {
+	public function autoload($class) {
 		
 		$moduleName = Zend_Controller_Front::getInstance()->getRequest()->getModuleName();
 		
 		if (substr($class,-10) === 'Controller') {
-			try {
-				self::loadClass($class,array(
-					SITE_ROOT.'/application/modules/'.$moduleName.'/controllers'
-				));
-				return $class;
-			} 
-			catch (Exception $e) {
+			
+			$path = SITE_ROOT.'/application/modules/'.$moduleName.'/controllers/'.$class.'.php';
+
+			if (Zend_Loader::isReadable($path)) {
+				@include $path;
+				return true;
 			}
 		}
 		
-		try {
-			self::loadClass($class,array(
-				SITE_ROOT.'/library/Bbx/Vendor',
-				SITE_ROOT.'/library',
-				SITE_ROOT.'/application/modules/'.$moduleName.'/models'
-			));
-			return $class;
-		} 
-		catch (Exception $e) {
-			return false;
+		$paths = array(
+			SITE_ROOT.'/application/modules/'.$moduleName.'/models',
+			SITE_ROOT.'/library/Bbx/Vendor',
+		);
+		
+		foreach ($paths as $p) {
+			$classPath = $p.'/'.$class.'.php';
+			if (Zend_Loader::isReadable($classPath)) {
+				@include $classPath;
+				return true;
+			}
 		}
+		
+		return false;
 	}
 
 }

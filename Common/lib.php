@@ -27,7 +27,7 @@ function encode_email($email) {
 }
 
 function bbx_escape($string) {
-	return htmlentities($string,ENT_COMPAT,Bbx_Config::get()->env->locale->charset);
+	return htmlentities($string,ENT_COMPAT,Bbx_Config::get()->locale->charset);
 }
 
 function h($string) {

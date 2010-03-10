@@ -78,13 +78,13 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 	}
 
 	protected function _notify() {
-		if (isset(Bbx_Config::get()->env->site->support_address)) {
+		if (isset(Bbx_Config::get()->site->support_address)) {
 			try {
 				$mail = Bbx_Mail::instance();
-				$mail->setFrom('error@'.Bbx_Config::get()->env->site->location,Bbx_Config::get()->env->site->location);
+				$mail->setFrom('error@'.Bbx_Config::get()->site->location,Bbx_Config::get()->site->location);
 				$mail->setBodyText(print_r($this->_error,true));
-				$mail->addTo(Bbx_Config::get()->env->site->support_address);
-				$mail->setSubject('Error at '.Bbx_Config::get()->env->site->location);
+				$mail->addTo(Bbx_Config::get()->site->support_address);
+				$mail->setSubject('Error at '.Bbx_Config::get()->site->location);
 				$mail->send();
 			}
 			catch (Exception $e) {

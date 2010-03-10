@@ -39,14 +39,14 @@ class Bbx_Mail extends Zend_Mail {
 		$args = func_get_args();
 		if (self::$_instance === null) {
 			$options = array();
-			if (isset(Bbx_Config::get()->env->site->smtp_username)) {
+			if (isset(Bbx_Config::get()->site->smtp_username)) {
 				$options = 	array(
 					'auth'=>'login',
-					'username'=>Bbx_Config::get()->env->site->smtp_username,
-					'password'=>Bbx_Config::get()->env->site->smtp_password
+					'username'=>Bbx_Config::get()->site->smtp_username,
+					'password'=>Bbx_Config::get()->site->smtp_password
 				);
 			}
-			$transport = new Zend_Mail_Transport_Smtp(Bbx_Config::get()->env->site->smtp_server,$options);
+			$transport = new Zend_Mail_Transport_Smtp(Bbx_Config::get()->site->smtp_server,$options);
 			Zend_Mail::setDefaultTransport($transport);
 			self::$_instance = new Bbx_Mail();
 		}

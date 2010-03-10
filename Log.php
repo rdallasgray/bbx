@@ -41,7 +41,7 @@ class Bbx_Log {
 	}
 	
 	public static function debug($str, $type = 'info', $log = 'main_log') {
-		if (APP_MODE === 'development' || APP_MODE === 'test') {
+		if (APPLICATION_ENV === 'development' || APPLICATION_ENV === 'testing') {
 			return Bbx_Log::write($str, $type, $log);
 		}
 		return null;

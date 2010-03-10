@@ -16,15 +16,23 @@ You should have received a copy of the GNU General Public License along with Bac
 
 
 
-class Admin_IndexController extends Zend_Controller_Action {
+class Bbx_ControllerPlugin_Layout extends Zend_Controller_Plugin_Abstract {
 
-	public function init() {
-		$viewRenderer = Zend_Controller_Action_HelperBroker::getExistingHelper('viewRenderer');
-		$viewRenderer->setNoRender();
-	}
+	public function routeShutdown(Zend_Controller_Request_Abstract $request) {
+		
+		$moduleName = $request->getModuleName();
 
-	public function indexAction() {
-		$this->_helper->getHelper('Redirector')->gotoUrl('/Bxs/app/xul/main.xul');
+		if ($moduleName === 'admin') {
+			return;
+		}
+		
+		$path = APPLICATION_PATH.'/modules/'.$moduleName.'/views';
+		
+		Zend_Layout::startMvc(array(
+			'layout'=>'layout',
+			'viewSuffix'=>'phtml',
+			'layoutPath'=>$path.'/layouts'
+		));
 	}
 
 }

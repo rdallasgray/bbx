@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License along with Bac
 
 
 
-class Admin_MetadataController extends Bbx_Controller_Rest {
+class Bbx_Controller_Rest_Metadata extends Bbx_Controller_Rest {
 	
 	public function init() {
 		$this->_helper->contextSwitch()->addActionContext('error','json');
@@ -25,10 +25,13 @@ class Admin_MetadataController extends Bbx_Controller_Rest {
 	}
 	
 	public function preDispatch() {
+		
 		if ($this->_getParam('final')) {
 			return;
 		}
+		
 		$modelName = $this->getRequest()->getActionName();
+
 		if ($modelName === 'null') {
 			return;
 		}
@@ -39,6 +42,7 @@ class Admin_MetadataController extends Bbx_Controller_Rest {
 			$this->_forward('error',null,null,array('format' => 'json','modelName' => $modelName,'final' => true));
 			return;
 		}
+		
 		$this->_sendMetadata($model);
 	}
 	

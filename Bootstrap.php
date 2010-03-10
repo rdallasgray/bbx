@@ -14,130 +14,63 @@ You should have received a copy of the GNU General Public License along with Bac
 
 */
 
-class Bbx_Bootstrap {
-
-	public static function run() {
-
-		/**
-		* Set up basic ini settings
-		*
-		*/
-
-		ini_set("display_errors","0");
-		ini_set("html_errors","0");
-		ini_set("log_errors","1");
-		error_reporting(E_ALL);
-
-		ini_set("short_open_tag","0");
-		
-		set_time_limit(240);
-
-		/**
-		* Get config info and set basic include paths 
-		*
-		*/
-
-
-		set_include_path(get_include_path().':'.SITE_ROOT.'/library');
-
-
-		require(SITE_ROOT.'/library/Zend/Loader.php');
-		require(SITE_ROOT.'/library/Bbx/Loader.php');
-
-		@Zend_Loader::registerAutoload('Bbx_Loader');
-		//TODO THIS NEEDS TO BE CHANGED TO WORK WITH ZEND_LOADER_AUTOLOADER BEFORE V2.0
-
-
-		/**
-		* Set up locale, language and charset 
-		*
-		*/
-
-		ini_set("default_charset",Bbx_Config::get()->env->locale->charset);
-		ini_set("date.timezone","UTC");
-
+class Bbx_Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
+	
+	protected function _initLoader() {
+		$ldr = Zend_Loader_Autoloader::getInstance();
+		$bbxLdr = new Bbx_Autoloader;
+		$ldr->unshiftAutoloader($bbxLdr);
+	}
+	
+	protected function _initLib() {
+		require(APPLICATION_PATH.'/../library/Bbx/Common/lib.php');
+	}
+	
+	protected function _initLocale() {
 		if (function_exists('mb_internal_encoding')) {
-			mb_internal_encoding(Bbx_Config::get()->env->locale->charset);
+			mb_internal_encoding(Bbx_Config::get()->locale->charset);
 		}
-
-
-
-		/**
-		* Require unclassed library files
-		*
-		*/
-
-		require(SITE_ROOT.'/library/Bbx/Common/lib.php');
-		
-
-
-		// LOCALE
-
-		//TODO redo locale from scratch
-
-
-		/**
-		* Set up global routes 
-		*
-		*/
-
-		$front = Zend_Controller_Front::getInstance();
+	}
+	
+	protected function _initRouter() {
+		$this->bootstrap('FrontController');
+		$front = $this->getResource('FrontController');
 
 		$router = new Zend_Controller_Router_Rewrite();
 		$router->removeDefaultRoutes();
-		Zend_Registry::set('router',$router);
-
-		include(SITE_ROOT.'/application/modules/'.MODULE_NAME.'/config/routes.php');
+		
+		include(APPLICATION_PATH.'/routes.php');
 
 		$front->setControllerDirectory(array(
-			'default'=>SITE_ROOT.'/application/modules/'.MODULE_NAME.'/controllers',
-			'admin'=>SITE_ROOT.'/library/Bbx/Admin/application/controllers'
+			'default'=>APPLICATION_PATH.'/modules/default/controllers',
+			'admin'=>APPLICATION_PATH.'/../library/Bbx/Admin/application/controllers'
 		));
-
+		
 		$front->setRouter($router);
-
-		/**
-		* Set up global Action Helpers 
-		*
-		*/
-
-		Zend_Controller_Action_HelperBroker::addPath(SITE_ROOT.'/library/Bbx/ActionHelper','Bbx_ActionHelper');
-
-		$front->registerPlugin(new Bbx_ControllerPlugin_Startup);
-		
-		
-		/**
-		* Set up DB
-		*
-		*/
-		
-		$db = Zend_Db::factory(Bbx_Config::get()->db->adaptor,array(
-			'host'=>Bbx_Config::get()->db->host,
-			'username'=>Bbx_Config::get()->db->username,
-			'password'=>Bbx_Config::get()->db->password,
-			'dbname'=>Bbx_Config::get()->db->dbname,
-			'charset'=>Bbx_Config::get()->env->locale->charset,
-		));
-
-		Zend_Db_Table_Abstract::setDefaultAdapter($db);
-		
+	}
+	
+	protected function _initContext() {
+		$autoContextHelper = new Bbx_ActionHelper_AutoContext;
+		Zend_Controller_Action_HelperBroker::addHelper($autoContextHelper);
+	}
+	
+	protected function _initPlugins() {
+		$this->bootstrap('FrontController');
+		$front = $this->getResource('FrontController');
+		$viewPlugin = new Bbx_ControllerPlugin_View;
+		$actionHelperPlugin = new Bbx_ControllerPlugin_ActionHelpers;
+		$layoutPlugin = new Bbx_ControllerPlugin_Layout;
+		$front->registerPlugin($viewPlugin);
+		$front->registerPlugin($actionHelperPlugin);
+		$front->registerPlugin($layoutPlugin);
+	}
+	
+	protected function _initDbUtf8() {
+		$this->bootstrap('Db');
+		$db = $this->getResource('Db');
 		$db->query('SET NAMES utf8');
-		
-		Zend_Registry::set('db',$db);
-		
-		
-		/**
-		* Start Front Controller 
-		*
-		*/
-		if (!defined("NO_DISPATCH")) {
-			$front->dispatch();
-		}
-
 	}
 
 }
-
-Bbx_Bootstrap::run();
 
 ?>

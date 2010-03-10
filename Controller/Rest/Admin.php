@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License along with Bac
 
 
 
-class Admin_AuthController extends Bbx_Controller_Rest {
+class Bbx_Controller_Rest_Admin extends Bbx_Controller_Rest {
 
 	protected $_user;
 
@@ -25,6 +25,12 @@ class Admin_AuthController extends Bbx_Controller_Rest {
 		$this->_helper->contextSwitch()->addActionContext('login','json');
 		$this->_helper->contextSwitch()->addActionContext('logout','json');
 		parent::init();
+	}
+
+	public function indexAction() {
+		$viewRenderer = Zend_Controller_Action_HelperBroker::getExistingHelper('viewRenderer');
+		$viewRenderer->setNoRender();
+		$this->_helper->getHelper('Redirector')->gotoUrl('/Bxs/app/xul/main.xul');
 	}
 
 	public function loginAction() {

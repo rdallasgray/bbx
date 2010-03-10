@@ -56,7 +56,7 @@ class Bbx_Controller_Rest extends Zend_Controller_Action {
 		
 		$config = array(
 			'accept_schemes' => 'digest',
-			'realm'          => Bbx_Config::get()->env->site->location,
+			'realm'          => Bbx_Config::get()->site->location,
 			'digest_domains' => '/',
 			'nonce_timeout'  => 3600,
 		);
