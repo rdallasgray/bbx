@@ -35,6 +35,8 @@ class Bbx_Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	protected function _initContext() {
 		$autoContextHelper = new Bbx_ActionHelper_AutoContext;
 		Zend_Controller_Action_HelperBroker::addHelper($autoContextHelper);
+		$downloadHelper = new Bbx_ActionHelper_Download;
+		Zend_Controller_Action_HelperBroker::addHelper($downloadHelper);
 	}
 	
 	protected function _initPlugins() {

@@ -32,6 +32,10 @@ class Bbx_Controller_Rest extends Zend_Controller_Action {
 		$this->_helper->contextSwitch()->initContext();
 		$this->_context = $this->_helper->contextSwitch()->getCurrentContext();
 	}
+	
+	public function getContext() {
+		return $this->_context;
+	}
 
 	protected function _setEtag($etag) {
 		

@@ -54,18 +54,10 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		if ($this->_context === 'csv') {
 			$this->_authenticate();
 		}
-		// TODO should maybe do this in a helper
+
 		if (@$params['download'] === "true") {
 			$this->_authenticate();
-			$model = $this->_helper->Model->getModel();
-			if ($model instanceof Bbx_Model_Default_Media) {
-				$extension = $model->getExtension();
-			}
-			else {
-				$extension = $this->_context;
-			}
-			$this->getResponse()->setHeader('Content-disposition','attachment; filename='
-				.Bbx_ActionHelper_Filename::fromUrl($this->getRequest()->getRequestUri()).'.'.$extension, true);
+			$this->_helper->download($this->_helper->Model->getModel());
 		}
 		
 		switch ($request->getMethod()) {

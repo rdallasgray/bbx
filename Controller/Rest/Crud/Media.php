@@ -83,7 +83,7 @@ class Bbx_Controller_Rest_Crud_Media extends Bbx_Controller_Rest_Crud {
 				->setHeader('Location',$new_model->url(true))
 				->setBody(Zend_Json::encode($new_model->toArray()))
 				->sendResponse();
-			exit();
+			exit(); // has to exit otherwise indexAction runs
 		}
 		else {
 			$msgs = $upload->getMessages();
