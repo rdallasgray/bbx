@@ -36,6 +36,7 @@ class Bbx_ControllerPlugin_View extends Zend_Controller_Plugin_Abstract {
 		$view->addHelperPath($path.'/helpers','ViewHelper');
 		$viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('ViewRenderer');
 		$viewRenderer->setView($view);
+		Zend_Registry::set('view',$view);
 	}
 
 }
