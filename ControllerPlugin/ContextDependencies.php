@@ -43,19 +43,7 @@ class Bbx_ControllerPlugin_ContextDependencies extends Zend_Controller_Plugin_Ab
 
 		$contextHelper = Zend_Controller_Action_HelperBroker::getStaticHelper('contextSwitch');
 		
-		$contextHelper->addContexts(
-			array(
-				'html' => array(),
-				'csv'  => array(
-                    'suffix'    => 'csv',
-                    'headers'   => array('Content-Type' => 'application/csv; charset=iso-8859-1'),
-                    'callbacks' => array(
-                        'init' => array('Bbx_ActionHelper_Csv','initContext'),
-                        'post' => array('Bbx_ActionHelper_Csv','postContext'),
-					)
-				)
-			)
-		);
+		$contextHelper->addContext('html',array());
 		
 		$this->_initDependencies($context);
 	}
@@ -120,6 +108,17 @@ class Bbx_ControllerPlugin_ContextDependencies extends Zend_Controller_Plugin_Ab
 			case 'csv':
 			$csvHelper = new Bbx_ActionHelper_Csv;
 			Zend_Controller_Action_HelperBroker::addHelper($csvHelper);
+			Zend_Controller_Action_HelperBroker::getStaticHelper('contextSwitch')->addContext(
+				'csv',
+				array(
+                    'suffix'    => 'csv',
+                    'headers'   => array('Content-Type' => 'application/csv; charset=iso-8859-1'),
+                    'callbacks' => array(
+                        'init' => array($csvHelper,'initContext'),
+                        'post' => array($csvHelper,'postContext'),
+					)
+				)
+			);
 			break;
 		}
 	}
