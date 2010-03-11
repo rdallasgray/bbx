@@ -19,10 +19,6 @@ You should have received a copy of the GNU General Public License along with Bac
 class Bbx_ControllerPlugin_ActionHelpers extends Zend_Controller_Plugin_Abstract {
 
 	public function routeShutdown(Zend_Controller_Request_Abstract $request) {
-		$moduleName = $request->getModuleName();
-		if ($moduleName === 'admin') {
-			return;
-		}
 		
 		$modelHelper = new Bbx_ActionHelper_Model;
 		$csvHelper = new Bbx_ActionHelper_Csv;

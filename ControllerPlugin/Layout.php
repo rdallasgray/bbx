@@ -20,12 +20,6 @@ class Bbx_ControllerPlugin_Layout extends Zend_Controller_Plugin_Abstract {
 
 	public function routeShutdown(Zend_Controller_Request_Abstract $request) {
 		
-		$moduleName = $request->getModuleName();
-
-		if ($moduleName === 'admin') {
-			return;
-		}
-		
 		$path = APPLICATION_PATH.'/modules/'.$moduleName.'/views';
 		
 		Zend_Layout::startMvc(array(

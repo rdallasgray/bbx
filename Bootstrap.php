@@ -42,12 +42,8 @@ class Bbx_Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	protected function _initPlugins() {
 		$this->bootstrap('FrontController');
 		$front = $this->getResource('FrontController');
-		$viewPlugin = new Bbx_ControllerPlugin_View;
-		$actionHelperPlugin = new Bbx_ControllerPlugin_ActionHelpers;
-		$layoutPlugin = new Bbx_ControllerPlugin_Layout;
-		$front->registerPlugin($viewPlugin);
-		$front->registerPlugin($actionHelperPlugin);
-		$front->registerPlugin($layoutPlugin);
+		$contextDependenciesPlugin = new Bbx_ControllerPlugin_ContextDependencies;
+		$front->registerPlugin($contextDependenciesPlugin);
 	}
 	
 	protected function _initDbUtf8() {
