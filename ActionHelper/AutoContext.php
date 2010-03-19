@@ -22,16 +22,17 @@ class Bbx_ActionHelper_AutoContext extends Zend_Controller_Action_Helper_Abstrac
 		$types = explode(',',$accept);
 		$mainType = trim($types[0]);
 		$mime = explode('/',$mainType);
+				
+		if($mime[1] == '' || $mime[1] == '*') {
+			return;
+		}
 		
-		
-		if ($mime[1] !== '') {
-			try {
-				if ($this->getRequest()->getParam('format') == '') {
-					$this->getRequest()->setParam('format',$mime[1]);
-				}
+		try {
+			if ($this->getRequest()->getParam('format') == '') {
+				$this->getRequest()->setParam('format',$mime[1]);
 			}
-			catch (Exception $e) {
-			}
+		}
+		catch (Exception $e) {
 		}
 	}
 
