@@ -202,13 +202,6 @@ class Bbx_Model_Relationship_Abstract {
 					return $this->_collections[$parentModel->id]->current();
 				}
 			}
-			else if ($this->_type == 'hasone') {
-				// TODO Should NOT be doing this here -- do in controller.
-				$current = $this->_collections[$parentModel->id]->create();
-				if (!$forceCollection) {
-					return $current;
-				}
-			}
 		}
 		
 		return $this->_collections[$parentModel->id];
