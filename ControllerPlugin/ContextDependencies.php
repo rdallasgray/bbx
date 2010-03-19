@@ -65,6 +65,8 @@ class Bbx_ControllerPlugin_ContextDependencies extends Zend_Controller_Plugin_Ab
 			break;
 
 			default:
+			$this->_initView();
+			$this->_initLayout();
 			$this->_initHelpers('global');
 		}
 	}
@@ -94,14 +96,14 @@ class Bbx_ControllerPlugin_ContextDependencies extends Zend_Controller_Plugin_Ab
 		));
 	}
 	
-	protected function _initHelpers($context) {
-		
+	protected function _initHelpers($context = 'global') {
 		$modelHelper = new Bbx_ActionHelper_Model;
 		Zend_Controller_Action_HelperBroker::addHelper($modelHelper);
 		
 		switch ($context) {
 			case 'html':
-			$urlHelper = new Zend_Controller_Action_Helper_Url;
+			case 'global':
+ 			$urlHelper = new Zend_Controller_Action_Helper_Url;
 			Zend_Controller_Action_HelperBroker::addHelper($urlHelper);
 			break;
 			
