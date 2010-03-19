@@ -41,7 +41,12 @@ class Bbx_Controller_Rest_Crud_Node extends Bbx_Controller_Rest_Crud {
 
 	public function showAction() {
 		$model = $this->_getModel();
-		$this->view->text = $model->text;
+		if ($model instanceof Bbx_Model && isset($model->text)) {
+			$this->view->text = $model->text;
+		}
+		else {
+			$this->view->text = "";
+		}
 		$this->_setEtag($model->etag());
 	}
 
@@ -52,7 +57,12 @@ class Bbx_Controller_Rest_Crud_Node extends Bbx_Controller_Rest_Crud {
 
 	protected function _put() {
 		$model = $this->_getModel();
-		$model->update($this->_getBodyData());
+		if ($model instanceof Bbx_Model) {
+			$model->update($this->_getBodyData());
+		}
+		else {
+			$model->create($this->_getBodyData());
+		}
 	}
 
 	protected function _delete() {
