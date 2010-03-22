@@ -14,6 +14,8 @@ You should have received a copy of the GNU General Public License along with Bac
 
 */
 
+require_once 'Zend/Application/Bootstrap/Bootstrap.php';
+
 class Bbx_Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	
 	protected function _initLoader() {
