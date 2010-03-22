@@ -27,25 +27,18 @@ function encode_email($email) {
 }
 
 function bbx_escape($string) {
-	return htmlentities($string,ENT_COMPAT,Bbx_Config::get()->locale->charset);
+	return $string;
+//	return htmlspecialchars($string,ENT_COMPAT,Bbx_Config::get()->locale->charset);
+}
+
+function bbx_smart_escape($string) {
+	$string = str_replace('&','&#38;',$string);
+	$string = SmartyPants($string,2);
+	return $string;
 }
 
 function h($string) {
 	return bbx_escape($string);
-}
-
-function bbx_smart_escape($string) {
-	return bbx_smart_format(bbx_escape($string));
-}
-
-function bbx_text_escape($string) {
-	return bbx_smart_format(bbx_text_format($string));
-}
-
-function bbx_smart_format($string) {
-	$string = str_replace('&','&#38;',$string);
-	$string = SmartyPants($string,2);
-	return $string;
 }
 
 function balance_tags($text) {
