@@ -21,7 +21,7 @@ class Bbx_Controller_Rest_Metadata extends Bbx_Controller_Rest {
 	public function init() {
 		$this->_helper->contextSwitch()->addActionContext('error','json');
 		$this->_helper->contextSwitch()->addActionContext('null','json');
-		$this->_helper->contextSwitch()->initContext();
+		$this->_initContext();
 	}
 	
 	public function preDispatch() {

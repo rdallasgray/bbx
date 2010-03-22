@@ -43,7 +43,8 @@ class Bbx_ControllerPlugin_ContextDependencies extends Zend_Controller_Plugin_Ab
 
 		$contextHelper = Zend_Controller_Action_HelperBroker::getStaticHelper('contextSwitch');
 		
-		$contextHelper->addContext('html',array());
+		$contextHelper->addContext('html',array())
+			          ->setDefaultContext('html');
 		
 		$this->_initDependencies($context);
 	}

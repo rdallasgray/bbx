@@ -18,7 +18,10 @@ class Bbx_ActionHelper_AutoContext extends Zend_Controller_Action_Helper_Abstrac
 	
 	public function init() {
 		$req = $this->getRequest();
+		$helper = Zend_Controller_Action_HelperBroker::getStaticHelper('contextSwitch');
+
 		$accept = $req->getHeader('Accept');
+		
 		$types = explode(',',$accept);
 		$mainType = trim($types[0]);
 		$mime = explode('/',$mainType);
@@ -28,8 +31,8 @@ class Bbx_ActionHelper_AutoContext extends Zend_Controller_Action_Helper_Abstrac
 		}
 		
 		try {
-			if ($this->getRequest()->getParam('format') == '') {
-				$this->getRequest()->setParam('format',$mime[1]);
+			if ($req->getParam('format') == '') {
+				$req->setParam('format',$mime[1]);
 			}
 		}
 		catch (Exception $e) {
