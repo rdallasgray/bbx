@@ -27,8 +27,6 @@ class Bbx_Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	}
 	
 	protected function _initLocale() {
-		ini_set("default_charset",Bbx_Config::get()->locale->charset);
-		ini_set("date.timezone","UTC");
 		if (function_exists('mb_internal_encoding')) {
 			mb_internal_encoding(Bbx_Config::get()->locale->charset);
 		}
