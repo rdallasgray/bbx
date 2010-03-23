@@ -95,15 +95,11 @@ class Bbx_Model_Collection implements IteratorAggregate,Countable {
 	}
 
 	public function __toString() {
-		return $this->_stringifier();
-	}
-
-	protected function _stringifier() {
 		$a = array();
 		foreach ($this as $model) {
 			$a[] = $model->__toString();
 		}
- 		return implode(', ',$a);
+ 		return (string)implode(', ',$a);
 	}
 		
 	public function count() {
