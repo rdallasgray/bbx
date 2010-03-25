@@ -107,6 +107,15 @@ class Bbx_Date {
 		return self::dateTime($date) !== '';
 	}
 	
+	public static function isFuture($date) {
+		if (!self::isValidDate($date)) {
+			return false;
+		}
+		$normalized = self::_normalizeDateTime($date);
+		$timestamp = self::_timestamp(array_values($normalized));
+		return $timestamp > time();
+	}
+	
 	protected static function _getFinalDate($timestamp,$parts,$format) {
 		if ($format === null) {
 			$format = Bbx_Config::get()->locale->datetime_format;
