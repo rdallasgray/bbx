@@ -67,7 +67,7 @@ class Bbx_ControllerPlugin_NestedLayouts extends Zend_Controller_Plugin_Abstract
 	
     protected function _cloneView() {
         $view = clone Zend_Registry::get('view');
-        $view->clearVars();
+//       $view->clearVars();
         return $view;
     }
 
