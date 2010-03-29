@@ -61,7 +61,7 @@ class Bbx_Media_Image_Processor_Magickwand extends Bbx_Media_Image_Processor_Abs
 
 	protected function _resize($newWidth,$newHeight) {
 		MagickScaleImage($this->_resource,$newWidth,$newHeight);
-		MagickUnsharpMaskImage($this->_resource,1,0.25,10,0);
+		MagickUnsharpMaskImage($this->_resource,0.5,0.25,1.2,0.05);
 	}
 	
 	protected function _sanitizeImage() {

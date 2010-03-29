@@ -61,7 +61,7 @@ class Bbx_Media_Image_Processor_Imagick extends Bbx_Media_Image_Processor_Abstra
 
 	protected function _resize($newWidth,$newHeight) {
 		$this->_resource->scaleImage($newWidth,$newHeight);
-		$this->_resource->unsharpMaskImage(1,0.25,8,0);
+		$this->_resource->unsharpMaskImage(0.5,0.25,1.2,0.05);
 	}
 	
 	protected function _sanitizeImage() {
