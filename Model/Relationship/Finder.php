@@ -63,6 +63,10 @@ class Bbx_Model_Relationship_Finder implements IteratorAggregate,Countable {
 		return $this->_collection()->$key = $val;
 	}
 	
+	public function __isset($key) {
+		return isset($this->_collection()->$key);
+	}
+	
 	public function __call($method,$arguments) {
 		return call_user_func_array(array($this->_collection(),$method),$arguments);
 	}
