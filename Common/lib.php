@@ -27,7 +27,7 @@ function encode_email($email) {
 }
 
 function bbx_escape($string) {
-	return htmlspecialchars($string,ENT_COMPAT,Bbx_Config::get()->locale->charset);
+	return htmlspecialchars((string)$string,ENT_COMPAT,Bbx_Config::get()->locale->charset);
 }
 
 function bbx_smart_escape($string) {
@@ -37,7 +37,7 @@ function bbx_smart_escape($string) {
 }
 
 function h($string) {
-	return bbx_escape($string);
+	return bbx_escape((string)$string);
 }
 
 function balance_tags($text) {
