@@ -36,6 +36,9 @@ class Bbx_Controller_Rest extends Zend_Controller_Action {
 		try {
 			$this->_helper->contextSwitch()->initContext();
 			$this->_context = $this->_helper->contextSwitch()->getCurrentContext();
+			if ($this->_context == '') {
+				$this->_context = $this->_helper->contextSwitch()->getDefaultContext();
+			}
 		}
 		catch (Exception $e) {
 			$this->_context = $this->_helper->contextSwitch()->getDefaultContext();
