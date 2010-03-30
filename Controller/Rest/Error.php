@@ -36,34 +36,36 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 		switch ($this->_error->type) {
 			case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_CONTROLLER:
 			case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_ACTION:
-			$this->getResponse()->setHttpResponseCode(404);
-			$this->view->error = 'Not Found';
-			$url = $this->getRequest()->getRequestUri();
-			$this->view->errorVars = array('url'=>$url);
+			$this->_set404();
 			break;
 
 			default:
+			if ($this->_error['exception'] instanceof Zend_View_Exception) {
+				$this->_set404();
+				break;
+			}
+			
 			if ($this->_error['exception'] instanceof Bbx_Controller_Rest_Exception) {
 				$this->getResponse()->setHttpResponseCode($this->_error['exception']->getCode());
 			}
 			else {
 				$this->getResponse()->setHttpResponseCode(500);
 			}
+			$this->view->error = $this->_error['exception']->getMessage();
+		
+			if (isset($this->_error['exception']->errorVars)) {
+				$this->view->errorVars = $this->_error['exception']->errorVars;
+			}
+		
 			if ($this->getResponse()->getHttpResponseCode() == 500) {
 				$this->_notify();
 			}
 			else {
 				$this->_log();
 			}
-			
-			$this->view->error = $this->_error['exception']->getMessage();
-		
-			if (isset($this->_error['exception']->errorVars)) {
-				$this->view->errorVars = $this->_error['exception']->errorVars;
-			}
 			break;
 		}
-		
+			
 		if ($this->_helper->contextSwitch()->getCurrentContext() === 'json') {
 			$vars = isset($this->view->errorVars) ? $this->view->errorVars : array();
 			$this->getResponse()->setBody($this->view->error."\n\n".implode("\n",$vars));
@@ -72,13 +74,20 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 			exit();
 		}
 	}
+	
+	protected function _set404() {
+		$this->getResponse()->setHttpResponseCode(404);
+		$this->view->error = 'Not Found';
+		$url = $this->getRequest()->getRequestUri();
+		$this->view->errorVars = array('url'=>$url);
+	}
 
 	protected function _log() {
 		Bbx_Log::write($this->_error->exception->getMessage()."::".$this->_error->request->getRequestUri());
 	}
 
 	protected function _notify() {
-		if (isset(Bbx_Config::get()->site->support_address)) {
+		if (isset(Bbx_Config::get()->site->support_address) && APPLICATION_ENV == 'production') {
 			try {
 				$mail = Bbx_Mail::instance();
 				$mail->setFrom('error@'.Bbx_Config::get()->site->location,Bbx_Config::get()->site->location);
