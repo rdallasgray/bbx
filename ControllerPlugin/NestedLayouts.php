@@ -25,16 +25,11 @@ class Bbx_ControllerPlugin_NestedLayouts extends Zend_Controller_Plugin_Abstract
 	public function addLayout($layout) {
 		$this->_layouts = array_merge($this->_layouts,array_diff($layout,$this->_layouts));
 	}
-	
-	public function setErrorDetected($bool = true) {
-		$this->_errorDetected = $bool;
-	}
 
 	protected function _renderLayouts() {
 		$mvcLayout = Zend_Layout::getMvcInstance();
 		$mvcContentKey = $mvcLayout->getContentKey();
-		
-		$this->_layoutsAtShutdown = array_reverse($this->_layouts);
+		$content = $mvcLayout->$mvcContentKey;
 		
 		$view = $this->_cloneView();
 
@@ -43,37 +38,28 @@ class Bbx_ControllerPlugin_NestedLayouts extends Zend_Controller_Plugin_Abstract
 			'viewSuffix'=>$mvcLayout->getViewSuffix()
 		));
 		$layout->setView($view);
+		$layout->$mvcContentKey = $content;
 
 		foreach ($this->_layouts as $layoutName) {
 			$layout->setLayout($layoutName);
-			$layout->$mvcContentKey = $this->getResponse()->getBody();
-			$body = $layout->render();
-			$this->getResponse()->setBody($body);
+			$layout->$mvcContentKey = $content;
+			$content = $layout->render();
 		}
-		
-		$newLayouts = array_diff($this->_layouts,$this->_layoutsAtShutdown);
-		
-		if (count($newLayouts) > 0) {
-			$this->_layouts = array_diff($this->_layouts,$this->_layoutsAtShutdown);
-			$this->_renderLayouts();
-		}
+		$mvcLayout->content = $content;
+		$this->getResponse()->setBody($mvcLayout->render());
 	}
 
-	public function postDispatch() {
-		if (!$this->_errorDetected) {
-			$this->_renderLayouts();
-		}
+	public function dispatchLoopShutdown() {
+		$this->_renderLayouts();
 	}
 	
     protected function _cloneView() {
-        $view = clone Zend_Registry::get('view');
-//       $view->clearVars();
+      	$view = clone Zend_Registry::get('view');
+		if ($this->_errorDetected) {
+      		$view->clearVars();
+		}
         return $view;
     }
-
-	public function clearLayouts() {
-		$this->_layouts = array();
-	}
 
 }
 
