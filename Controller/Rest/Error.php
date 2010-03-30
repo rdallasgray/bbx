@@ -23,11 +23,6 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 	public function init() {
 		$this->_helper->contextSwitch()->addActionContext('error','json');
 		$this->_initContext();
-		$front = Zend_Controller_Front::getInstance();
-		if ($plugin = Zend_Controller_Front::getInstance()->getPlugin('Bbx_ControllerPlugin_NestedLayouts')) {
-			$plugin->clearLayouts();
-			$plugin->setErrorDetected(true);
-		}
 	}
 
 	public function errorAction() {
@@ -102,7 +97,7 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 			}
 		}
 		else {
-			Bbx_Log::write(print_r($this->_error,true));
+//			Bbx_Log::write(print_r($this->_error,true));
 		}
 	}
 }
