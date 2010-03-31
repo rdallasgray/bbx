@@ -190,6 +190,14 @@ class Bbx_Model_Collection implements IteratorAggregate,Countable {
 		return md5(serialize($data).$extra);
 	}
 	
+	public function url($absolute = false) {
+		$url = $this->_parentModel->url($absolute);
+		if ($this->_childModelName === get_class($this->_parentModel)) {
+			return $url;
+		}
+		return $url.'/'.Inflector::pluralize(Inflector::interscore($this->_childModelName));
+	}
+
 	public function __destruct() {
 		$this->_iterator = null;
 		$this->_relationship = null;
