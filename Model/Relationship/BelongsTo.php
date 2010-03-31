@@ -34,7 +34,6 @@ class Bbx_Model_Relationship_BelongsTo extends Bbx_Model_Relationship_Abstract {
 
 		$parentModelName = get_class($parentModel);
 		$parentTableName = $parentModel->getTableName();
-		
 		$childName = array_key_exists('source',$attributes) ? attributes('source') : $childName;
 		$childModelName = Inflector::classify($childName);
 		$childTableName = Bbx_Model::load($childModelName)->getTableName();
@@ -45,7 +44,18 @@ class Bbx_Model_Relationship_BelongsTo extends Bbx_Model_Relationship_Abstract {
 			$select->from($childTableName,array());
 		}
 		
+		if (!array_key_exists($parentTableName,$select->getPart('from'))) {
+			$select->from($parentTableName,array());
+		}
+		
 		$select->where("`".$parentTableName."`.`".$refColumn."` = `".$childTableName."`.`id`");
+		
+		try {
+			$parentModel->getRowData();
+			$select->where("`".$parentTableName."`.`id` = ".$parentModel->id); 
+		}
+		catch (Exception $e) {
+		}
 		
 		return $select;
 	}

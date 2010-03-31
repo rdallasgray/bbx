@@ -41,7 +41,7 @@ class Bbx_Model_Relationship_HasManyThrough extends Bbx_Model_Relationship_Abstr
 
 		$this->_throughRelationship = Bbx_Model_Registry::get('Relationships')->getRelationshipDataFor(
 			$this->_throughModelName,$this->_childName);
-			
+
 		$throughType = reset(array_keys($this->_throughRelationship));
 		$throughAttributes = $this->_throughRelationship[$throughType];
 		$throughRelationshipType = 'Bbx_Model_Relationship_'.ucwords($throughType);

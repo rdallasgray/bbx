@@ -81,7 +81,7 @@ class Bbx_Model_Relationship_Abstract {
 			$polymorphicTable = isset($this->_throughTableName) ? $this->_throughTableName : $this->_childTableName;
 			
 			$this->_parentRefColumn = $as.'_id';
-			$type = Inflector::singularize(Inflector::underscore($this->_parentModelName));
+			$type = Inflector::singularize(Inflector::underscore($this->_parentTableName));
 			$typeSelect = array('where'=>array("`".$polymorphicTable."`.`".$as."_type` = '".$type."'"));
 			$this->_originalSelect = array_merge_recursive((array)$this->_originalSelect,$typeSelect);
 		}

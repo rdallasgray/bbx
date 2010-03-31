@@ -55,7 +55,7 @@ class Bbx_Model_Relationship_HasMany extends Bbx_Model_Relationship_Abstract {
 		$parentModelName = get_class($parentModel);
 		$parentTableName = $parentModel->getTableName(); // exhibitions
 		
-		$childName = array_key_exists('source',$attributes) ? attributes('source') : $childName;
+		$childName = array_key_exists('source',$attributes) ? $attributes['source'] : $childName;
 		$childModelName = Inflector::classify($childName);
 		$childTableName = Bbx_Model::load($childModelName)->getTableName(); // images
 		
@@ -73,10 +73,10 @@ class Bbx_Model_Relationship_HasMany extends Bbx_Model_Relationship_Abstract {
 		
 		try {
 			$parentModel->getRowData();
-			$select->where("`".$childTableName."`.`".$refColumn."` = ".$parentModel->id); // images.subject_id = 
+			$select->where("`".$childTableName."`.`".$refColumn."` = ".$parentModel->id); 
 		}
 		catch (Exception $e) {
-			$select->where("`".$childTableName."`.`".$refColumn."` = `".$parentTableName."`.`id`"); // images.subject_id = 
+			$select->where("`".$childTableName."`.`".$refColumn."` = `".$parentTableName."`.`id`"); 
 		}
 		
 		if (isset($polyType)) {
