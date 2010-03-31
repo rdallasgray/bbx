@@ -19,21 +19,23 @@ You should have received a copy of the GNU General Public License along with Bac
 class Bbx_ControllerPlugin_NestedLayouts extends Zend_Controller_Plugin_Abstract {
 
 	protected $_layouts = array();
-	protected $_layoutsAtShutdown = array();
 	protected $_errorDetected = false;
 
 	public function addLayout($layout) {
-		$this->_layouts = array_merge($this->_layouts,array_diff($layout,$this->_layouts));
+		$this->_layouts = array_merge($this->_layouts,$layout);
 	}
 	
 	public function setErrorDetected($bool = true) {
 		$this->_errorDetected = $bool;
+		$this->getResponse()->clearBody();
+		$this->_clearLayouts();
 	}
 
-	protected function _renderLayouts() {
+	public function postDispatch() {
+		$layouts = array_reverse($this->_layouts);
 		$mvcLayout = Zend_Layout::getMvcInstance();
 		$mvcContentKey = $mvcLayout->getContentKey();
-		$content = $mvcLayout->$mvcContentKey;
+		$content = $this->getResponse()->getBody();
 		
 		$view = $this->_cloneView();
 
@@ -42,19 +44,12 @@ class Bbx_ControllerPlugin_NestedLayouts extends Zend_Controller_Plugin_Abstract
 			'viewSuffix'=>$mvcLayout->getViewSuffix()
 		));
 		$layout->setView($view);
-		$layout->$mvcContentKey = $content;
 
-		foreach ($this->_layouts as $layoutName) {
+		foreach ($layouts as $layoutName) {
 			$layout->setLayout($layoutName);
-			$layout->$mvcContentKey = $content;
-			$content = $layout->render();
+			$layout->$mvcContentKey = $this->getResponse()->getBody();
+			$this->getResponse()->setBody($layout->render());
 		}
-		$mvcLayout->content = $content;
-		$this->getResponse()->setBody($mvcLayout->render());
-	}
-
-	public function dispatchLoopShutdown() {
-		$this->_renderLayouts();
 	}
 	
     protected function _cloneView() {
@@ -64,6 +59,10 @@ class Bbx_ControllerPlugin_NestedLayouts extends Zend_Controller_Plugin_Abstract
 		}
         return $view;
     }
+
+	protected function _clearLayouts() {
+		$this->_layouts = array();
+	}
 
 }
 
