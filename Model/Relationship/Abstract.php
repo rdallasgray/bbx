@@ -196,7 +196,7 @@ class Bbx_Model_Relationship_Abstract {
 		
 		$this->_clearSelect();
 		
-		if ($this->_type == 'belongsto' || $this->_type == 'hasone') {
+		if ($this->_type == 'belongsto' || $this->_type == 'hasone' || $this->_type == 'hasonethrough') {
 			if ($this->_collections[$parentModel->id]->current() instanceof Bbx_Model) {
 				if (!$forceCollection) {
 					return $this->_collections[$parentModel->id]->current();
