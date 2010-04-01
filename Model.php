@@ -538,7 +538,7 @@ class Bbx_Model implements IteratorAggregate {
 		else {
 			$this->_url = $this->_defaultRoute();
 		}
-		return $absolute && !$external ? 'http://'.$_SERVER['SERVER_NAME'].'/'.$this->_url : $this->_url;
+		return $absolute && !$external ? 'http://'.$_SERVER['SERVER_NAME'].$this->_url : $this->_url;
 	}
 
 	public function toHtml() {
@@ -547,7 +547,7 @@ class Bbx_Model implements IteratorAggregate {
 
 	protected function _defaultRoute() {
 		$idPart = isset($this->id) ? '/'.$this->id : '';
-		return Inflector::interscore(Inflector::pluralize(get_class($this))).$idPart;
+		return '/'.Inflector::interscore(Inflector::pluralize(get_class($this))).$idPart;
 	}
 
 	public function activeRelationships() {
