@@ -36,18 +36,26 @@ class Bbx_Controller_Rest_Crud_Node extends Bbx_Controller_Rest_Crud {
 	}
 
 	public function indexAction() {
+		$this->getRequest()->setActionName('show');
 		$this->showAction();
 	}
 
 	public function showAction() {
 		$model = $this->_getModel();
-		if ($model instanceof Bbx_Model && isset($model->text)) {
-			$this->view->text = $model->text;
+		if ($model instanceof Bbx_Model) {
+			$modelName = Inflector::underscore(get_class($model));
+			$this->view->$modelName = $model;
 		}
 		else {
-			$this->view->text = "";
+			$this->view->$modelName = "";
 		}
-		$this->_setEtag($model->etag());
+
+		$this->_setEtag($this->view->$modelName->etag($this->_helper->contextSwitch()->getCurrentContext()));
+
+		if ($this->_helper->contextSwitch()->getCurrentContext() === 'json') {
+			$this->view->assign($this->view->$modelName->toArray());
+			unset($this->view->$modelName);
+		}
 	}
 
 	protected function _post() {
