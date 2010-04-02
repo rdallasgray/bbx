@@ -77,7 +77,7 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 		}
 		try {
 			if (file_exists($this->getMediaPath('original')) && !$overwrite) {
-				return $this->_createSizedMedia($img, $overwrite);
+				return $this->_createSizedMedia($overwrite);
 			}
 			$img->setResolution(300)->save($this->getMediaPath());
 
@@ -85,7 +85,7 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 			$this->height = $img->height();
 			$this->save();
 			
-			$this->_createSizedMedia($img);
+			$this->_createSizedMedia();
 		}
 		catch (Exception $e) {
 			Bbx_Log::write($e->getMessage());
@@ -103,11 +103,14 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 		}
 	}
 	
-	protected function _createSizedMedia(Bbx_Media_Image $img, $overwrite = true) {
-		
-		Bbx_Log::debug("Creating sized media");
+	public function regenerateSizedMedia() {
+		$this->_createSizedMedia(true);
+	}
+	
+	protected function _createSizedMedia($overwrite = true) {
 		
 			foreach($this->_sizes as $size => $values) {
+				$img = Bbx_Media_Image::load($this->getMediaPath('original'));
 				if (file_exists($this->getMediaPath($size)) && !$overwrite) {
 					continue;
 				}
@@ -117,7 +120,7 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 				}
 				catch(Exception $e) {
 					Bbx_Log::write($e->getMessage());
-					throw new Bbx_Model_Exception("Couldn't resize image ".$img->id." to path ".$this->getMediaPath($size));
+					throw new Bbx_Model_Exception("Couldn't resize image ".$this->id." to path ".$this->getMediaPath($size));
 				}
 			}
 	}
