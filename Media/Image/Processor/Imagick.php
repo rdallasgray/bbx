@@ -60,8 +60,8 @@ class Bbx_Media_Image_Processor_Imagick extends Bbx_Media_Image_Processor_Abstra
 	}
 
 	protected function _resize($newWidth,$newHeight) {
-		$this->_resource->scaleImage($newWidth,$newHeight);
-		$this->_resource->unsharpMaskImage(0.5,0.25,1.2,0.05);
+    	$this->_resource->resizeImage($newWidth,$newHeight,Imagick::FILTER_LANCZOS,0.95);
+		$this->_resource->adaptiveSharpenImage(2,1);
 	}
 	
 	protected function _sanitizeImage() {
@@ -69,8 +69,8 @@ class Bbx_Media_Image_Processor_Imagick extends Bbx_Media_Image_Processor_Abstra
 	}
 	
 	protected function _save($writePath) {
+		$this->_resource->setImageCompressionQuality(90);
 		try {
-			$this->_resource->setImageCompressionQuality(90);
 			$this->_resource->writeImage($writePath);
 		}
 		catch (Exception $e) {
