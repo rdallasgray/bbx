@@ -502,6 +502,13 @@ class Bbx_Model implements IteratorAggregate {
 
 	protected function _stringifierCallback($matches) {
 		$key = substr($matches[0],1);
+		if ($key === 'date') {
+			try {
+				return Bbx_Date::date($this->$key);
+			}
+			catch (Exception $e) {
+			}
+		}
 		return $this->$key;
 	}
 	
