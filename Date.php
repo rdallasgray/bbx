@@ -60,7 +60,6 @@ class Bbx_Date {
 		if ($time === null) {
 			$time = date('G:i:s');
 		}
-
 		$ta = explode(' ',$time);
 		$time = isset($ta[1]) ? $ta[1] : $ta[0];
 		$normalized = self::_normalizeTime($time);
@@ -173,14 +172,19 @@ class Bbx_Date {
 			'MINUTE' => "/[i]+[\s:\.aA,]*/",
 			'SECOND' => "/[s]+[\s:\.aA,]*/",
 			'MONTH' => "/[FmMn]+[\s:\.\/,]*/",
-			'DAY' => "/[dDjlNS]+[\s:\.\/,]*/",
+			'DAY' => "/[dDjlNS\s]+[\s:\.\/,]*/",
 			'YEAR' => "/[oYy]+[\s:\.\/,]*/",
 		);
 		
 		foreach($regExp as $key => $value) {
-			if (preg_match($value,$format,$matches,PREG_OFFSET_CAPTURE) !== 0) {
-				$fArray[$key] = $matches[0][0];
-				$order[$matches[0][1]] = $key;
+			if (preg_match_all($value,$format,$matches,PREG_OFFSET_CAPTURE) !== 0) {
+				foreach ($matches as $match) {
+					if (!array_key_exists($key,$fArray)) {
+						$fArray[$key] = '';
+					}
+					$fArray[$key] .= $match[0][0];
+					$order[$match[0][1]] = $key;
+				}
 			}
 		}
 		
@@ -190,7 +194,6 @@ class Bbx_Date {
 		foreach(array_values($order) as $key) {
 			$sortedFArray[$key] = $fArray[$key];
 		}
-		
 		return $sortedFArray;
 	}
 	
@@ -259,7 +262,6 @@ class Bbx_Date {
 				return $valid;
 			}
 		}
-		
 		return $valid;
 	}
 	
