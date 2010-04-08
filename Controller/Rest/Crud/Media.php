@@ -54,11 +54,19 @@ class Bbx_Controller_Rest_Crud_Media extends Bbx_Controller_Rest_Crud {
 
 		$model = $this->_helper->Model->getModel();
 		$mimeType = ($model instanceof Bbx_Model) 
-			? $model->getMimeType() : Bbx_Model::load($model->getModelName())->getMimeType();		
+			? $model->getMimeType() : Bbx_Model::load($model->getModelName())->getMimeType();
+		
+		$max_size = ini_get('upload_max_filesize');
+		$post_max = ini_get('post_max_size');
+		if ($post_max < $max_size) {
+			$max_size = $post_max;
+		}
 		
 		$upload = new Zend_File_Transfer_Adapter_Http();
-		$upload->addValidator('Count', false, array('min' => 1, 'max' => 1))
-			   ->addValidator('MimeType', false, $mimeType);
+		$upload->addValidator('MimeType', false, $mimeType);
+		$upload->getValidator('Zend_Validate_File_Upload')
+				->setMessage('File is too large - max size '.$max_size, 
+				Zend_Validate_File_Upload::INI_SIZE);
 			
 		if ($upload->receive()) {
 			
@@ -86,13 +94,17 @@ class Bbx_Controller_Rest_Crud_Media extends Bbx_Controller_Rest_Crud {
 			exit(); // has to exit otherwise indexAction runs
 		}
 		else {
-			$msgs = $upload->getMessages();
-			if (empty($msgs)) {
-				$msgs = array('unknown failure -- please contact support.');
-			}
-			Bbx_Log::debug('Upload failed: '.implode($msgs));
-			throw new Bbx_Controller_Rest_Exception('Upload failed: '.implode($msgs),500);
+			$this->_throwUploadException($upload);
 		}
+	}
+	
+	protected function _throwUploadException($upload) {
+		$msgs = $upload->getMessages();
+		if (empty($msgs)) {
+			$msgs = array('Unknown failure - please contact support.');
+		}
+		Bbx_Log::debug('Upload failed: '.implode($msgs));
+		throw new Bbx_Controller_Rest_Exception('Upload failed: '.implode($msgs),500);
 	}
 
 }
