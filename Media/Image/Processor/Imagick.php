@@ -35,6 +35,9 @@ class Bbx_Media_Image_Processor_Imagick extends Bbx_Media_Image_Processor_Abstra
 	}
 	
 	protected function _getResource() {
+		if (isset($this->_resource)) {
+			$this->_resource->destroy();
+		}
 		$this->_resource = new Imagick();
 	}
 		

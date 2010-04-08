@@ -35,6 +35,9 @@ class Bbx_Media_Image_Processor_Magickwand extends Bbx_Media_Image_Processor_Abs
 	}
 	
 	protected function _getResource() {
+		if (isset($this->_resource)) {
+			DestroyMagickWand($this->_resource);
+		}
 		$this->_resource = NewMagickWand();
 	}
 		
