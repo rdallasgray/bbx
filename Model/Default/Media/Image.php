@@ -30,14 +30,24 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 		if ($this->getSize() === 'original' && !empty($this->width)) {
 			return $this->width;
 		}
-		return Bbx_Media_Image::load($this->getMediaPath())->width();
+		try {
+			return Bbx_Media_Image::load($this->getMediaPath())->width();
+		}
+		catch (Exception $e) {
+			return 0;
+		}
 	}
 	
 	public function height() {
 		if ($this->getSize() === 'original' && !empty($this->height)) {
 			return $this->height;
 		}
-		return Bbx_Media_Image::load($this->getMediaPath())->height();
+		try {
+			return Bbx_Media_Image::load($this->getMediaPath())->height();
+		}
+		catch (Exception $e) {
+			return 0;
+		}
 	}
 	
 	public function setSize($size) {
