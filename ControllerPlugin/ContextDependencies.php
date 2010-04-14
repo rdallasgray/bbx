@@ -24,18 +24,19 @@ class Bbx_ControllerPlugin_ContextDependencies extends Zend_Controller_Plugin_Ab
 		
 		$this->_request = $request;
 		
-		$accept = $request->getHeader('Accept');
-		$types = explode(',',$accept);
-		$mainType = trim($types[0]);
-		$mime = explode('/',$mainType);
+		if ($accept = $request->getHeader('Accept')) {
+			$types = explode(',',$accept);
+			$mainType = trim($types[0]);
+			$mime = explode('/',$mainType);
 		
-		if ($mime[1] !== '') {
-			try {
-				if ($request->getParam('format') == '') {
-					$request->setParam('format',$mime[1]);
+			if ($mime[1] !== '') {
+				try {
+					if ($request->getParam('format') == '') {
+						$request->setParam('format',$mime[1]);
+					}
 				}
-			}
-			catch (Exception $e) {
+				catch (Exception $e) {
+				}
 			}
 		}
 		
