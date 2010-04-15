@@ -15,8 +15,10 @@ class Bbx_Controller_Rest_Tools extends Bbx_Controller_Rest {
 		$imgs = Bbx_Model::load('Image')->findAll();
 		foreach ($imgs as $img) {
 			Bbx_Log::write("trying to regenerate image id ".$img->id);
+			Bbx_Log::write(memory_get_usage());
 			$img->regenerateSizedMedia($size);
 			Bbx_Log::write("image ".$img->id." done");
+			Bbx_Log::write(memory_get_usage());
 		}
 	}
 
