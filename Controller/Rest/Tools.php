@@ -1,6 +1,6 @@
 <?php
 
-class Tools extends Bbx_Controller_Rest {
+class Bbx_Controller_Rest_Tools extends Bbx_Controller_Rest {
 
 	public function init() {
 		$this->contexts['regenerate-images'] = array('json');
