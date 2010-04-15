@@ -1,0 +1,24 @@
+<?php
+
+class Tools extends Bbx_Controller_Rest {
+
+	public function init() {
+		$this->contexts['regenerate-images'] = array('json');
+		parent::init();
+		$this->_authenticate();
+		Bbx_Log::write($this->getContext());
+	}
+	
+	public function regenerateImagesAction() {
+		$size = $this->_getParam('size');
+		$imgs = Bbx_Model::load('Image')->findAll();
+		foreach ($imgs as $img) {
+			Bbx_Log::write("trying to regenerate image id ".$img->id);
+			$img->regenerateSizedMedia($size);
+			Bbx_Log::write("image ".$img->id." done");
+		}
+	}
+
+}
+
+?>
