@@ -113,34 +113,45 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 		}
 	}
 	
-	public function regenerateSizedMedia() {
-		$this->_createSizedMedia(true);
+	public function regenerateSizedMedia($size = null) {
+		$this->_createSizedMedia($size, true);
 	}
 	
-	protected function _createSizedMedia($overwrite = true) {
-		
+	protected function _createSizedMedia($size = null, $overwrite = true) {
 		$img = Bbx_Media_Image::load($this->getMediaPath('original'));
+
+		if ($size !== null) {
+			if (!array_key_exists($size, $this->_sizes)) {
+				return Bbx_Log::write("Image size '".$size."' does not exist");
+			}
+			return $this->_resizeImage($img, $size, $overwrite);
+		}
 	
-		foreach($this->_sizes as $size => $values) {
-			if (file_exists($this->getMediaPath($size)) && !$overwrite) {
-				continue;
-			}
-			list($width,$height) = explode('x',$values);
-			if ($width > $img->width() || $height > $img->height()) {
-				try {
-					$img = Bbx_Media_Image::load($this->getMediaPath('large'));
-				}
-				catch (Exception $e) {
-					$img = Bbx_Media_Image::load($this->getMediaPath('original'));
-				}
-			}
+		foreach(array_keys($this->_sizes) as $size) {
+			$this->_resizeImage($img, $size, $overwrite);
+		}
+	}
+	
+	protected function _resizeImage($img, $size, $overwrite) {
+
+		if (file_exists($this->getMediaPath($size)) && !$overwrite) {
+			continue;
+		}
+		list($width,$height) = explode('x',$this->_sizes[$size]);
+		if ($width > $img->width() || $height > $img->height()) {
 			try {
-				$img->resize($width,$height)->save($this->getMediaPath($size));
+				$img = Bbx_Media_Image::load($this->getMediaPath('large'));
 			}
-			catch(Exception $e) {
-				Bbx_Log::write($e->getMessage());
-				throw new Bbx_Model_Exception("Couldn't resize image ".$this->id." to path ".$this->getMediaPath($size));
+			catch (Exception $e) {
+				$img = Bbx_Media_Image::load($this->getMediaPath('original'));
 			}
+		}
+		try {
+			$img->resize($width,$height)->save($this->getMediaPath($size));
+		}
+		catch(Exception $e) {
+			Bbx_Log::write($e->getMessage());
+			throw new Bbx_Model_Exception("Couldn't resize image ".$this->id." to path ".$this->getMediaPath($size));
 		}
 	}
 	
