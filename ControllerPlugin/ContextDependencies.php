@@ -31,8 +31,8 @@ class Bbx_ControllerPlugin_ContextDependencies extends Zend_Controller_Plugin_Ab
 		
 			if ($mime[1] !== '') {
 				try {
-					if ($request->format == '') {
-						$request->format = $mime[1];
+					if ($request->getParam('format') == '') {
+						$request->setParam('format',$mime[1]);
 					}
 				}
 				catch (Exception $e) {
