@@ -52,6 +52,7 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 	
 	public function setSize($size) {
 		$this->_size = $size;
+		return $this;
 	}
 	
 	public function getSize() {
