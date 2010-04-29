@@ -25,7 +25,7 @@ class Bbx_ActionHelper_Download extends Zend_Controller_Action_Helper_Abstract {
 			$extension = $this->getActionController()->getContext();
 		}
 		$this->getResponse()->setHeader('Content-disposition','attachment; filename='
-			.Bbx_ActionHelper_Filename::fromUrl($this->getRequest()->getRequestUri()).'.'.$extension, true);
+			. Bbx_ActionHelper_Filename::fromModel($model) . '.' . $extension, true);
 	}
 
 }

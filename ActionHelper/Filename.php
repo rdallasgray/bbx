@@ -19,7 +19,18 @@ class Bbx_ActionHelper_Filename extends Zend_Controller_Action_Helper_Abstract {
 	public static function fromUrl($url) {
 		$f = explode('?',$url);
 		$f = $f[0];
-		return trim(str_replace('/','_',Inflector::interscore($f)),'_');
+		return substr(trim(str_replace('/','_',Inflector::interscore($f)),'_'), 0, 48);
+	}
+
+	public static function fromModel(Bbx_Model $model) {
+		$f = $model->id;
+		try {
+			$f .= '-' . $model->subject;
+		}
+		catch (Exception $e) {
+			$f .= '-' . $model;
+		}
+		return substr(trim(Inflector::interscore($f)), 0, 48);
 	}
 
 }
