@@ -17,20 +17,23 @@ You should have received a copy of the GNU General Public License along with Bac
 
 
 class Bbx_Controller_Rest_Crud_Node_Text extends Bbx_Controller_Rest_Crud_Node {
-	
-	public function init() {
-		parent::init();
-	}
 
 	public function showAction() {
-		$model = $this->_getModel();
-		if ($model instanceof Bbx_Model && isset($model->text)) {
-			$this->view->text = $model->text;
+		$model = $this->_helper->Model->getModel();
+
+		if ($this->_helper->contextSwitch()->getCurrentContext() === 'json') {
+			if ($model instanceof Bbx_Model && isset($model->text)) {
+				$this->view->text = $model->text;
+			}
+			else {
+				$this->view->text = "";
+			}
 		}
 		else {
-			$this->view->text = "";
+			$modelName = Inflector::underscore(get_class($model));
+			$this->view->$modelName = $model;
 		}
-		$this->_setEtag($model->etag());
+		$this->_setEtag($model->etag($this->_helper->contextSwitch()->getCurrentContext()));
 	}
 
 }
