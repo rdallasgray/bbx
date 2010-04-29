@@ -30,25 +30,32 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		$request = $this->getRequest();
 
 		if (isset($params['rel'])) {
+			
+			$initialRequest = clone $request;
+			$initialRequest->setDispatched(true);
+			
 			$rel_id = isset($params['rel_id']) ? $params['rel_id'] : null;
 			$userParams = $this->_helper->Model->parseParams($params);
 			$parentModel = $this->_helper->Model->getModel();
-			$request
-				->setControllerName($params['rel'])
-				->setParams(array(
-					'rel'=>null,
-					'rel_id'=>null,
-					'controller'=>$params['rel'],
-					'id'=>$rel_id,
-					'parentModel'=>$parentModel
-				))
-				->setDispatched(false);
-				
-			foreach($userParams as $key=>$val) {
-				$request->setParam($key,$val);
-			}
 			
-			return;
+			$newParams = array_merge(
+				array(
+					'rel'            => null,
+					'rel_id'         => null,
+					'id'             => $rel_id,
+					'parentModel'    => $parentModel,
+					'controller'     => $params['rel'],
+					'initialRequest' => $initialRequest
+				),
+				$userParams
+			);
+			
+			return $this->_forward(
+				$request->getActionName(),
+				$params['rel'],
+				$request->getModuleName(),
+				$newParams
+			);
 		}
 		
 		if ($this->_context === 'csv') {
@@ -77,6 +84,13 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			$this->$method();
 		}
 	}
+	
+	public function postDispatch() {
+		if ($this->_hasParam('initialRequest')) {
+			$r = $this->_getParam('initialRequest');
+			Zend_Controller_Front::getInstance()->setRequest($r);
+		}
+	}
 
 	public function indexAction() {
 		if ($this->getRequest()->isHead()) {
@@ -93,6 +107,20 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			$this->view->assign($this->view->$collectionName->toArray($options));
 			unset($this->view->$collectionName);
 		}
+	}
+	
+	protected function _htmlIndexRel() {
+		if (!$this->_hasParam('parentModel')) {
+			throw new Zend_View_Exception('Not Found');
+		}
+		$subject = $this->_getParam('parentModel');
+		$subjectType = Inflector::underscore(get_class($subject));
+		$controller = Inflector::interscore(Inflector::pluralize($subjectType));
+		$action = $this->_getParam('controller');
+		
+		$this->view->$subjectType = $subject;
+		
+		$this->_helper->viewRenderer($controller.'/'.$action,  null, true);
 	}
 
 	public function showAction() {
