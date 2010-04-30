@@ -99,15 +99,8 @@ class Bbx_ControllerPlugin_ContextDependencies extends Zend_Controller_Plugin_Ab
 	}
 	
 	protected function _initHelpers($context = 'global') {
-		$modelHelper = new Bbx_ActionHelper_Model;
-		Zend_Controller_Action_HelperBroker::addHelper($modelHelper);
 		
 		switch ($context) {
-			case 'html':
-			case 'global':
- 			$urlHelper = new Zend_Controller_Action_Helper_Url;
-			Zend_Controller_Action_HelperBroker::addHelper($urlHelper);
-			break;
 			
 			case 'csv':
 			$csvHelper = new Bbx_ActionHelper_Csv;
@@ -124,6 +117,8 @@ class Bbx_ControllerPlugin_ContextDependencies extends Zend_Controller_Plugin_Ab
 				)
 			);
 			break;
+			
+			default:
 		}
 	}
 
