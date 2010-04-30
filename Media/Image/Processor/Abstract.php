@@ -81,7 +81,7 @@ abstract class Bbx_Media_Image_Processor_Abstract {
 			$newHeight = $reqHeight;
 			$newWidth = floor($origWidth * ($reqHeight/$origHeight));
 		}
-		if ($reqHeight == 0 || (($reqWidth/$reqHeight) <= ($origWidth/$origHeight))) {
+		else if ($reqHeight == 0 || (($reqWidth/$reqHeight) <= ($origWidth/$origHeight))) {
 			$newWidth = $reqWidth;
 			$newHeight = floor($origHeight * ($reqWidth/$origWidth));
 		}
@@ -89,7 +89,7 @@ abstract class Bbx_Media_Image_Processor_Abstract {
 		if (($newWidth > $origWidth || $newHeight > $origHeight) && $upSize === false) {
 			return null;
 		}
-		
+
 		$this->_resize($newWidth,$newHeight);
 		
 		$this->_width = $newWidth;
