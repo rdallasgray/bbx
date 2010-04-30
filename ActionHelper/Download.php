@@ -22,10 +22,19 @@ class Bbx_ActionHelper_Download extends Zend_Controller_Action_Helper_Abstract {
 			$extension = $model->getExtension();
 		}
 		else {
-			$extension = $this->getActionController()->getContext();
+			$extension = $this->getRequest()->getParam('format');
 		}
-		$this->getResponse()->setHeader('Content-disposition','attachment; filename='
-			. Bbx_ActionHelper_Filename::fromModel($model) . '.' . $extension, true);
+		
+		$filename = 'file';
+		
+		try {
+			$filename = Bbx_ActionHelper_Filename::fromModel($model);
+		}
+		catch (Exception $e) {
+			$filename = Bbx_ActionHelper_Filename::fromUrl($this->getRequest()->getRequestUri());
+		}
+
+		$this->getResponse()->setHeader('Content-disposition','attachment; filename=' . $filename . '.' . $extension, true);
 	}
 
 }
