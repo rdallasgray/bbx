@@ -28,8 +28,9 @@ class Bbx_Model_Registry_Relationships extends Bbx_Model_Registry_Abstract {
 		if (!$this->_isInstantiated($parentModelName,$childName)) {
 			$this->_instantiate($parentModel,$childName);
 		}
+		$model = $this->_data[$parentModelName][$childName]['model'];
 
-		return $this->_data[$parentModelName][$childName]['model']->getFinder($parentModel);
+		return $model->getFinder($parentModel);
 	}
 	
 	public function getActiveRelationshipsFor(Bbx_Model $parentModel,Zend_Db_Table_Row $parentRow) {
