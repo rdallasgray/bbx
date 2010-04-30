@@ -42,7 +42,7 @@ class Bbx_Model_Default_Media extends Bbx_Model {
 			unlink($this->getMediaPath());
 		}
 		catch (Exception $e) {
-			Bbx_Log::write('Unable to delete media '.$this->_getMediaPath());
+			Bbx_Log::debug('Unable to delete media '.$this->_getMediaPath());
 		}
 	}
 
@@ -51,7 +51,7 @@ class Bbx_Model_Default_Media extends Bbx_Model {
 			$this->deleteMedia();
 		}
 		catch (Exception $e) {
-			Bbx_Log::write('Unable to delete media '.get_class($this).' id '.$this->id.' - '.$e->getMessage());
+			Bbx_Log::debug('Unable to delete media '.get_class($this).' id '.$this->id.' - '.$e->getMessage());
 		}
 		parent::delete();
 	}
