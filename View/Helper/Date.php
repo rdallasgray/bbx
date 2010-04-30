@@ -55,11 +55,11 @@ class Bbx_View_Helper_Date {
 				return call_user_func_array(array('Bbx_Date',$method),$arguments);
 			}
 			catch (Exception $e) {
-				Bbx_Log::write($e->getMessage());
+				Bbx_Log::debug($e->getMessage());
 			}
 		}
 		else {
-			Bbx_Log::write('Bbx_Date has no method "'.$method.'"');
+			Bbx_Log::debug('Bbx_Date has no method "'.$method.'"');
 		}
 	}
 
