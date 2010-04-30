@@ -71,7 +71,7 @@ class Bbx_Model_Relationship_Finder implements IteratorAggregate,Countable {
 		return call_user_func_array(array($this->_collection(),$method),$arguments);
 	}
 	
-	public function findAll($params) {
+	public function findAll($params = null) {
 		if ($params !== 'all' && !empty($params)) {
 			$this->_relationship->setFindParams($params);
 		}

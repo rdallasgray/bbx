@@ -208,6 +208,9 @@ class Bbx_Model_Relationship_Abstract {
 	}
 	
 	public function getFinder(Bbx_Model $parentModel) {
+		if ($this->_type == 'belongsto') {
+			return $this->getCollection($parentModel);
+		}
 		if (!isset($this->_finder)) {
 			$this->_finder = new Bbx_Model_Relationship_Finder($this);
 		}
@@ -228,7 +231,12 @@ class Bbx_Model_Relationship_Abstract {
 				if (strpos($key,'`') === false) {
 					$key = '`'.$key.'`';
 				}
-				$conditions['where'][] = Zend_Registry::get('db')->quoteInto($key.' = ?',$val);
+				if (strpos($key, ':value') === false) {
+					$conditions['where'][] = Zend_Registry::get('db')->quoteInto($key.' = ?',$val);
+				}
+				else {
+					$conditions['where'][] = str_replace(':value', $val, $key);
+				}
 			}
 		}
 		else {
