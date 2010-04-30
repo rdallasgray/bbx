@@ -63,7 +63,7 @@ class Bbx_Media_Image_Processor_Imagick extends Bbx_Media_Image_Processor_Abstra
 	}
 
 	protected function _resize($newWidth,$newHeight) {
-    	$this->_resource->resizeImage($newWidth,$newHeight,Imagick::FILTER_LANCZOS,0.95);
+    	$this->_resource->resizeImage($newWidth, $newHeight, Imagick::FILTER_LANCZOS, 0.95);
 		$this->_resource->adaptiveSharpenImage(2,1);
 	}
 	

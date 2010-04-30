@@ -69,75 +69,32 @@ abstract class Bbx_Media_Image_Processor_Abstract {
 		return $this->_resolution;
 	}
 
-	public function resize($reqWidth,$reqHeight,$upSize = false) {
-		if (abs($reqWidth) + abs($reqHeight) === 0) {
-			return;
+	public function resize($reqWidth, $reqHeight, $upSize = false) {
+
+		$origWidth = $this->getWidth();
+		$origHeight = $this->getHeight();
+
+		$newWidth = $reqWidth;
+		$newHeight = $reqHeight;
+		
+		if ($reqWidth == 0 || (($reqWidth/$reqHeight) > ($origWidth/$origHeight))) {
+			$newHeight = $reqHeight;
+			$newWidth = floor($origWidth * ($reqHeight/$origHeight));
+		}
+		if ($reqHeight == 0 || (($reqWidth/$reqHeight) <= ($origWidth/$origHeight))) {
+			$newWidth = $reqWidth;
+			$newHeight = floor($origHeight * ($reqWidth/$origWidth));
+		}
+
+		if (($newWidth > $origWidth || $newHeight > $origHeight) && $upSize === false) {
+			return null;
 		}
 		
-		$minWidth = false;
-		$minHeight = false;
+		$this->_resize($newWidth,$newHeight);
 		
-		if ($reqWidth < 0) {
-			$reqWidth = 0-$reqWidth;
-			$minWidth = true;
-		}
-		
-		if ($reqHeight < 0) {
-			$reqHeight = 0-$reqHeight;
-			$minHeight = true;
-		}
-		
-		if ($reqWidth + $reqHeight > 0) {
-			$origWidth = $this->getWidth();
-			$origHeight = $this->getHeight();
-			if ($reqWidth != 0 && $reqHeight != 0) {
-				if ($origWidth > $origHeight) {
-					$newWidth = $reqWidth;
-					$newHeight = floor($reqWidth/$origWidth * $origHeight);
-					if ($minHeight && $newHeight < $reqHeight) {
-						$newHeight = $reqHeight;
-						$newWidth = floor($reqHeight/$origHeight * $origWidth);
-					}
-				}
-				else if ($origHeight > $origWidth) {
-					$newHeight = $reqHeight;
-					$newWidth = floor($reqHeight/$origHeight * $origWidth);
-					if ($minWidth && $newWidth < $reqWidth) {
-						$newWidth = $reqWidth;
-						$newHeight = floor($reqWidth/$origWidth * $origHeight);
-					}
-				}
-				else {
-					$newHeight = $reqHeight;
-					$newWidth = floor($reqHeight/$origHeight * $origWidth);
-					if ($minWidth && $newWidth < $reqWidth) {
-						$newWidth = $reqWidth;
-						$newHeight = floor($reqWidth/$origWidth * $origHeight);
-					}
-				}
-			}
-			else {
-				if ($reqWidth == 0) {
-					if (!$upSize && $reqWidth >= $origWidth) {
-						return;
-					}
-					$newHeight = $reqHeight;
-					$newWidth = floor($reqHeight/$origHeight * $origWidth);
-				}
-				else if ($reqHeight == 0) {
-					if (!$upSize && $reqHeight >= $origHeight) {
-						return;
-					}
-					$newWidth = $reqWidth;
-					$newHeight = floor($reqWidth/$origWidth * $origHeight);
-				}
-			}
-			if (($reqWidth < $origWidth || $reqHeight < $origHeight) || $upSize) {
-				$this->_resize($newWidth,$newHeight);
-				$this->_width = $newWidth;
-				$this->_height = $newHeight;
-			}
-		}
+		$this->_width = $newWidth;
+		$this->_height = $newHeight;
+			
 		return $this;
 	}
 
