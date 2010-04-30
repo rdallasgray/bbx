@@ -65,32 +65,6 @@ class Bbx_Controller_Rest extends Zend_Controller_Action {
 		$this->getResponse()->setHeader('Etag',$etag);
 	}
 	
-	protected function _authenticate() {
-		if ($this->_authenticated === true) {
-			return true;
-		}
-		
-		$config = array(
-			'accept_schemes' => 'digest',
-			'realm'          => Bbx_Config::get()->site->location,
-			'digest_domains' => '/',
-			'nonce_timeout'  => 3600,
-		);
-		$adaptor = new Zend_Auth_Adapter_Http($config);
-		$this->_resolver = new Bbx_Auth_Resolver_Db;
-		$adaptor->setDigestResolver($this->_resolver);
-		
-		$adaptor->setRequest($this->getRequest());
-		$adaptor->setResponse($this->getResponse());
-
-		$result = $adaptor->authenticate();
-		
-		if (!$result->isValid()) {
-			throw new Bbx_Controller_Rest_Exception(null,401);
-		}
-		$this->_authenticated = true;
-	}
-	
 	protected function _getBodyData() {
 		return Zend_Json::decode($this->getRequest()->getRawBody());
 	}

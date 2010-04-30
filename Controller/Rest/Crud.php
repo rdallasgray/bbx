@@ -59,11 +59,11 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		}
 		
 		if ($this->_context === 'csv') {
-			$this->_authenticate();
+			$this->_helper->authenticate();
 		}
 
 		if (@$params['download'] === "true") {
-			$this->_authenticate();
+			$this->_helper->authenticate();
 			$this->_helper->download($this->_helper->Model->getModel());
 		}
 		
@@ -75,7 +75,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			case 'PUT':
 			case 'DELETE':
 			case 'OPTIONS':
-			$this->_authenticate();
+			$this->_helper->authenticate();
 			
 			case 'HEAD':
 			case 'OPTIONS':
@@ -141,7 +141,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 	}
 	
 	public function newAction() {
-		$this->_authenticate();
+		$this->_helper->authenticate();
 		if ($this->getRequest()->isHead()) {
 			return;
 		}

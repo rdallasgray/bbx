@@ -81,7 +81,7 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 	}
 
 	protected function _log() {
-		Bbx_Log::write($this->_error->exception->getMessage()."::".$this->_error->request->getRequestUri());
+		Bbx_Log::debug($this->_error->exception->getMessage()."::".$this->_error->request->getRequestUri());
 	}
 
 	protected function _notify() {
@@ -95,12 +95,12 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 				$mail->send();
 			}
 			catch (Exception $e) {
-				Bbx_Log::write(print_r($this->_error,true));
-				Bbx_Log::write("Couldn't send mail: ".$e->getMessage());
+				Bbx_Log::debug(print_r($this->_error,true));
+				Bbx_Log::debug("Couldn't send mail: ".$e->getMessage());
 			}
 		}
 		else {
-			Bbx_Log::write(print_r($this->_error,true));
+			Bbx_Log::debug(print_r($this->_error,true));
 		}
 	}
 }
