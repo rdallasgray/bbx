@@ -99,7 +99,7 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 			$this->_createSizedMedia();
 		}
 		catch (Exception $e) {
-			Bbx_Log::write($e->getMessage());
+			Bbx_Log::debug($e->getMessage());
 			throw new Bbx_Model_Exception('Unable to create sized media for image '.$filePath);
 		}
 	}
@@ -123,7 +123,7 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 
 		if ($size !== null) {
 			if (!array_key_exists($size, $this->_sizes)) {
-				return Bbx_Log::write("Image size '".$size."' does not exist");
+				return Bbx_Log::debug("Image size '".$size."' does not exist");
 			}
 			return $this->_resizeImage($img, $size, $overwrite);
 		}
@@ -151,11 +151,29 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 			$img->resize($width,$height)->save($this->getMediaPath($size));
 		}
 		catch(Exception $e) {
-			Bbx_Log::write($e->getMessage());
+			Bbx_Log::debug($e->getMessage());
 			throw new Bbx_Model_Exception("Couldn't resize image ".$this->id." to path ".$this->getMediaPath($size));
 		}
 	}
-	
+		
+	public function getCaption() {
+		try {
+			$view = Zend_Registry::get('view');
+		}
+		catch (Exception $e) {
+			return (string) $this->subject;
+		}
+		$helperName = Inflector::camelize(get_class($this->subject), false);
+		if (!isset($stringMethod)) {
+			try {
+				return $view->$helperName($this->subject)->imageCaption($this);
+			}
+			catch (Exception $e) {
+				return (string) $this->subject;
+			}
+		}
+	}
+
 }
 
 ?>
