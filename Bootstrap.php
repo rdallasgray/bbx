@@ -32,9 +32,8 @@ class Bbx_Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		}
 	}
 
-	protected function _initHelpers() {
-		$downloadHelper = new Bbx_ActionHelper_Download;
-		Zend_Controller_Action_HelperBroker::addHelper($downloadHelper);
+	protected function _initHelperPrefix() {
+		Zend_Controller_Action_HelperBroker::addPrefix('Bbx_ActionHelper');
 	}
 	
 	protected function _initPlugins() {
