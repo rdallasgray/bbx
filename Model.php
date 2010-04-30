@@ -211,7 +211,7 @@ class Bbx_Model implements IteratorAggregate {
 		return $c->current();
 	}
 	
-	public function findWithParams(array $params,$select = null) {
+	public function findWithParams(array $params, $select = null) {
 
 		$parsedParams = $this->parseParams($params);
 		
@@ -220,17 +220,25 @@ class Bbx_Model implements IteratorAggregate {
 		}
 		
 		if (empty($parsedParams)) {
-			return new Bbx_Model_Collection($this,$this->_table()->fetchAll($select));
+			return new Bbx_Model_Collection($this, $this->_table()->fetchAll($select));
 		}
 
-		foreach($parsedParams as $key=>$val) {
+		foreach($parsedParams as $key => $val) {
 			if (strpos($key,'`') === false) {
 				$key = '`'.$key.'`';
 			}
-			$select->where($key.' = ?',$val);
+			
+			if (strpos($key, ':value') === false) {
+				$select->where($key.' = ?', $val);
+			}
+			else {
+				$q = str_replace(':value', $val, $key);
+				$select->where($q);
+			}
+
 		}
-		
-		return new Bbx_Model_Collection($this,$this->_table()->fetchAll($select));
+
+		return new Bbx_Model_Collection($this, $this->_table()->fetchAll($select));
 	}
 	
 	public function parseParams(array $params) {
@@ -458,7 +466,7 @@ class Bbx_Model implements IteratorAggregate {
 				return $this->_getRelationship(Inflector::underscore($key));
 			}
 			catch (Exception $e) {
-				Bbx_Log::write($e->getMessage());
+				Bbx_Log::debug($e->getMessage());
 				throw new Bbx_Model_Exception("Trying to get value of uninitialised variable '$key': ".get_class($this));
 			}
 		}
@@ -621,6 +629,37 @@ class Bbx_Model implements IteratorAggregate {
 	
 	public function renderAsList($option = true) {
 		$this->_renderAsList = $option;
+	}
+	
+	public function isLinkable() {
+		return true;
+	}
+	
+	public function getLinkable($key) {
+		$method = 'getLinkable' . Inflector::camelize($key);
+		if (method_exists($this, $method)) {
+			return $this->$method();
+		}
+		$items = array();
+		foreach($this->$key as $i) {
+			if ($i->isLinkable()) {
+				$items[] = $i;
+			}
+		}
+		return $items;
+	}
+	
+	public function hasLinkable($key) {
+		$method = 'hasLinkable' . Inflector::camelize($key);
+		if (method_exists($this, $method)) {
+			return $this->$method();
+		}
+		foreach($this->$key as $i) {
+			if ($i->isLinkable()) {
+				return true;
+			}
+		}
+		return false;
 	}
 	
 	public function toStringPattern() {
