@@ -42,7 +42,12 @@ class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 		
 		if ($parentModel = $request->getParam('parentModel')) {
 			$params = $this->parseParams($request->getUserParams());
-			$model = $parentModel->$controllerName->findAll($params);
+			if (method_exists($parentModel->$controllerName, 'findAll')) {
+				$model = $parentModel->$controllerName->findAll($params);
+			}
+			else {
+				$model = $parentModel->$controllerName;
+			}
 		}
 		
 		else {
@@ -64,7 +69,7 @@ class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 		if ($request->getParam('list') === 'true') {
 			$model->renderAsList();
 		}
-		
+
 		return $model;
 	}
 	
@@ -75,7 +80,7 @@ class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 		if (!$collection instanceof Bbx_Model_Collection) {
 			$collection = $collection->findAll($params);
 		}
-		
+
 		if (@$params['list'] === 'true') {
 			$collection->renderAsList();
 		}
