@@ -76,19 +76,6 @@ abstract class Bbx_Media_Image_Processor_Abstract {
 
 		$newWidth = $reqWidth;
 		$newHeight = $reqHeight;
-		
-		if ($reqWidth + $reqHeight === 0) {
-			throw new Bbx_Image_Processor_Exception('Either width or height must be non-zero');
-		}
-				
-		if ($reqWidth === 0 || ($reqHeight > 0 && (($reqWidth/$reqHeight) > ($origWidth/$origHeight))) {
-			$newHeight = $reqHeight;
-			$newWidth = floor($origWidth * ($reqHeight/$origHeight));
-		}
-		else {
-			$newWidth = $reqWidth;
-			$newHeight = floor($origHeight * ($reqWidth/$origWidth));
-		}
 
 		if (($newWidth > $origWidth || $newHeight > $origHeight) && $upSize === false) {
 			$newWidth = $origWidth;
