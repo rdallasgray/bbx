@@ -18,6 +18,7 @@ class Bbx_View_Helper_Model extends Zend_View_Helper_Abstract {
 	
 	protected $_model;
 	protected $_modelName;
+	protected $_text = '';
 	
 	public function setView(Zend_View_Interface $view) {
 		$this->view = $view;
@@ -37,6 +38,10 @@ class Bbx_View_Helper_Model extends Zend_View_Helper_Abstract {
 		}
 		
 		return $this;		
+	}
+	
+	public function __toString() {
+		return $this->_text;
 	}
 	
 }
