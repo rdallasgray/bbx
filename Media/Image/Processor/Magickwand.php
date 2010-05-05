@@ -67,10 +67,6 @@ class Bbx_Media_Image_Processor_Magickwand extends Bbx_Media_Image_Processor_Abs
 		MagickUnsharpMaskImage($this->_resource,0.5,0.25,1.2,0.05);
 	}
 	
-	protected function _sanitizeImage() {
-		MagickStripImage($this->_resource);
-	}
-	
 	protected function _save($writePath) {
 		try {
 			MagickSetImageCompressionQuality($this->_resource,85);

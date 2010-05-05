@@ -54,10 +54,6 @@ class Bbx_Media_Image_Processor_GD extends Bbx_Media_Image_Processor_Abstract {
 		imagecopyresampled($newImage,$this->_resource(),0,0,0,0,$newWidth,$newHeight,$width,$height);
 		$this->_setResource($newImage);
 	}
-
-	protected function _sanitize() {
-		return true;
-	}
 	
 	protected function _canSetResolution() {
 		return false;

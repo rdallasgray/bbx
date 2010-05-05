@@ -67,10 +67,6 @@ class Bbx_Media_Image_Processor_Imagick extends Bbx_Media_Image_Processor_Abstra
 		$this->_resource->adaptiveSharpenImage(2,1);
 	}
 	
-	protected function _sanitizeImage() {
-		$this->_resource->stripImage();
-	}
-	
 	protected function _save($writePath) {
 		$this->_resource->setImageCompressionQuality(90);
 		try {
