@@ -35,14 +35,14 @@ class Bbx_Controller_Rest_Admin extends Bbx_Controller_Rest {
 
 	public function loginAction() {
 		$this->_helper->authenticate();
-		$this->_user = $this->_resolver->getUser();
+		$this->_user = $this->_helper->Authenticate->getUser();
 		$this->_checkLastLogin();
 		$this->_loginUser();
 	}
 
 	public function logoutAction() {
 		$this->_helper->authenticate();
-		$this->_user = $this->_resolver->getUser();
+		$this->_user = $this->_helper->Authenticate->getUser();
 		$session = $this->_user->current_admin_session;
 		try {
 			$session->close();
