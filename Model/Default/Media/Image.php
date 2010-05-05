@@ -138,14 +138,11 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 		if (file_exists($this->getMediaPath($size)) && !$overwrite) {
 			continue;
 		}
-		list($width,$height) = explode('x',$this->_sizes[$size]);
+		
+		list($width, $height) = $this->_calculateImageGeometry($this->_sizes[$size], $img);
+		
 		if ($width > $img->width() || $height > $img->height()) {
-			try {
-				$img = Bbx_Media_Image::load($this->getMediaPath('large'));
-			}
-			catch (Exception $e) {
-				$img = Bbx_Media_Image::load($this->getMediaPath('original'));
-			}
+			$img = Bbx_Media_Image::load($this->getMediaPath('original'));
 		}
 		try {
 			$img->resize((int) $width, (int) $height)->save($this->getMediaPath($size));
@@ -154,6 +151,27 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 			Bbx_Log::debug($e->getMessage());
 			throw new Bbx_Model_Exception("Couldn't resize image ".$this->id." to path ".$this->getMediaPath($size));
 		}
+	}
+	
+	protected function _calculateImageGeometry($size, $img) {
+		
+		list($reqWidth, $reqHeight) = explode('x', $size);
+		$reqWidth = (int) $reqWidth;
+		$reqHeight = (int) $reqHeight;
+		
+		$newWidth = $reqWidth;
+		$newHeight = $reqHeight;
+
+		$origWidth = $img->width();
+		$origHeight = $img->height();
+				
+		if ($reqWidth === 0 || ($reqHeight > 0 && (($reqWidth/$reqHeight) > ($origWidth/$origHeight)))) {
+			$newWidth = floor($origWidth * ($reqHeight/$origHeight));
+		}
+		else {
+			$newHeight = floor($origHeight * ($reqWidth/$origWidth));
+		}
+		return array($newWidth, $newHeight);
 	}
 		
 	public function getCaption() {
