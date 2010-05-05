@@ -77,24 +77,27 @@ abstract class Bbx_Media_Image_Processor_Abstract {
 		$newWidth = $reqWidth;
 		$newHeight = $reqHeight;
 		
-		if ($reqWidth == 0 || (($reqWidth/$reqHeight) > ($origWidth/$origHeight))) {
+		if ($reqWidth + $reqHeight === 0) {
+			throw new Bbx_Image_Processor_Exception('Either width or height must be non-zero');
+		}
+				
+		if ($reqWidth === 0 || ($reqHeight > 0 && (($reqWidth/$reqHeight) > ($origWidth/$origHeight))) {
 			$newHeight = $reqHeight;
 			$newWidth = floor($origWidth * ($reqHeight/$origHeight));
 		}
-		else if ($reqHeight == 0 || (($reqWidth/$reqHeight) <= ($origWidth/$origHeight))) {
+		else {
 			$newWidth = $reqWidth;
 			$newHeight = floor($origHeight * ($reqWidth/$origWidth));
 		}
 
 		if (($newWidth > $origWidth || $newHeight > $origHeight) && $upSize === false) {
-			return null;
+			$newWidth = $origWidth;
+			$newHeight = $origHeight;
 		}
 
 		$this->_resize($newWidth,$newHeight);
-		
 		$this->_width = $newWidth;
 		$this->_height = $newHeight;
-			
 		return $this;
 	}
 
@@ -103,28 +106,23 @@ abstract class Bbx_Media_Image_Processor_Abstract {
 		$this->_save($writePath);
 	}
 	
-	public function sanitize() {
-		$this->_sanitize();
-		return $this;
-	}
-	
 	public function getHeight() {
 		if (isset($this->_height)) {
 			return $this->_height;
 		}
-		list($width,$height) = getimagesize($this->_sourcePath);
-		$this->_height = $height;
-		$this->_width = $width;
+		list($width,$height) = $this->getSize();
+		$this->_height = (int) $height;
+		$this->_width = (int) $width;
 		return $this->_height;
 	}
 
 	public function getWidth() {
 		if (isset($this->_width)) {
-			return $this->_width;
+			return (int) $this->_width;
 		}
-		list($width,$height) = getimagesize($this->_sourcePath);
-		$this->_height = $height;
-		$this->_width = $width;
+		list($width,$height) = $this->getSize();
+		$this->_height = (int) $height;
+		$this->_width = (int) $width;
 		return $this->_width;
 	}
 
