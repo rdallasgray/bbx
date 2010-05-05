@@ -44,6 +44,10 @@ class Bbx_ActionHelper_Authenticate extends Zend_Controller_Action_Helper_Abstra
 		}
 		$this->_authenticated = true;
 	}
+	
+	public function getUser() {
+		return $this->_resolver->getUser();
+	}
 
 }
 
