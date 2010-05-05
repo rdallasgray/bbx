@@ -148,7 +148,7 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 			}
 		}
 		try {
-			$img->resize($width,$height)->save($this->getMediaPath($size));
+			$img->resize((int) $width, (int) $height)->save($this->getMediaPath($size));
 		}
 		catch(Exception $e) {
 			Bbx_Log::debug($e->getMessage());
