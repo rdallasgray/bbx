@@ -30,6 +30,10 @@ function bbx_escape($string) {
 	return htmlspecialchars((string)$string,ENT_COMPAT,Bbx_Config::get()->locale->charset);
 }
 
+function bbx_unescape($string) {
+	return htmlspecialchars_decode((string)$string,ENT_COMPAT);
+}
+
 function bbx_smart_escape($string) {
 	$string = str_replace('&','&#38;',$string);
 	$string = SmartyPants($string,2);
@@ -38,6 +42,16 @@ function bbx_smart_escape($string) {
 
 function h($string) {
 	return bbx_escape((string)$string);
+}
+
+function convert_urls($string, $escaped = true) {
+	if ($escaped) {
+		$string = bbx_unescape($string);
+	}
+	$text = preg_replace(
+		"/((http(s?):\/\/)([\-A-Za-z0-9\+&@\#\/%\?=~_!:,\.;]*(?!&(\#?)[a-z0-9]{2,6};)[\-A-Za-z0-9\+&@\#\/%=~_]))/",
+		"<a href=\"$1\" target=\"_blank\">$1</a>", $string);
+	return $text;
 }
 
 function balance_tags($text) {
