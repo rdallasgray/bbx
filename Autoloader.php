@@ -32,6 +32,16 @@ class Bbx_Autoloader implements Zend_Loader_Autoloader_Interface {
 			}
 		}
 		
+		if (substr($class,-4) === 'Form') {
+			
+			$path = SITE_ROOT.'/application/modules/'.$moduleName.'/forms/'.$class.'.php';
+
+			if (Zend_Loader::isReadable($path)) {
+				@include $path;
+				return true;
+			}
+		}
+		
 		$paths = array(
 			SITE_ROOT.'/application/modules/'.$moduleName.'/models',
 			SITE_ROOT.'/library/Bbx/Vendor',
