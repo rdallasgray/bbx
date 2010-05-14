@@ -114,8 +114,8 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 		}
 	}
 	
-	public function regenerateSizedMedia($size = null) {
-		$this->_createSizedMedia($size, true);
+	public function regenerateSizedMedia($size = null, $overwrite = true) {
+		$this->_createSizedMedia($size, $overwrite);
 	}
 	
 	protected function _createSizedMedia($size = null, $overwrite = true) {
