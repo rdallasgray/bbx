@@ -11,10 +11,14 @@ class Bbx_Controller_Rest_Tools extends Bbx_Controller_Rest {
 	public function regenerateImagesAction() {
 		set_time_limit(7200);
 		$size = $this->_getParam('size');
+		$overwrite = $this->_getParam('overwrite');
 		$imgs = Bbx_Model::load('Image')->findAll();
 		foreach ($imgs as $img) {
-			$img->regenerateSizedMedia($size);
+			Bbx_Log::debug("regenerating sized media for image " . $img->id);
+			$img->regenerateSizedMedia($size, $overwrite);
 		}
+		$this->getResponse()->sendResponse();
+		exit();
 	}
 
 }
