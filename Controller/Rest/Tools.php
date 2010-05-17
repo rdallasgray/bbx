@@ -17,6 +17,8 @@ class Bbx_Controller_Rest_Tools extends Bbx_Controller_Rest {
 			Bbx_Log::debug("regenerating sized media for image " . $img->id);
 			$img->regenerateSizedMedia($size, $overwrite);
 		}
+		// TODO send a JSON response
+		// Also we should probably do each resize as a separate request so as to avoid the segfault problem
 		$this->getResponse()->sendResponse();
 		exit();
 	}
