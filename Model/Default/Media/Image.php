@@ -136,7 +136,7 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 	protected function _resizeImage($img, $size, $overwrite) {
 
 		if (file_exists($this->getMediaPath($size)) && !$overwrite) {
-			continue;
+			return;
 		}
 		
 		list($width, $height) = $this->_calculateImageGeometry($this->_sizes[$size], $img);
