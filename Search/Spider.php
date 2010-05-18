@@ -19,176 +19,83 @@ You should have received a copy of the GNU General Public License along with Bac
 class Bbx_Search_Spider {
 
 	protected $_visited = array();
-	protected $_maxLinks = 500;
-	protected $_languages;
-	protected $_currentLanguage;
-	protected $_indexLevel;
+	protected $_maxLinks = 1000;
+	protected $_client;
 	protected $_search;
-	protected $_reporter;
 
-	public function __construct($startUrl = '',$level = 0) {
-		set_time_limit(6000);
-		$this->_search = Zend_Registry::get('searchManager');
-		$this->_reporter = Zend_Registry::get('searchIndexReporter');
-		$this->_client = new Zend_Http_Client;
-		$this->_client->setConfig(array('keepalive'=>true));
-		$this->_client->setParameterGet(array('spider'=>'true'));
-		$this->_indexLevel = $level;
-		$this->_reporter->report("Spidering at level ".$level."\n");
-		if (isset(Site_Config::$lang['multi']) && Site_Config::$lang['multi']) {
-			$this->_languages = array_merge(array(Site_Config::$lang['default']),Site_Config::$lang['translations']);
-			foreach ($this->_languages as $lang) {
-				$this->_currentLanguage = $lang;
-				$this->_spider($this->_getLinks($this->_getUrl($startUrl,'?lang='.$lang)));
-			}
+	public function __construct() {
+	}
+	
+	protected function _search() {
+		if (!isset($this->_search)) {
+			$this->_search = new Bbx_Search;
 		}
-		else {
-			$this->_spider($this->_getLinks($this->_getUrl($startUrl)));
-		}
+		return $this->_search;
 	}
 
-	protected function _checkLink($link) {
-		if (empty($link)) {
-//			$this->_reporter->report($link.': Empty url, returning');
+	protected function _sanitizeUrl($url) {
+		if ($url == '') {
 			return false;
 		}
-		$schemeChecked = explode(':',$link);
-		if (isset($schemeChecked[1])) {
-//			$this->_reporter->report($link.': url has scheme, returning');
+		$schemeCheck = explode(':', $url);
+		if (count($schemeCheck) > 1) {
 			return false; 
 		}
-		if (strpos($link,'//') !== false) {
-//			$this->_reporter->report($link.': url has scheme, returning');
+		if (strpos($url, '//') !== false) {
 			return false;
 		}
-		$slashed = explode('/',$link);
-		if (in_array($slashed[0],Site_Structure::$noIndex)) {
-//			$this->_reporter->report($link.': url set as noIndex, returning');
+		
+		$link = explode('?', $url);
+		
+		$link = explode('#', $link[0]);
+		
+		$extCheck = explode('.', $link[0]);
+		$forbidden = array('jpg', 'gif', 'png', 'mp3', 'pdf');
+		if (in_array(end($extCheck), $forbidden)) {
 			return false;
 		}
-		$link = explode('#',$link);
+
 		return $link[0];
 	}
 
-	protected function _getUrl($link = '') {
-		$rawUrl = Site_Config::site_base().$link;
-		$splitUrl = explode('?',$rawUrl);
-		$url = $splitUrl[0];
-		if (isset($this->_currentLanguage)) {
-			$url .= '?lang='.$this->_currentLanguage;
+	protected function _isVisited($url) {
+		return in_array($url, $this->_visited);
+	}
+	
+	protected function _getAbsoluteUrl($url) {
+		return 'http://' . $_SERVER['HTTP_HOST'] . $url;
+	}
+
+	public function start($url) {
+		if (empty($url)) {
+			return;
 		}
-		return $url;
+		Bbx_Log::debug('Starting Spider with url ' . $url);
+		$this->_spider($url);
+		$this->_search()->optimize();
+		Bbx_Log::debug('Spider done');
 	}
-
-	protected function _getLink($url = '') {
-		return str_replace(Site_Config::site_base(),'',$url);
-	}
-
-	protected function _getLinks($url) {
-		$links = array();
-		if (!$this->_isVisited($url)) {
-			$this->_reporter->report($url.': Getting links');
-			$docLinks = $this->_visit($url);
-			$links = array();
-			foreach ($docLinks as $link) {
-				if ($this->_checkLink($link)) {
-					$link = $this->_checkLink($link);
-					$url = $this->_getUrl($link);
-					if ($link && !$this->_isVisited($url) && $this->_hasLevel($url)) {
-						$links[] = $this->_getUrl($link);
+	
+	protected function _spider($url) {
+		if ($url = $this->_sanitizeUrl($url)) {
+			if (!$this->_isVisited($url)) {
+				$doc = Zend_Search_Lucene_Document_Html::loadHTMLFile($this->_getAbsoluteUrl($url), false, 'utf-8');
+				$this->_search()->indexDoc($doc, $url);
+				$this->_visited[] = $url;
+				$links = array_diff($doc->getLinks(), $this->_visited);
+				foreach ($links as $link) {
+					if (count($this->_visited) < $this->_maxLinks) {
+						Bbx_Log::debug('Spidering url ' . $link);
+						$this->_spider($link);
+					}
+					else {
+						Bbx_Log::debug('Reached max number of links (' . $this->_maxLinks . '), returning');
 					}
 				}
 			}
 		}
-		else {
-//			$this->_reporter->report($url.': Already visited, returning');
-		}
-		return $links;
-	}
-
-	protected function _hasLevel($url) {
-		if (!isset(Site_Structure::$indexLevels)) {
-			return true;
-		}
-		if ($this->_indexLevel >= count(Site_Structure::$indexLevels)) {
-			return true;
-		}
-		for ($i = 0; $i <= $this->_indexLevel; $i++) {
-			if (!isset(Site_Structure::$indexLevels[$i])) {
-//				$this->_reporter->report($url.': below indexLevel, returning');
-				return false;
-			}
-			foreach (Site_Structure::$indexLevels[$i] as $str) {
-				if (strpos($url,$str) !== false) {
-					return true;
-				}
-			}
-		}
-//		$this->_reporter->report($url.': below indexLevel, returning');
-		return false;
-	}
-
-	protected function _visit($url) {
-		$this->_client->setUri($url);
-		try {
-			$response = $this->_client->request();
-		}
-		catch (Exception $e) {
-			return array();
-		}
-		$docContents = $response->getBody();
-		$domDoc = new DOMDocument;
-		$domDoc->loadHTML($docContents);
-		$searchDoc = Zend_Search_Lucene_Document_Html::loadHTML($docContents);
-		if (isset($this->_currentLanguage)) {
-			if (!isset($this->_visited[$this->_currentLanguage])) {
-				$this->_visited[$this->_currentLanguage] = array();
-			}
-			$this->_visited[$this->_currentLanguage][] = $url;
-		}
-		else {
-			$this->_visited[] = $url;
-		}
-		$this->_index($searchDoc,$domDoc,$this->_getLink($url));
-		return $searchDoc->getLinks();
 	}
 	
-	protected function _index($searchDoc,$domDoc,$url) {
-		$this->_reporter->report($url.': Indexing ...');
-		ob_start();
-		$this->_search->index($searchDoc,$domDoc,$url);
-		$this->_reporter->report(ob_get_clean());
-	}
-
-	protected function _isVisited($url) {
-		if (isset($this->_currentLanguage)) {
-			return isset($this->_visited[$this->_currentLanguage]) ? in_array($url,$this->_visited[$this->_currentLanguage]) : false;
-		}
-		return in_array($url,$this->_visited);
-	}
-
-	protected function _countVisited() {
-		if (isset($this->_currentLanguage)) {
-			return isset($this->_visited[$this->_currentLanguage]) ? count($this->_visited[$this->_currentLanguage]) : 0;
-		}
-		return count($this->_visited);
-	}
-
-	protected function _spider($links) {
-		if (empty($links)) {
-			return;
-		}
-		foreach ($links as $link) {
-			if ($this->_countVisited() < $this->_maxLinks) {
-				$nextLinks = $this->_getLinks($link);
-				$this->_spider($nextLinks);
-			}
-			else {
-				$this->_reporter->report('Reached max number of links ('.$this->_maxLinks.'), returning');
-			}
-		}
-	}
-
 }
 
 ?>
