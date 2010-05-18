@@ -4,6 +4,7 @@ class Bbx_Controller_Rest_Tools extends Bbx_Controller_Rest {
 
 	public function init() {
 		$this->_helper->contextSwitch()->addActionContext('regenerate-images','json');
+		$this->_helper->contextSwitch()->addActionContext('spider','json');
 		parent::init();
 		$this->_helper->authenticate();
 	}
@@ -19,6 +20,14 @@ class Bbx_Controller_Rest_Tools extends Bbx_Controller_Rest {
 		}
 		// TODO send a JSON response
 		// Also we should probably do each resize as a separate request so as to avoid the segfault problem
+		$this->getResponse()->sendResponse();
+		exit();
+	}
+	
+	public function spiderAction() {
+		set_time_limit(7200);
+		$spider = new Bbx_Search_Spider;
+		$spider->start('/');
 		$this->getResponse()->sendResponse();
 		exit();
 	}
