@@ -90,7 +90,10 @@ function utf8_excerpt($text,$chars,$balance_tags = true) {
 	if (mb_strlen($text) > $chars) {
 		$text = $text." ";
 		$text = mb_substr($text,0,$chars);
-		$text = mb_substr($text,0,mb_strrpos($text,' '));
+		$last_space = mb_strrpos($text, ' ');
+		if ($last_space !== false) {
+			$text = mb_substr($text, 0, $last_space);
+		}
 		$text = $text." ...";
 	}
 	if ($balance_tags) {
