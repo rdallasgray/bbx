@@ -118,6 +118,21 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		$controller = Inflector::interscore(Inflector::pluralize($subjectType));
 		$action = $this->_getParam('controller');
 		
+		$controllerClass = ucfirst($controller) . 'Controller';
+		if (class_exists($controllerClass)) {
+			$actionName = $action . 'Action';
+			if (method_exists($controllerClass, $actionName)) {
+				Bbx_Log::write('forwarding');
+				$request = $this->getRequest();
+				return $this->_forward(
+					$action,
+					$controller,
+					$request->getModuleName(),
+					array('id' => $subject->id)
+				);
+			}
+		}
+		
 		$this->view->$subjectType = $subject;
 		
 		$this->_helper->viewRenderer($controller.'/'.$action,  null, true);
