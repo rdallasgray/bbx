@@ -64,7 +64,7 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 			$size = $this->getSize();
 		}
 		$this->setSize($size);
-		return SITE_ROOT.str_replace(':size',$size,$this->_mediaPath).'/'.$this->id.'.'.$this->_extension;
+		return APPLICATION_PATH . '/..' . str_replace(':size',$size,$this->_mediaPath).'/'.$this->id.'.'.$this->_extension;
 	}
 	
 	public function getMediaUrl($size = null,$absolute = false) {
