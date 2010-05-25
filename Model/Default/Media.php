@@ -27,14 +27,25 @@ class Bbx_Model_Default_Media extends Bbx_Model {
 	}
 	
 	public function getMediaPath() {
-		return SITE_ROOT.$this->_mediaPath.'/'.$this->id.'.'.$this->_extension;
+		return APPLICATION_PATH . '/..' . $this->_mediaPath . $this->id . '.' . $this->_extension;
+	}
+	
+	public function getMediaUrl($absolute = false) {
+		$absolutePath = $absolute ? 'http://'.$_SERVER['SERVER_NAME'] : '';
+		return $absolutePath . $this->_mediaUrl . $this->id . '.' . $this->_extension;
 	}
 	
 	public function getExtension() {
 		return $this->_extension;
 	}
 	
-	public function attachMedia($filePath) {
+	
+	public function attachMedia($filePath, $overwrite = true) {
+		Bbx_Log::debug("trying to attach media to " . get_class($this) . ' ' . $this->id);
+		
+		if (!rename($filePath, $this->getMediaPath())) {
+			throw new Bbx_Model_Exception('Unable to save media ' . $filePath . ' to ' . $this->getMediaPath());
+		}
 	}
 	
 	public function deleteMedia() {
