@@ -128,14 +128,14 @@ class Bbx_Model_Collection implements IteratorAggregate,Countable {
 	
 	protected function _toRowArray() {
 		$array = array();
-		foreach ($this->_rowset as &$row) {
+		foreach ($this->_rowset as $row) {
 			$array[] = $row;
 		}
 		return $array;
 	}
 	
 	public function random($num = 1) {
-		if (count($this->_rowset) == 0) {
+		if (count($this->_rowset) === 0) {
 			return array();
 		}
 		$array = $this->_toRowArray();
