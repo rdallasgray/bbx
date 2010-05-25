@@ -122,7 +122,6 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		if (class_exists($controllerClass)) {
 			$actionName = $action . 'Action';
 			if (method_exists($controllerClass, $actionName)) {
-				Bbx_Log::write('forwarding');
 				$request = $this->getRequest();
 				return $this->_forward(
 					$action,
@@ -132,7 +131,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 				);
 			}
 		}
-		
+
 		$this->view->$subjectType = $subject;
 		
 		$this->_helper->viewRenderer($controller.'/'.$action,  null, true);
