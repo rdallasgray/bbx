@@ -23,16 +23,9 @@ class Bbx_Model_Relationship_Finder implements IteratorAggregate,Countable {
 	protected $_collection = null;
 	protected $_clearFlag = false;
 	
-	public function __construct(Bbx_Model_Relationship_Abstract $relationship) {
+	public function __construct(Bbx_Model_Relationship_Abstract $relationship, Bbx_Model $parentModel) {
 		$this->_relationship = $relationship;
-	}
-	
-	public function setParentModel(Bbx_Model $parentModel) {
-		if (isset($this->_parentModel) && ($this->_parentModel->id !== $parentModel->id)) {
-			$this->_setClearFlag(true);
-		}
 		$this->_parentModel = $parentModel;
-		$this->_collection = null;
 	}
 	
 	protected function _collection() {

@@ -38,7 +38,7 @@ class Bbx_Model_Relationship_Abstract {
 	protected $_isInitialised = false;
 	protected $_parentRow;
 	protected $_parentTableName;
-	protected $_finder;
+	protected $_finders = array();
 	
 	public function __construct(Bbx_Model $parentModel,$childName,array $attributes) {
 		$this->_childName = $childName;
@@ -211,11 +211,11 @@ class Bbx_Model_Relationship_Abstract {
 		if ($this->_type == 'belongsto') {
 			return $this->getCollection($parentModel);
 		}
-		if (!isset($this->_finder)) {
-			$this->_finder = new Bbx_Model_Relationship_Finder($this);
+		if (!array_key_exists($parentModel->id, $this->_finders)) {
+			$this->_finders[$parentModel->id] = new Bbx_Model_Relationship_Finder($this, $parentModel);
 		}
-		$this->_finder->setParentModel($parentModel);
-		return $this->_finder;
+
+		return $this->_finders[$parentModel->id];
 	}
 	
 	public function setFindParams($params) {
@@ -269,7 +269,6 @@ class Bbx_Model_Relationship_Abstract {
 	}
 	
 	public function __destruct() {
-		$this->_finder = null;
 		$this->_collections = null;
 	}
 
