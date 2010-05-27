@@ -30,7 +30,6 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		$request = $this->getRequest();
 
 		if (isset($params['rel'])) {
-			
 			$initialRequest = clone $request;
 			$initialRequest->setDispatched(true);
 			
@@ -110,6 +109,15 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 	}
 	
 	protected function _htmlIndexRel() {
+		
+		$request = $this->getRequest();
+		$action = $request->getActionName();
+		if ($action !== 'index' && $action !== 'show') {
+			if (method_exists($this, $action . 'Action')) {
+				return;
+			}
+		}
+		
 		if (!$this->_hasParam('parentModel')) {
 			throw new Zend_View_Exception('Not Found');
 		}
@@ -122,7 +130,6 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		if (class_exists($controllerClass)) {
 			$actionName = $action . 'Action';
 			if (method_exists($controllerClass, $actionName)) {
-				$request = $this->getRequest();
 				return $this->_forward(
 					$action,
 					$controller,
