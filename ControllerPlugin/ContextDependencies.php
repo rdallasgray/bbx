@@ -74,8 +74,7 @@ class Bbx_ControllerPlugin_ContextDependencies extends Zend_Controller_Plugin_Ab
 	}
 	
 	protected function _initView() {
-		$moduleName = $this->_request->getModuleName();
-		$path = APPLICATION_PATH.'/modules/'.$moduleName.'/views';
+		$path = APPLICATION_PATH.'/modules/'.MODULE_NAME.'/views';
 		$view = new Zend_View;
 		$view->setUseStreamWrapper(true);
 		$view->setEncoding('UTF-8');
@@ -89,8 +88,7 @@ class Bbx_ControllerPlugin_ContextDependencies extends Zend_Controller_Plugin_Ab
 	}
 	
 	protected function _initLayout() {
-		$moduleName = $this->_request->getModuleName();
-		$path = APPLICATION_PATH.'/modules/'.$moduleName.'/views';
+		$path = APPLICATION_PATH.'/modules/'.MODULE_NAME.'/views';
 		Zend_Layout::startMvc(array(
 			'layout'=>'layout',
 			'viewSuffix'=>'phtml',
