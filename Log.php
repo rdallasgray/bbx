@@ -22,7 +22,7 @@ class Bbx_Log {
 
 		if (!Zend_Registry::isRegistered($log)) {
 
-			$logFilePath = SITE_ROOT.'/logs';
+			$logFilePath = APPLICATION_PATH . '/../logs';
 			if(!file_exists($logFilePath)) {
 				mkdir($logFilePath);
 			}
