@@ -19,12 +19,10 @@ You should have received a copy of the GNU General Public License along with Bac
 class Bbx_Autoloader implements Zend_Loader_Autoloader_Interface {
 
 	public function autoload($class) {
-		
-		$moduleName = Zend_Controller_Front::getInstance()->getRequest()->getModuleName();
-		
+
 		if (substr($class,-10) === 'Controller') {
 			
-			$path = SITE_ROOT.'/application/modules/'.$moduleName.'/controllers/'.$class.'.php';
+			$path = APPLICATION_PATH . '/modules/'.MODULE_NAME.'/controllers/'.$class.'.php';
 
 			if (Zend_Loader::isReadable($path)) {
 				@include $path;
@@ -34,7 +32,7 @@ class Bbx_Autoloader implements Zend_Loader_Autoloader_Interface {
 		
 		if (substr($class,-4) === 'Form') {
 			
-			$path = SITE_ROOT.'/application/modules/'.$moduleName.'/forms/'.$class.'.php';
+			$path = APPLICATION_PATH . '/modules/'.MODULE_NAME.'/forms/'.$class.'.php';
 
 			if (Zend_Loader::isReadable($path)) {
 				@include $path;
@@ -43,8 +41,8 @@ class Bbx_Autoloader implements Zend_Loader_Autoloader_Interface {
 		}
 		
 		$paths = array(
-			SITE_ROOT.'/application/modules/'.$moduleName.'/models',
-			SITE_ROOT.'/library/Bbx/Vendor',
+			APPLICATION_PATH . '/modules/'.MODULE_NAME.'/models',
+			APPLICATION_PATH . '/../library/Bbx/Vendor',
 		);
 		
 		foreach ($paths as $p) {
