@@ -325,9 +325,6 @@ class Bbx_Model implements IteratorAggregate {
 	}
 	
 	public function build($attributes = array()) {
-		if (empty($attributes)) {
-			return $this;
-		}
 		$this->_validate($attributes);
 		$attributes = $this->_dbiseAll($attributes);
 		
