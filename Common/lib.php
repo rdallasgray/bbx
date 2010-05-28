@@ -50,7 +50,7 @@ function convert_urls($string, $escaped = true) {
 	}
 	$text = preg_replace(
 		"/((http(s?):\/\/)([\-A-Za-z0-9\+&@\#\/%\?=~_!:,\.;]*(?!&(\#?)[a-z0-9]{2,6};)[\-A-Za-z0-9\+&@\#\/%=~_]))/",
-		"<a href=\"$1\" target=\"_blank\">$1</a>", $string);
+		"<a href=\"$1\" rel=\"nofollow\" target=\"_blank\">$1</a>", $string);
 	return $text;
 }
 
