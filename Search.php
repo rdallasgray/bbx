@@ -21,15 +21,13 @@ class Bbx_Search {
 	protected $_index;
 	
 	public static function reset() {
-		$moduleName = Zend_Controller_Front::getInstance()->getRequest()->getModuleName();
-		Zend_Search_Lucene::create(APPLICATION_PATH . '/modules/' . $moduleName . '/search/index');
+		Zend_Search_Lucene::create(APPLICATION_PATH . '/modules/' . MODULE_NAME . '/search/index');
 	}
 	
 	public function __construct() {
 		Zend_Search_Lucene_Analysis_Analyzer::setDefault(
 			new Zend_Search_Lucene_Analysis_Analyzer_Common_Utf8Num_CaseInsensitive());
-		$moduleName = Zend_Controller_Front::getInstance()->getRequest()->getModuleName();
-		$indexPath = APPLICATION_PATH . '/modules/' . $moduleName . '/search/index';
+		$indexPath = APPLICATION_PATH . '/modules/' . MODULE_NAME . '/search/index';
 		if (file_exists($indexPath)) {
 			$this->_index = Zend_Search_Lucene::open($indexPath);
 		}
