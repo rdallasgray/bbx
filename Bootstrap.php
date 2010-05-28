@@ -22,6 +22,16 @@ class Bbx_Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 		$ldr->unshiftAutoloader($bbxLdr);
 	}
 	
+	protected function _initConstants() {
+		$front = Zend_Controller_Front::getInstance();
+		if ($front->getRequest() instanceof Zend_Controller_Request_Abstract) {
+			define('MODULE_NAME', $request->getModuleName());
+		}
+		else {
+			define('MODULE_NAME', 'default');
+		}
+	}
+	
 	protected function _initLib() {
 		require(APPLICATION_PATH.'/../library/Bbx/Common/lib.php');
 	}
