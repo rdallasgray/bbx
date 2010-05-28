@@ -50,6 +50,24 @@ class Bbx_Controller_Rest_Admin extends Bbx_Controller_Rest {
 		catch (Exception $e) {
 			Bbx_Log::debug("Unable to close session: ".$e->getMessage());
 		}
+		$this->_doSearchIndex();
+	}
+	
+	protected function _doSearchIndex() {
+		try {
+			$report = Bbx_Model::load('SearchIndexReport');
+			$time = $report->timeSinceLastIndex();
+			Bbx_Log::write('Last search-index was ' . $time . 's ago');
+			if ($time > 86400) {
+				Bbx_Log::write('> 24h elapsed, running index');
+				$pid = exec('nice php ' . APPLICATION_PATH . 
+					'/../library/Bbx/bin/search-index.php ' . $_SERVER['HTTP_HOST'] . 
+					' > /dev/null 2>&1 &');
+			}
+		}
+		catch (Exception $e) {
+			Bbx_Log::write('Unable to load SearchIndexReport model');
+		}
 	}
 
 	protected function _loginUser() {
