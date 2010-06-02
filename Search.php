@@ -78,13 +78,16 @@ class Bbx_Search {
 			$html = substr($html, $contentStart, $contentEnd);
 		}
 		$html = str_replace(array('</', '<br'), array(' </', ' <br'), $html);
+		Bbx_Log::write('after str_replace, string is ' . $html);
 		$html = strip_tags($html);
+		Bbx_Log::write('after strip-tags, string is ' . $html);
 		$contentSample = preg_replace('/[\t\s\n]+/', ' ', $html);
+		Bbx_Log::write('after preg_replace string is ' . $contentSample);
 		$fields['contentSample'] = utf8_excerpt(trim($contentSample), 128, false);
 		$this->_indexDocument($doc, $fields);
 	}
 	
-	protected function _indexDocument($doc, $fields) {		
+	protected function _indexDocument($doc, $fields) {
 		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('checkSum',md5($doc->body)));
 		$doc->addField(Zend_Search_Lucene_Field::UnIndexed('lastIndexed',time()));
 		foreach ($fields as $name => $value) {
