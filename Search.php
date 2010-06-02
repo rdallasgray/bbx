@@ -19,6 +19,7 @@ You should have received a copy of the GNU General Public License along with Bac
 class Bbx_Search {
 	
 	protected $_index;
+	protected $_query;
 	
 	public static function reset() {
 		Zend_Search_Lucene::create(APPLICATION_PATH . '/modules/' . MODULE_NAME . '/search/index');
