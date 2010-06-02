@@ -79,16 +79,11 @@ class Bbx_Search {
 			$html = substr($html, $contentStart, $contentEnd);
 		}
 		$html = str_replace(array('</', '<br'), array(' </', ' <br'), $html);
-		Bbx_Log::write('after str_replace, string is ' . $html);
 		$html = strip_tags($html);
-		Bbx_Log::write('after strip-tags, string is ' . $html);
 		$contentSample = preg_replace('/[\t\s\n]+/', ' ', $html);
-		Bbx_Log::write('after preg_replace, string is ' . $contentSample);
 		$contentSample = trim($contentSample);
-		Bbx_Log::write('after trim, string is ' . $contentSample);
 		$contentSample = utf8_excerpt($contentSample, 128, false);
-		Bbx_Log::write('after utf8_excerpt, string is ' . $contentSample);
-		$fields['contentSample'] = $contentSample;
+		$fields['contentSample'] = htmlentities($contentSample, ENT_COMPAT, 'UTF-8');
 		$this->_indexDocument($doc, $fields);
 	}
 	
