@@ -83,8 +83,12 @@ class Bbx_Search {
 		$html = strip_tags($html);
 		Bbx_Log::write('after strip-tags, string is ' . $html);
 		$contentSample = preg_replace('/[\t\s\n]+/', ' ', $html);
-		Bbx_Log::write('after preg_replace string is ' . $contentSample);
-		$fields['contentSample'] = utf8_excerpt(trim($contentSample), 128, false);
+		Bbx_Log::write('after preg_replace, string is ' . $contentSample);
+		$contentSample = trim($contentSample);
+		Bbx_Log::write('after trim, string is ' . $contentSample);
+		$contentSample = utf8_excerpt($contentSample, 128, false);
+		Bbx_Log::write('after utf8_excerpt, string is ' . $contentSample);
+		$fields['contentSample'] = $contentSample;
 		$this->_indexDocument($doc, $fields);
 	}
 	
