@@ -25,9 +25,10 @@ class Bbx_Controller_Rest_Tools extends Bbx_Controller_Rest {
 	}
 	
 	public function spiderAction() {
+		$reset = ($this->_getParam('reset') === 'true');
 		set_time_limit(7200);
 		$spider = new Bbx_Search_Spider;
-		$spider->start('/');
+		$spider->start('/', $reset);
 		$this->getResponse()->sendResponse();
 		exit();
 	}
