@@ -95,7 +95,10 @@ class Bbx_Search_Spider {
 		Bbx_Log::debug('Spider done');
 	}
 	
-	protected function _spider($url = '/') {
+	protected function _spider($url = '/', $reset = false) {
+		if ($reset) {
+			$this->_search->reset();
+		}
 		if ($url = $this->_sanitizeUrl($url)) {
 			if (!$this->_isVisited($url)) {
 				if ($data = @file_get_contents($this->_getAbsoluteUrl($url))) {
