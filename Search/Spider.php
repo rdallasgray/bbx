@@ -28,6 +28,7 @@ class Bbx_Search_Spider {
 
 	public function __construct() {
 		Zend_Search_Lucene_Document_Html::setExcludeNoFollowLinks(true);
+		$this->_client = new Zend_Http_Client;
 	}
 	
 	protected function _search() {
@@ -54,11 +55,13 @@ class Bbx_Search_Spider {
 		$link = explode('#', $link[0]);
 		
 		$extCheck = explode('.', $link[0]);
-		$forbidden = array('jpg', 'gif', 'png', 'mp3', 'pdf');
+		$forbidden = array('jpg', 'gif', 'png', 'mp3', 'pdf', 'swf');
 		if (in_array(end($extCheck), $forbidden)) {
 			return false;
 		}
-
+		if (!strpos($link[0], '/') === 1) {
+			return false;
+		}
 		return $link[0];
 	}
 
@@ -101,7 +104,12 @@ class Bbx_Search_Spider {
 		}
 		if ($url = $this->_sanitizeUrl($url)) {
 			if (!$this->_isVisited($url)) {
-				if ($data = @file_get_contents($this->_getAbsoluteUrl($url))) {
+				$this->_client->setUri($this->_getAbsoluteUrl($url));
+				$response = $this->_client->request();
+				$status = $response->getStatus();
+				Bbx_Log::write('Client response code ' . $status);
+				if ($status == '200') {
+					$data = $response->getBody();
 					$doc = Zend_Search_Lucene_Document_Html::loadHTML($data, false, 'utf-8');
 					$this->_search()->indexDoc($doc, $url);
 					$this->_indexed++;
