@@ -575,23 +575,12 @@ class Bbx_Model implements IteratorAggregate {
 		return $active;
 	}
 	
-	public function schema($includeOneToOneRelationships = false) {
-
-		if ($includeOneToOneRelationships && !$this->_isInitialised) {
-			$this->_init();
-		}
+	public function schema() {
 
 		$cols = $this->columns();
 		$metadata = $this->_metadata();
 		$schema = array();
 		foreach ($cols as $col) {
-		
-			if ($includeOneToOneRelationships && @strpos($col,'_id',(strlen($col)-3)) !== false) {
-				$modelName = substr($col,0,-3);
-				$m = Bbx_Model::load($modelName);
-				$schema[$modelName] = $m->schema($includeOneToOneRelationships);
-				continue;
-			}
 		
 			switch ($metadata[$col]['DATA_TYPE']) {
 				case 'int':
@@ -617,8 +606,8 @@ class Bbx_Model implements IteratorAggregate {
 			$schema[$col] = array(
 				'type' => $type,
 				'length' => $metadata[$col]['LENGTH'],
-				'default' => $metadata[$col]['DEFAULT'],
-				'null' => $metadata[$col]['NULLABLE']
+/*				'default' => $metadata[$col]['DEFAULT'],
+				'null' => $metadata[$col]['NULLABLE']*/
 			);
 		}
 		return $schema;
