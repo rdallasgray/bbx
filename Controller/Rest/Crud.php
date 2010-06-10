@@ -168,7 +168,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		}
 		$model = $this->_helper->Model->getModel();
 		if ($model instanceof Bbx_Model) {		
-			$this->view->assign($model->schema());
+			$this->view->assign($model->newModel());
 		}
 		else {
 			throw new Bbx_Controller_Rest_Exception(null,404);
