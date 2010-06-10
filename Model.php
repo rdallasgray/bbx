@@ -606,11 +606,20 @@ class Bbx_Model implements IteratorAggregate {
 			$schema[$col] = array(
 				'type' => $type,
 				'length' => $metadata[$col]['LENGTH'],
-/*				'default' => $metadata[$col]['DEFAULT'],
-				'null' => $metadata[$col]['NULLABLE']*/
+				'default' => $metadata[$col]['DEFAULT'],
+				'null' => $metadata[$col]['NULLABLE']
 			);
 		}
 		return $schema;
+	}
+	
+	public function newModel() {
+		$cols = $this->columns();
+		$new = array();
+		foreach ($cols as $col) {
+			$new[$col] = null;
+		}
+		return $new;
 	}
 	
 	public function renderAsList($option = true) {
