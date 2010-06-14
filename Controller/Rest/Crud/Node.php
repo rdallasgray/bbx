@@ -23,16 +23,8 @@ class Bbx_Controller_Rest_Crud_Node extends Bbx_Controller_Rest_Crud {
 	}
 
 	protected function _createModel() {
-	}
-	
-	protected function _getModel() {
-		try {
-			$model = $this->_helper->Model->getModel();
-		}
-		catch (Exception $e) {
-			$model = $this->_createModel();
-		}
-		return $model;
+		$className = Inflector::classify($this->getRequest()->getControllerName());
+		return Bbx_Model::load($className);
 	}
 
 	public function indexAction() {
@@ -41,21 +33,29 @@ class Bbx_Controller_Rest_Crud_Node extends Bbx_Controller_Rest_Crud {
 	}
 
 	public function showAction() {
-		$model = $this->_getModel();
-		if ($model instanceof Bbx_Model) {
-			$modelName = Inflector::underscore(get_class($model));
-			$this->view->$modelName = $model;
+		
+		$model = $this->_helper->Model->getModel();
+		$modelName = ($model instanceof Bbx_Model_Collection) 
+			? $model->getModelName() : Inflector::classify(get_class($model));
+			
+		$this->view->$modelName = $model;
+		
+		try {
+			$this->_setEtag($this->view->$modelName->etag($this->_helper->contextSwitch()->getCurrentContext()));
 		}
-		else {
-			$this->view->$modelName = "";
+		catch (Exception $e) {
 		}
-
-		$this->_setEtag($this->view->$modelName->etag($this->_helper->contextSwitch()->getCurrentContext()));
-
+		
 		if ($this->_helper->contextSwitch()->getCurrentContext() === 'json') {
-			$this->view->assign($this->view->$modelName->toArray());
+			if ($this->view->$modelName instanceof Bbx_Model) {
+				$this->view->assign($this->view->$modelName->toArray());
+			}
+			else {
+				$this->view->assign($this->_createModel()->newModel());
+			}
 			unset($this->view->$modelName);
 		}
+
 	}
 
 	protected function _post() {
@@ -64,7 +64,7 @@ class Bbx_Controller_Rest_Crud_Node extends Bbx_Controller_Rest_Crud {
 	}
 
 	protected function _put() {
-		$model = $this->_getModel();
+		$model = $this->_helper->Model->getModel();
 		if ($model instanceof Bbx_Model) {
 			$model->update($this->_getBodyData());
 		}
