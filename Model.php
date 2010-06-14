@@ -334,9 +334,9 @@ class Bbx_Model implements IteratorAggregate {
 			$date = new Zend_Date(Zend_Date::ISO_8601);
 			$attributes['created_at'] = $date->get(Zend_Date::ISO_8601);
 		}
-		if (in_array('modified_at',$cols)) {
+		if (in_array('updated_at',$cols)) {
 			$date = new Zend_Date(Zend_Date::ISO_8601);
-			$attributes['modified_at'] = $date->get(Zend_Date::ISO_8601);
+			$attributes['updated_at'] = $date->get(Zend_Date::ISO_8601);
 		}
 		
 		$this->_rowData = $this->_table()->createRow($attributes);
@@ -378,9 +378,9 @@ class Bbx_Model implements IteratorAggregate {
 
 		$cols = $this->columns();
 
-		if (in_array('modified_at',$cols)) {
+		if (in_array('updated_at',$cols)) {
 			$date = new Zend_Date();
-			$attributes['modified_at'] = $date->get(Zend_Date::ISO_8601);
+			$attributes['updated_at'] = $date->get(Zend_Date::ISO_8601);
 		}
 
 		$this->_oldData = $this->_rowData()->toArray();
@@ -663,8 +663,8 @@ class Bbx_Model implements IteratorAggregate {
 
 	public function etag($extra = null) {
 		
-		if (isset($this->modified_at)) {
-			return md5($this->modified_at.$extra);
+		if (isset($this->updated_at)) {
+			return md5($this->updated_at.$extra);
 		}
 		
 		$cols = $this->columns();
