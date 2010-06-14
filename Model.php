@@ -619,6 +619,7 @@ class Bbx_Model implements IteratorAggregate {
 		foreach ($cols as $col) {
 			$new[$col] = null;
 		}
+		unset($new['id']);
 		return $new;
 	}
 	
