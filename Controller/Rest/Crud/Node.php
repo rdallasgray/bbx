@@ -17,10 +17,6 @@ You should have received a copy of the GNU General Public License along with Bac
 
 
 class Bbx_Controller_Rest_Crud_Node extends Bbx_Controller_Rest_Crud {
-	
-	public function init() {
-		parent::init();
-	}
 
 	protected function _createModel() {
 		$className = Inflector::classify($this->getRequest()->getControllerName());
@@ -35,16 +31,18 @@ class Bbx_Controller_Rest_Crud_Node extends Bbx_Controller_Rest_Crud {
 	public function showAction() {
 		
 		$model = $this->_helper->Model->getModel();
-		$modelName = ($model instanceof Bbx_Model_Collection) 
-			? $model->getModelName() : Inflector::classify(get_class($model));
+		if ($model instanceof Bbx_Model_Collection) {
+			$model = $model->current();
+		}
+		if ($model instanceof Bbx_Model) {
+			$this->_setEtag($model->etag($this->_helper->contextSwitch()->getCurrentContext()));
+			$modelName = Inflector::underscore(get_class($model));
+		}
+		else {
+			Inflector::underscore($this->getRequest()->getControllerName());
+		}
 			
 		$this->view->$modelName = $model;
-		
-		try {
-			$this->_setEtag($this->view->$modelName->etag($this->_helper->contextSwitch()->getCurrentContext()));
-		}
-		catch (Exception $e) {
-		}
 		
 		if ($this->_helper->contextSwitch()->getCurrentContext() === 'json') {
 			if ($this->view->$modelName instanceof Bbx_Model) {
