@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License along with Bac
 
 class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 	
-	private $_privateParams = array('rel','rel_id','controller','id','parentModel','module','action','format');
+	private $_privateParams = array('rel','rel_id','controller','id','parentModel','module','action','format','initialRequest');
 		
 	public function parseParams($allParams) {
 		
