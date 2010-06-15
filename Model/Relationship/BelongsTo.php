@@ -30,6 +30,10 @@ class Bbx_Model_Relationship_BelongsTo extends Bbx_Model_Relationship_Abstract {
 		return $this->_model($polyType)->getTable()->find($parentModel->{$this->_foreignKey});
 	}
 	
+	public function getFinder(Bbx_Model $parentModel) {
+		return $this->getCollection($parentModel);
+	}
+	
 	public static function getExternalConditions($select,$parentModel,$childName,$attributes) {
 
 		$parentModelName = get_class($parentModel);

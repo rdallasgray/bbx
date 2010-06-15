@@ -208,9 +208,6 @@ class Bbx_Model_Relationship_Abstract {
 	}
 	
 	public function getFinder(Bbx_Model $parentModel) {
-		if ($this->_type == 'belongsto') {
-			return $this->getCollection($parentModel);
-		}
 		if (!array_key_exists($parentModel->id, $this->_finders)) {
 			$this->_finders[$parentModel->id] = new Bbx_Model_Relationship_Finder($this, $parentModel);
 		}

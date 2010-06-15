@@ -18,7 +18,10 @@ You should have received a copy of the GNU General Public License along with Bac
 
 class Bbx_Model_Relationship_HasOne extends Bbx_Model_Relationship_HasMany {
 				
-
+	public function getFinder(Bbx_Model $parentModel) {
+		return $this->getCollection($parentModel);
+	}
+	
 }
 
 ?>
