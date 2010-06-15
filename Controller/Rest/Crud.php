@@ -96,10 +96,10 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			return;
 		}
 		$collection = $this->_helper->Model->getCollection();
+		$this->_setEtag($collection->etag($this->_helper->contextSwitch()->getCurrentContext()));
 		$collectionName = Inflector::tableize($collection->getModelName());
 		$this->view->$collectionName = $collection;
 
-		$this->_setEtag($this->view->$collectionName->etag($this->_helper->contextSwitch()->getCurrentContext()));
 
 		if ($this->_context === 'json' || $this->_context === 'csv') {
 			$options = ($this->_context === 'json') ? array('deep' => true) : null;
@@ -150,10 +150,10 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		}
 		$model = $this->_helper->Model->getModel();
 	
+		$this->_setEtag($model->etag($this->_helper->contextSwitch()->getCurrentContext()));
+
 		$modelName = Inflector::underscore(get_class($model));
 		$this->view->$modelName = $model;
-
-		$this->_setEtag($this->view->$modelName->etag($this->_helper->contextSwitch()->getCurrentContext()));
 
 		if ($this->_helper->contextSwitch()->getCurrentContext() === 'json') {
 			$this->view->assign($this->view->$modelName->toArray());
