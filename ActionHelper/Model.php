@@ -42,7 +42,7 @@ class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 
 		if ($parentModel = $request->getParam('parentModel')) {
 			$params = $this->parseParams($request->getUserParams());
-			if (method_exists($parentModel->$controllerName, 'findAll')) {
+			if (method_exists($parentModel->$controllerName, 'findAll') && !empty($params)) {
 				$model = $parentModel->$controllerName->findAll($params);
 			}
 			else {
