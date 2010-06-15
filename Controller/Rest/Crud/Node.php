@@ -39,7 +39,7 @@ class Bbx_Controller_Rest_Crud_Node extends Bbx_Controller_Rest_Crud {
 			$modelName = Inflector::underscore(get_class($model));
 		}
 		else {
-			Inflector::underscore($this->getRequest()->getControllerName());
+			$modelName = Inflector::underscore($this->getRequest()->getControllerName());
 		}
 			
 		$this->view->$modelName = $model;
