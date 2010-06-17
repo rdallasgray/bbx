@@ -38,6 +38,7 @@ class Bbx_Controller_Rest_Admin extends Bbx_Controller_Rest {
 		$this->_user = $this->_helper->Authenticate->getUser();
 		$this->_checkLastLogin();
 		$this->_loginUser();
+		$this->view->assign(array('id' => $this->_user->id));
 	}
 
 	public function logoutAction() {
@@ -76,6 +77,9 @@ class Bbx_Controller_Rest_Admin extends Bbx_Controller_Rest {
 
 	protected function _checkLastLogin() {
 		$session = $this->_user->last_admin_session;
+		if (!$session instanceof Bbx_Model) {
+			return;
+		}
 		try {
 			if ($session->timeout == '0000-00-00 00:00:00') {
 				$session->close();

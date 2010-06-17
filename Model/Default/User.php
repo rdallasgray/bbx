@@ -26,9 +26,17 @@ class Bbx_Model_Default_User extends Bbx_Model {
 		$this->hasOne('current_admin_session')->source('admin_sessions')
 			->select(array('order'=>'id DESC','where'=>"timein < NOW() AND timeout = '0000-00-00 00:00:00'",'limit'=>1));
 	}
-	
+		
+	protected function _initValidations() {
+		$this->validates('username')
+			->NotEmpty();
+		$this->validates('password')
+			->NotEmpty();
+	}
+
 	protected function _beforeSave() {
-		if (empty($this->_oldData) || ($this->password !== $this->_oldData['password'])) {
+		if (empty($this->_oldData) 
+			|| ($this->password !== $this->_oldData['password'] || $this->username !== $this->_oldData['username'])) {
 			$this->password = md5($this->username.':'.Bbx_Config::get()->site->location.':'.$this->password);
 		}
 	}

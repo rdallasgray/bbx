@@ -18,10 +18,6 @@ You should have received a copy of the GNU General Public License along with Bac
 
 class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 
-	public function init() {
-		parent::init();
-	}
-
 	public function preDispatch() {
 		if ($this->_getParam('final')) {
 			return;
@@ -78,7 +74,6 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			
 			case 'HEAD':
 			case 'OPTIONS':
-			
 			$method = '_'.Inflector::underscore($request->getMethod());
 			$this->$method();
 		}
@@ -95,7 +90,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		if ($this->getRequest()->isHead()) {
 			return;
 		}
-		$collection = $this->_helper->Model->getCollection();
+		$collection = $this->_getIndexData();
 		$this->_setEtag($collection->etag($this->_helper->contextSwitch()->getCurrentContext()));
 		$collectionName = Inflector::tableize($collection->getModelName());
 		$this->view->$collectionName = $collection;
@@ -106,6 +101,14 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			$this->view->assign($this->view->$collectionName->toArray($options));
 			unset($this->view->$collectionName);
 		}
+	}
+	
+	protected function _getIndexData() {
+		return $this->_helper->Model->getCollection();
+	}
+	
+	protected function _getShowData() {
+		return $this->_helper->Model->getModel();
 	}
 	
 	protected function _htmlIndexRel() {
@@ -148,7 +151,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		if ($this->getRequest()->isHead()) {
 			return;
 		}
-		$model = $this->_helper->Model->getModel();
+		$model = $this->_getShowData();
 	
 		$this->_setEtag($model->etag($this->_helper->contextSwitch()->getCurrentContext()));
 
@@ -188,12 +191,15 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		exit();
 	}
 
-	protected function _put() {
+	protected function _put($data = null) {
 		if (!$this->_hasParam('id')) {
 			$e = new Bbx_Controller_Rest_Exception(null,405,array('allowed_methods'=>'GET,POST'));
 			throw $e;
 		}
-		$this->_helper->Model->getModel()->update($this->_getBodyData());
+		if ($data === null) {
+			$data = $this->_getBodyData();
+		}
+		$this->_helper->Model->getModel()->update($data);
 	}
 
 	protected function _delete() {

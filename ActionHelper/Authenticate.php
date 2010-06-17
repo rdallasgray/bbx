@@ -24,6 +24,13 @@ class Bbx_ActionHelper_Authenticate extends Zend_Controller_Action_Helper_Abstra
 			return true;
 		}
 		
+		if (!$this->_httpAuth()) {
+			throw new Bbx_Controller_Rest_Exception(null,401);
+		}
+		$this->_authenticated = true;
+	}
+	
+	protected function _httpAuth() {
 		$config = array(
 			'accept_schemes' => 'digest',
 			'realm'          => Bbx_Config::get()->site->location,
@@ -37,12 +44,7 @@ class Bbx_ActionHelper_Authenticate extends Zend_Controller_Action_Helper_Abstra
 		$adaptor->setRequest($this->getRequest());
 		$adaptor->setResponse($this->getResponse());
 
-		$result = $adaptor->authenticate();
-		
-		if (!$result->isValid()) {
-			throw new Bbx_Controller_Rest_Exception(null,401);
-		}
-		$this->_authenticated = true;
+		return $adaptor->authenticate()->isValid();
 	}
 	
 	public function getUser() {
