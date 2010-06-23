@@ -29,7 +29,7 @@ class Bbx_Controller_Rest_Crud_Node extends Bbx_Controller_Rest_Crud {
 	}
 
 	public function showAction() {
-		
+		$this->_doRequestMethod();
 		$model = $this->_helper->Model->getModel();
 		if ($model instanceof Bbx_Model_Collection) {
 			$model = $model->current();
@@ -62,6 +62,7 @@ class Bbx_Controller_Rest_Crud_Node extends Bbx_Controller_Rest_Crud {
 	}
 
 	protected function _put() {
+		$this->_helper->authenticate();
 		$model = $this->_helper->Model->getModel();
 		if ($model instanceof Bbx_Model) {
 			$model->update($this->_getBodyData());
@@ -74,10 +75,6 @@ class Bbx_Controller_Rest_Crud_Node extends Bbx_Controller_Rest_Crud {
 	protected function _delete() {
 		$e = new Bbx_Controller_Rest_Exception(null,405,array('allowed_methods'=>'PUT'));
 		throw $e;
-	}
-	
-	protected function _options() {
-//TODO set header for allowed methods etc.
 	}
 
 }

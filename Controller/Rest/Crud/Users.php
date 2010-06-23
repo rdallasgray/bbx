@@ -3,11 +3,13 @@
 class Bbx_Controller_Rest_Crud_Users extends Bbx_Controller_Rest_Crud {
 	
 	public function indexAction() {
+		$this->_doRequestMethod();
 		$this->_helper->authenticate();
 		parent::indexAction();
 	}
 	
 	public function showAction() {
+		$this->_doRequestMethod();
 		$this->_helper->authenticate();
 		parent::showAction();
 	}

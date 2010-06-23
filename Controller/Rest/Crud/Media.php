@@ -19,6 +19,7 @@ You should have received a copy of the GNU General Public License along with Bac
 class Bbx_Controller_Rest_Crud_Media extends Bbx_Controller_Rest_Crud {
 	
 	public function showAction() {
+		$this->_doRequestMethod();
 		if ($this->getRequest()->getParam('download') === "true") {
 			Zend_Controller_Action_HelperBroker::getExistingHelper('viewRenderer')->setNoRender(true);
 			$model = $this->_helper->Model->getModel();
@@ -46,7 +47,7 @@ class Bbx_Controller_Rest_Crud_Media extends Bbx_Controller_Rest_Crud {
 	}
 
 	protected function _post() {
-		
+		$this->_helper->authenticate();
 		if ($this->getRequest()->getHeader("Content-Length") == 0) {
 			$this->getResponse()->setHttpResponseCode(204)->sendResponse();
 			exit();
