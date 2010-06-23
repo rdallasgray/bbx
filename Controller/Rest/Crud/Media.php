@@ -63,7 +63,8 @@ class Bbx_Controller_Rest_Crud_Media extends Bbx_Controller_Rest_Crud {
 		}
 		
 		$upload = new Zend_File_Transfer_Adapter_Http();
-		$upload->addValidator('MimeType', false, $mimeType);
+// TODO throws error 'Magicfile can not be set. There is no finfo extension installed' (Zend_Validate_File_MimeType 193)		
+//		$upload->addValidator('MimeType', false, $mimeType);
 		$upload->getValidator('Zend_Validate_File_Upload')
 				->setMessage('File is too large - max size '.$max_size, 
 				Zend_Validate_File_Upload::INI_SIZE);
