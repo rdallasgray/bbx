@@ -61,22 +61,6 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			$this->_helper->authenticate();
 			$this->_helper->download($this->_helper->Model->getModel());
 		}
-		
-		switch ($request->getMethod()) {
-			case 'GET':
-			break;
-			
-			case 'POST':
-			case 'PUT':
-			case 'DELETE':
-			case 'OPTIONS':
-			$this->_helper->authenticate();
-			
-			case 'HEAD':
-			case 'OPTIONS':
-			$method = '_'.Inflector::underscore($request->getMethod());
-			$this->$method();
-		}
 	}
 	
 	public function postDispatch() {
@@ -85,8 +69,16 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			Zend_Controller_Front::getInstance()->setRequest($r);
 		}
 	}
+	
+	protected function _doRequestMethod() {
+		$method = '_' . strtolower($this->getRequest()->getMethod());
+		if (method_exists($this, $method)) {
+			$this->$method();
+		}
+	}
 
 	public function indexAction() {
+		$this->_doRequestMethod();
 		if ($this->getRequest()->isHead()) {
 			return;
 		}
@@ -112,7 +104,6 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 	}
 	
 	protected function _htmlIndexRel() {
-		
 		$request = $this->getRequest();
 		$action = $request->getActionName();
 		if ($action !== 'index' && $action !== 'show') {
@@ -148,6 +139,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 	}
 
 	public function showAction() {
+		$this->_doRequestMethod();
 		if ($this->getRequest()->isHead()) {
 			return;
 		}
@@ -179,6 +171,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 	}
 
 	protected function _post() {
+		$this->_helper->authenticate();
 		$model = $this->_helper->Model->getModel();
 		
 		$new_model = $model->create($this->_getBodyData());
@@ -192,6 +185,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 	}
 
 	protected function _put($data = null) {
+		$this->_helper->authenticate();
 		if (!$this->_hasParam('id')) {
 			$e = new Bbx_Controller_Rest_Exception(null,405,array('allowed_methods'=>'GET,POST'));
 			throw $e;
@@ -203,6 +197,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 	}
 
 	protected function _delete() {
+		$this->_helper->authenticate();
 		if (!$this->_hasParam('id')) {
 			$e = new Bbx_Controller_Rest_Exception(null,405,array('allowed_methods'=>'GET,POST'));
 			throw $e;

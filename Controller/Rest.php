@@ -69,12 +69,16 @@ class Bbx_Controller_Rest extends Zend_Controller_Action {
 		return Zend_Json::decode($this->getRequest()->getRawBody());
 	}
 	
+	protected function _get() {
+	}
+	
 	protected function _head() {
 		Bbx_Log::debug("received HEAD request");
 	}
 	
 	protected function _options() {
 		Bbx_Log::debug("received OPTIONS request");
+		$this->_helper->authenticate();
 	}
 }
 
