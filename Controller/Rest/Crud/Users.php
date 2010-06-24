@@ -2,18 +2,6 @@
 
 class Bbx_Controller_Rest_Crud_Users extends Bbx_Controller_Rest_Crud {
 	
-	public function indexAction() {
-		$this->_doRequestMethod();
-		$this->_helper->authenticate();
-		parent::indexAction();
-	}
-	
-	public function showAction() {
-		$this->_doRequestMethod();
-		$this->_helper->authenticate();
-		parent::showAction();
-	}
-	
 	protected function _closeSession() {
 		$this->_user = $this->_helper->Authenticate->getUser();
 		$session = $this->_user->current_admin_session;
@@ -23,6 +11,11 @@ class Bbx_Controller_Rest_Crud_Users extends Bbx_Controller_Rest_Crud {
 		catch (Exception $e) {
 			Bbx_Log::debug("Unable to close session: ".$e->getMessage());
 		}
+	}
+	
+	protected function _get() {
+		$this->_helper->authenticate();
+		parent::_get();
 	}
 	
 	protected function _put() {
@@ -91,12 +84,14 @@ class Bbx_Controller_Rest_Crud_Users extends Bbx_Controller_Rest_Crud {
 		// user isn't an admin
 		$request = $this->getRequest();
 		if ($request->isPost() || $request->isDelete()) {
-			throw new Bbx_Controller_Rest_Exception(null,401); //non-admins can't post or delete
+			//non-admins can't post or delete
+			throw new Bbx_Controller_Rest_Exception(null,401); 
 		}
 		if ($request->isPut()) {
 			$data = $this->_getBodyData();
 			if ($userRequesting->id != $data['id']) {
-				throw new Bbx_Controller_Rest_Exception(null,401); //non-admins can only update themselves
+				//non-admins can only update themselves
+				throw new Bbx_Controller_Rest_Exception(null,401); 
 			}
 		}
 		return false;
