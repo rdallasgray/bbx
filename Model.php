@@ -658,6 +658,16 @@ class Bbx_Model implements IteratorAggregate {
 		return false;
 	}
 	
+	public function hasLinkableRows() {
+		$c = $this->findAll();
+		foreach ($c as $row) {
+			if ($row->isLinkable()) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public function toStringPattern() {
 		return $this->_to_string_pattern;
 	}
