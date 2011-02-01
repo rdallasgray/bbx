@@ -25,27 +25,27 @@ class Bbx_Model_Default_AdminSession extends Bbx_Model {
 	}
 	
 	protected function _beforeSave() {
-		if ($this->timein == '' || $this->timein == '0000-00-00 00:00:00') {
-			$this->setTimeIn();
+		if ($this->logged_in_at == '' || $this->logged_in_at == '0000-00-00 00:00:00') {
+			$this->setTimeLoggedIn();
 		}
 	}
 	
-	public function setTimeIn($time = null) {
+	public function setTimeLoggedIn($time = null) {
 		if (!$time) {
 			$time = date('Y-m-d H:i:s');
 		}
-		$this->timein = $time;
+		$this->logged_in_at = $time;
 	}
 	
-	public function setTimeOut($time = null) {
+	public function setTimeLoggedOut($time = null) {
 		if (!$time) {
 			$time = date('Y-m-d H:i:s');
 		}
-		$this->timeout = $time;
+		$this->logged_out_at = $time;
 	}
 	
 	public function close() {
-		$this->setTimeOut();
+		$this->setTimeLoggedOut();
 		$this->save();
 	}
 

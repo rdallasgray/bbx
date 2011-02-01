@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License along with Bac
 
 
 
-class Bbx_Model_Collection implements IteratorAggregate,Countable {
+class Bbx_Model_Collection implements IteratorAggregate, Countable, ArrayAccess {
 	
 	protected $_parentModel;
 	protected $_rowset;
@@ -93,6 +93,24 @@ class Bbx_Model_Collection implements IteratorAggregate,Countable {
 		}
 		return $this->_iterator;
 	}
+	
+	public function offsetExists($offset) {
+		$rowSet = $this->getRowset();
+		$rowSet->seek($position);
+		return $rowSet->valid();
+	}
+	
+	public function offsetGet($offset) {
+		return $this->getIterator()->seek($offset);
+	}
+	
+	public function offsetSet($offset, $value) {
+		// reqd by ArrayAccess
+	}
+	
+	public function offsetUnset($offset) {
+		// reqd by ArrayAccess
+	}
 
 	public function __toString() {
 		$a = array();
@@ -134,11 +152,14 @@ class Bbx_Model_Collection implements IteratorAggregate,Countable {
 		return $array;
 	}
 	
-	public function random($num = 1) {
+	public function random($num = 1, $limit = 0) {
 		if (count($this->_rowset) === 0) {
 			return array();
 		}
 		$array = $this->_toRowArray();
+		if ($limit > 0) {
+			$array = array_slice($array, 0, $limit);
+		}
 		$keys = (array)array_rand($array,$num);
 		$rand = array_values(array_intersect_key($array,array_flip($keys)));
 		if ($num == 1) {
@@ -151,14 +172,14 @@ class Bbx_Model_Collection implements IteratorAggregate,Countable {
 		return $models;
 	}
 	
-	public function create($attributes = array()) {
+	public function create($attributes = array(), $useId = false) {
 		if (isset($this->_relationship)) {
 			Bbx_Log::debug('$this->_relationship is set, creating new and reloading');
-			$model = $this->_relationship->create($this->_parentModel,$attributes);
+			$model = $this->_relationship->create($this->_parentModel, $attributes, $useId);
 		}
 		else {
 			Bbx_Log::debug('$this->_relationship is NOT set, creating new and reloading');
-			$model = $this->_parentModel->create($attributes);
+			$model = $this->_parentModel->create($attributes, $useId);
 		}
 		$this->_reload($this->_parentModel);
 		return $model;
@@ -186,7 +207,6 @@ class Bbx_Model_Collection implements IteratorAggregate,Countable {
 
 	public function etag($extra = null) {
 		$data = $this->getRowset()->getRawData();
-		
 		return md5(serialize($data).$extra);
 	}
 	
@@ -198,9 +218,13 @@ class Bbx_Model_Collection implements IteratorAggregate,Countable {
 		return $url.'/'.Inflector::pluralize(Inflector::interscore($this->_childModelName));
 	}
 
-	public function __destruct() {
-		$this->_iterator = null;
-		$this->_relationship = null;
+	public function __destruct() {		
+		unset($this->_relationship);
+		unset($this->_parentModel);
+		unset($this->_rowset);
+		unset($this->_models);
+		unset($this->_iterator);
+		unset($this->_table);
 	}
 
 }

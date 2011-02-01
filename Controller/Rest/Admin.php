@@ -81,7 +81,7 @@ class Bbx_Controller_Rest_Admin extends Bbx_Controller_Rest {
 			return;
 		}
 		try {
-			if ($session->timeout == '0000-00-00 00:00:00') {
+			if ($session->logged_out_at == '0000-00-00 00:00:00') {
 				$session->close();
 			}
 		}

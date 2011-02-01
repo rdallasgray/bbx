@@ -21,26 +21,6 @@ class Bbx_View_Helper_Date {
 	public function setView(Zend_View_Interface $view) {
 		$this->view = $view;
 	}
-/*	
-	public function date($date = null,$format = null) {
-		if ($date === null) {
-			return $this;
-		}
-		return Bbx_Date::getDate($date,$format);
-	}
-	
-	public function dateTime($dateTime,$format = null) {
-		return Bbx_Date::getDateTime($dateTime,$format);
-	}
-	
-	public function time($dateTime,$format = null) {
-		return Bbx_Date::getDateTime($dateTime,$format);
-	}
-
-	public function range($from, $to, $format = null, $separator = null) {
-		return Bbx_Date::getDateRange($dateTime,$format);
-	}
-*/
 	
 	public function date($date = null,$format = null) {
 		if ($date === null) {

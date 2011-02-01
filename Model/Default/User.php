@@ -24,7 +24,7 @@ class Bbx_Model_Default_User extends Bbx_Model {
 		$this->hasMany('admin_sessions');
 		$this->hasOne('last_admin_session')->source('admin_sessions')->select(array('order'=>'id DESC','limit'=>1));
 		$this->hasOne('current_admin_session')->source('admin_sessions')
-			->select(array('order'=>'id DESC','where'=>"timein < NOW() AND timeout = '0000-00-00 00:00:00'",'limit'=>1));
+			->select(array('order'=>'id DESC','where'=>"logged_in_at < NOW() AND logged_out_at = '0000-00-00 00:00:00'",'limit'=>1));
 	}
 		
 	protected function _initValidations() {

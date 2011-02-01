@@ -24,6 +24,11 @@ class Bbx_View_Helper_Collection extends Bbx_View_Helper_Model {
 		return implode(', ', $a);
 	}
 	
+	public function flatList() {
+		$a = $this->_model->toArray();
+		return implode(', ', $a);
+	}
+	
 }
 
 ?>

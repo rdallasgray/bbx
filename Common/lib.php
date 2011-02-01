@@ -18,6 +18,7 @@ You should have received a copy of the GNU General Public License along with Bac
 
 require('utf8.php');
 require('smartypants.php');
+require('markdown.php');
 
 function encode_email($email) {
     $encoded = bin2hex($email);
@@ -41,7 +42,7 @@ function bbx_smart_escape($string) {
 }
 
 function h($string) {
-	return bbx_escape((string)$string);
+	return bbx_smart_escape((string)$string);
 }
 
 function convert_urls($string, $escaped = true) {

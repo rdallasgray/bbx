@@ -77,7 +77,7 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 	}
 	
 	public function attachMedia($filePath, $overwrite = true) {
-		Bbx_Log::debug("trying to attach media to image");
+		Bbx_Log::debug("trying to attach media to Image " . $this->id);
 		$this->setSize('original');
 		
 		try {
@@ -88,7 +88,7 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 		}
 		try {
 			if (file_exists($this->getMediaPath('original')) && !$overwrite) {
-				return $this->_createSizedMedia($overwrite);
+				return $this->_createSizedMedia(null, $overwrite);
 			}
 			$img->setResolution(300)->save($this->getMediaPath());
 

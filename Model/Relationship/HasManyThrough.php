@@ -67,10 +67,11 @@ class Bbx_Model_Relationship_HasManyThrough extends Bbx_Model_Relationship_Abstr
 		return new Bbx_Db_Table_Rowset($config);
 	}
 	
-	public function create(Bbx_Model $parentModel, $attributes = array()) {
-		$child = Bbx_Model::load($this->_childModelName)->create($attributes);
+	public function create(Bbx_Model $parentModel, $attributes = array(), $useId) {
+		$child = Bbx_Model::load($this->_childModelName)->create($attributes, $useId);
 		try {
-			$through = Bbx_Model::load($this->_throughModelName)->create($this->_getThroughConditions($parentModel, $child->id));
+			$through = Bbx_Model::load($this->_throughModelName)
+				->create($this->_getThroughConditions($parentModel, $child->id), $useId);
 			return $child;
 		}
 		catch (Exception $e) {

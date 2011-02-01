@@ -29,7 +29,6 @@ class Bbx_Model_Registry_Relationships extends Bbx_Model_Registry_Abstract {
 			$this->_instantiate($parentModel,$childName);
 		}
 		$model = $this->_data[$parentModelName][$childName]['model'];
-
 		return $model->getFinder($parentModel);
 	}
 	
@@ -66,6 +65,20 @@ class Bbx_Model_Registry_Relationships extends Bbx_Model_Registry_Abstract {
 			return $self->_data[$parentModelName][Inflector::singularize($childName)];
 		}
 		throw new Zend_Exception('No relationship registered for '.$parentModelName.'-'.$childName);
+	}
+	
+	public function destroyRelationshipDataFor($parentModel) {
+		if (!isset($parentModel->id)) {
+			return;
+		}
+		$parentModelName = get_class($parentModel);
+		if (isset($this->_data[$parentModelName])) {
+			foreach($this->_data[$parentModelName] as $key => $value) {
+				if (array_key_exists('model', $this->_data[$parentModelName][$key])) {
+					unset($this->_data[$parentModelName][$key]['model']);
+				}
+			}
+		}
 	}
 	
 	protected function _instantiate(Bbx_Model $parentModel,$childName) {

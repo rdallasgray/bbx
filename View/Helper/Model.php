@@ -47,8 +47,15 @@ class Bbx_View_Helper_Model extends Zend_View_Helper_Abstract {
 		return $this;
 	}
 	
+	public function wrapLink() {
+		
+		$this->_text = '<a href="' . $this->_model->url() . '">' . $this->_text . '</a>';
+	}
+	
 	public function __toString() {
-		return $this->_text;
+		$text = $this->_text;
+		$this->_text = '';
+		return $text;
 	}
 	
 }

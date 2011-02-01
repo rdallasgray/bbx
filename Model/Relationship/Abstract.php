@@ -207,6 +207,11 @@ class Bbx_Model_Relationship_Abstract {
 		return $this->_collections[$parentModel->id];
 	}
 	
+	public function destroyCollectionsFor($id) {
+		unset($this->_collections[$id]);
+		unset($this->_finders[$id]);
+	}
+	
 	public function getFinder(Bbx_Model $parentModel) {
 		if (!array_key_exists($parentModel->id, $this->_finders)) {
 			$this->_finders[$parentModel->id] = new Bbx_Model_Relationship_Finder($this, $parentModel);
@@ -266,7 +271,13 @@ class Bbx_Model_Relationship_Abstract {
 	}
 	
 	public function __destruct() {
-		$this->_collections = null;
+		unset($this->_throughModel);
+		unset($this->_models);
+		unset($this->_finders);
+		unset($this->_originalSelect);
+		unset($this->_rowData);
+		unset($this->_select);
+		unset($this->_parentRow);
 	}
 
 }

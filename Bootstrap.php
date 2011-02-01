@@ -47,6 +47,9 @@ class Bbx_Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	}
 	
 	protected function _initPlugins() {
+		if (defined('NO_MVC')) {
+			return;
+		}
 		$this->bootstrap('FrontController');
 		$front = $this->getResource('FrontController');
 		$contextDependenciesPlugin = new Bbx_ControllerPlugin_ContextDependencies;

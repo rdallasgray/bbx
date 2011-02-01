@@ -91,6 +91,10 @@ abstract class Bbx_Model_Registry_Abstract {
 		}
 		return $this->_data[$modelName];
 	}
+	
+	public function destroyDataFor($modelName) {
+		unset($this->_data[$modelName]);
+	}
 
 	public function __call($method,$arguments) {
 		if (empty($this->_tempEntry)) {

@@ -78,8 +78,8 @@ class Bbx_Date {
 	
 	public static function dateRange($start = null, $end = null, $format = null, $separator = '–') {
 
-		$startDate = self::date($start,$format);
-		$endDate = self::date($end,$format);
+		$startDate = self::date($start, $format);
+		$endDate = self::date($end, $format);
 
 		if ($startDate === '') {
 			return '';
@@ -88,14 +88,34 @@ class Bbx_Date {
 			return $startDate;
 		}
 		
-		$parts = self::_getValidDateParts($start);
+		$startParts = self::_getValidDateParts($start);
+		$endParts = self::_getValidDateParts($end);
 		$startTimestamp = self::_timestamp(self::_normalizeDate($start));
 		$endTimestamp = self::_timestamp(self::_normalizeDate($end));
 		
-		$startDate = self::_getFinalDate($startTimestamp,$parts,$format);
-		$endDate = self::_getFinalDate($endTimestamp,$parts,$format);
+		if ($startParts['YEAR'] == $endParts['YEAR']) {
+			unset($startParts['YEAR']);
+		}
+		
+		$startDate = self::_getFinalDate($startTimestamp, $startParts, $format);
+		$endDate = self::_getFinalDate($endTimestamp, $endParts, $format);
 		
 		return $startDate === $endDate ? self::_trim($startDate) : self::_trim($startDate).$separator.self::_trim($endDate);
+	}
+	
+	public static function timeRange($start = null, $end = null, $format = null, $separator = '–') {
+		$startTime = self::time($start, $format);
+		$endTime = self::time($end, $format);
+		
+		return $startTime === $endTime ? self::_trim($startTime) : self::_trim($startTime) . $separator . self::_trim($endTime);
+	}
+	
+	public static function dateTimeRange($start = null, $end = null, $format = null, $separator = '–') {
+		$range = self::dateRange($start, $end);
+		if ($range != self::date($start)) {
+			return $range;
+		}
+		return self::dateRange($start, $end) . ', ' . self::timeRange($start, $end);
 	}
 	
 	public static function isValidDate($date) {
@@ -113,6 +133,15 @@ class Bbx_Date {
 		$normalized = self::_normalizeDateTime($date);
 		$timestamp = self::_timestamp(array_values($normalized));
 		return $timestamp > time();
+	}
+	
+	public static function isPast($date) {
+		if (!self::isValidDate($date)) {
+			return false;
+		}
+		$normalized = self::_normalizeDateTime($date);
+		$timestamp = self::_timestamp(array_values($normalized));
+		return time() > $timestamp;
 	}
 	
 	protected static function _getFinalDate($timestamp,$parts,$format) {
@@ -272,7 +301,7 @@ class Bbx_Date {
 		}
 		
 		$timeParts = explode(':',$time);
-		$timeParts = array_pad($timeParts,3,"00");
+		$timeParts = array_pad($timeParts, 3, "00");
 		
 		$valid = array();
 		

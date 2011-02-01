@@ -24,12 +24,14 @@ class Bbx_Model implements IteratorAggregate {
 	protected $_primary;
 	protected $_to_string_pattern = ':id';
 	protected $_url;
+	protected $_select;
 	protected $_alwaysLinked = array();
 	protected $_neverLinked = array();
 	protected $_validations = array();
 	protected $_validationsInited = false;
 	protected $_isInitialised = false;
 	protected $_params = array();
+	protected $_derivedParams = array();
 	protected $_iterator;
 	protected $_defaultParams = array();
 	protected $_oldData = array();
@@ -51,7 +53,7 @@ class Bbx_Model implements IteratorAggregate {
 		return $this->_iterator;
 	}
 
-	public static function load($name,$forceInit = false) {
+	public static function load($name, $forceInit = false) {
 		$class = Inflector::classify($name);
 		if (@class_exists($class)) {
 			$model = new $class;
@@ -149,7 +151,7 @@ class Bbx_Model implements IteratorAggregate {
 		}
 		return Bbx_Model_Registry::get('Relationships')->getRelationship($this,$childName);
 	}
-	
+
 	public function getRelationshipData($childName = null) {
 		if (!$this->_isInitialised) {
 			$this->_init();
@@ -175,7 +177,10 @@ class Bbx_Model implements IteratorAggregate {
 	}
 
 	public function select() {
-		return $this->_table()->select()->setIntegrityCheck(false);
+		if (!isset($this->_select)) {
+			$this->_select = $this->_table()->select()->setIntegrityCheck(false);
+		}
+		return $this->_select;
 	}
 
 	public function findAll() {
@@ -200,7 +205,7 @@ class Bbx_Model implements IteratorAggregate {
 			return $this->findWithParams($args[0],$select);
 		}
 		if ($args[0] instanceof Zend_Db_Table_Select) {
-			return new Bbx_Model_Collection($this,$this->_table()->fetchAll($args[0]));
+			return new Bbx_Model_Collection($this, $this->_table()->fetchAll($args[0]));
 		}
 		throw new Bbx_Model_Exception('Bbx_Model::find() requires one numeric argument or one Zend_Db_Table_Select');
 	}
@@ -329,23 +334,30 @@ class Bbx_Model implements IteratorAggregate {
 		$attributes = $this->_dbiseAll($attributes);
 		
 		$cols = $this->columns();
+		$date = new Zend_Date(Zend_Date::ISO_8601);
+		$now = $date->get(Zend_Date::ISO_8601);
 		
 		if (in_array('created_at',$cols)) {
-			$date = new Zend_Date(Zend_Date::ISO_8601);
-			$attributes['created_at'] = $date->get(Zend_Date::ISO_8601);
+			if (!array_key_exists('created_at', $attributes) 
+				|| $attributes['created_at'] == '' 
+				|| $attributes['created_at'] == '0000-00-00 00:00:00') 
+			{
+				$attributes['created_at'] = $now;
+			}
 		}
 		if (in_array('updated_at',$cols)) {
-			$date = new Zend_Date(Zend_Date::ISO_8601);
-			$attributes['updated_at'] = $date->get(Zend_Date::ISO_8601);
+			$attributes['updated_at'] = $now;
 		}
 		
 		$this->_rowData = $this->_table()->createRow($attributes);
 		return $this;
 	}
 
-	public function create($attributes = array()) {
+	public function create($attributes = array(), $useId = false) {
 		$this->_beforeCreate();
-		unset($attributes['id']);
+		if (!$useId) {
+			unset($attributes['id']);
+		}
 		$this->build($attributes);
 		$this->save();
 		$this->_afterCreate();
@@ -453,10 +465,14 @@ class Bbx_Model implements IteratorAggregate {
 	}
 
 	public function __get($key) {
+		$derivedParam = 'dp' . ucfirst($key);
 		if (isset($this->_rowData()->$key)) {
 			$value = $this->_rowData()->$key;
 			$viewised = $this->_viewise($key,$value);
 			return $viewised[1];
+		}
+		else if (method_exists($this, $derivedParam)) {
+			return $this->$derivedParam();
 		}
 		else {
 			try {
@@ -481,7 +497,9 @@ class Bbx_Model implements IteratorAggregate {
 
 	public function __unset($key) {
 		$rowData = $this->_rowData();
-		unset($rowData->$key);
+		if (isset($rowData->$key)) {
+			unset($rowData->$key);
+		}
 	}
 
 	public function __call($method,$arguments) {
@@ -627,6 +645,10 @@ class Bbx_Model implements IteratorAggregate {
 		$this->_renderAsList = $option;
 	}
 	
+	public function isListable() {
+		return true;
+	}
+	
 	public function isLinkable() {
 		return true;
 	}
@@ -649,6 +671,9 @@ class Bbx_Model implements IteratorAggregate {
 		$method = 'hasLinkable' . Inflector::camelize($key);
 		if (method_exists($this, $method)) {
 			return $this->$method();
+		}
+		if ($this->$key instanceof Bbx_Model) {
+			return $this->$key->isLinkable();
 		}
 		foreach($this->$key as $i) {
 			if ($i->isLinkable()) {
@@ -689,9 +714,14 @@ class Bbx_Model implements IteratorAggregate {
 	}
 	
 	public function __destruct() {
-		$this->_iterator = null;
+		Bbx_Model_Registry::get('Relationships')->destroyRelationshipDataFor($this);
+		Bbx_Model_Registry::get('Validations')->destroyDataFor(get_class($this));
+		unset($this->_iterator);
+		unset($this->_table);
+		unset($this->_rowData);
+		unset($this->_validations);
+		unset($this->_oldData);
 	}
-
 }
 
 ?>

@@ -35,12 +35,12 @@ class Bbx_Model_Relationship_HasMany extends Bbx_Model_Relationship_Abstract {
 		);
 	}
 	
-	public function create(Bbx_Model $parentModel, $attributes = array()) {
+	public function create(Bbx_Model $parentModel, $attributes = array(), $useId = false) {
 		$attributes[$this->_parentRefColumn] = $parentModel->id;
 		if ($this->_polymorphic) {
 			$attributes[$this->_polymorphicType] = Inflector::underscore($this->_parentModelName);
 		}
-		$model = Bbx_Model::load($this->_childModelName)->create($attributes);
+		$model = Bbx_Model::load($this->_childModelName)->create($attributes, $useId);
 		unset($this->_collections[$parentModel->id]);
 		return $model;
 	}
