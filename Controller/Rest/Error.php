@@ -45,6 +45,11 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 			
 			if ($this->_error['exception'] instanceof Bbx_Controller_Rest_Exception) {
 				$this->getResponse()->setHttpResponseCode($this->_error['exception']->getCode());
+				if ($this->_error['exception']->getCode() == 401) {
+					// send the auth request immediately
+					$this->getResponse()->sendResponse();
+					exit();
+				}
 			}
 			else {
 				$this->getResponse()->setHttpResponseCode(500);
