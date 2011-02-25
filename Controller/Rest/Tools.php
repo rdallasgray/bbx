@@ -10,7 +10,7 @@ class Bbx_Controller_Rest_Tools extends Bbx_Controller_Rest {
 	}
 	
 	public function regenerateImagesAction() {
-		set_time_limit(7200);
+		set_time_limit(86400);
 		$size = $this->_getParam('size');
 		$overwrite = $this->_getParam('overwrite');
 		$imgs = Bbx_Model::load('Image')->findAll();
