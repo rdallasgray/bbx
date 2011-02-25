@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License along with Bac
 
 
 
-class Bbx_Model_Relationship_Finder implements IteratorAggregate, Countable {
+class Bbx_Model_Relationship_Finder implements IteratorAggregate, Countable, ArrayAccess {
 	
 	protected $_relationship;
 	protected $_parentModel;
@@ -47,7 +47,23 @@ class Bbx_Model_Relationship_Finder implements IteratorAggregate, Countable {
 	public function count() {
 		return $this->_collection()->count();
 	}
+		
+	public function offsetExists($offset) {
+		return $this->_collection()->offsetExists($offset);
+	}
 	
+	public function offsetGet($offset) {
+		return $this->_collection()->offsetGet($offset);
+	}
+	
+	public function offsetSet($offset, $value) {
+		// reqd by ArrayAccess
+	}
+	
+	public function offsetUnset($offset) {
+		// reqd by ArrayAccess
+	}
+
 	public function __get($key) {
 		return $this->_collection()->$key;
 	}
