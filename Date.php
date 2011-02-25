@@ -2,9 +2,10 @@
 
 class Bbx_Date {
 	
-	public static function fixDateFormat($str) {
-		$parts = explode('-',$str);
-		$parts = array_pad($parts,3,"00");
+	public static function getDateParts($str) {
+		$dtParts = self::_getDateTimeParts($str);
+		$parts = explode('-',$dtParts[0]);
+		$parts = array_pad($parts, 3, "00");
 		
 		if (preg_match('/^[1-2][0-9][0-9][0-9]$/',$parts[0]) === 0) {
 			$parts[0] = "0000";
@@ -15,12 +16,12 @@ class Bbx_Date {
 		if (preg_match('/^[0-3][0-9]$/',$parts[2]) === 0) {
 			$parts[2] = "00";
 		}
-		
-		return implode('-',$parts);
+		return $parts;
 	}
 	
-	public static function fixTimeFormat($str) {
-		$parts = explode(':',$str);
+	public static function getTimeParts($str) {
+		$dtParts = self::_getDateTimeParts($str);
+		$parts = explode(':', $dtParts[1]);
 		$parts = array_pad($parts,3,"00");
 		
 		if (preg_match('/^[0-2][0-9]$/',$parts[0]) === 0) {
@@ -32,7 +33,16 @@ class Bbx_Date {
 		if (preg_match('/^[0-5][0-9]$/',$parts[2]) === 0) {
 			$parts[2] = "00";
 		}
-		
+		return $parts;
+	}
+	
+	public static function fixDateFormat($str) {
+		$parts = self::getDateParts($str);
+		return implode('-',$parts);
+	}
+	
+	public static function fixTimeFormat($str) {
+		$parts = self::getTimeParts($str);
 		return implode(':',$parts);
 	}
 	
@@ -47,32 +57,46 @@ class Bbx_Date {
 		return $date.' '.$time;
 	}
 	
+	public static function timestamp($date = null) {
+		if ($date == null) {
+			return time();
+		}
+		$n = self::_normalizeDateTime($date);
+		return self::_timestamp(array_values($n));
+	}
+	
 	public static function date($date = null, $format = null) {
 		if ($date === null) {
+			$timestamp = time();
 			$date = date('Y-m-d');
 		}
-		$normalized = self::_normalizeDateTime($date);
-		$timestamp = self::_timestamp(array_values($normalized));
+		else {
+			$timestamp = self::timestamp($date);
+		}
 		return self::_trim(self::_getFinalDate($timestamp,self::_getValidDateParts($date),$format));
 	}
 	
 	public static function time($time = null, $format = null) {
 		if ($time === null) {
 			$time = date('G:i:s');
+			$timestamp = time();
 		}
-		$ta = explode(' ',$time);
-		$time = isset($ta[1]) ? $ta[1] : $ta[0];
-		$normalized = self::_normalizeTime($time);
-		$timestamp = self::_timestamp(array_values($normalized));
+		else {
+			$ta = explode(' ',$time);
+			$time = isset($ta[1]) ? $ta[1] : $ta[0];
+			$timestamp = self::timestamp($time);
+		}
 		return self::_trim(self::_getFinalDate($timestamp,self::_getValidTimeParts($time),$format));
 	}
 	
 	public static function dateTime($dateTime = null, $format = null) {
 		if ($dateTime === null) {
 			$dateTime = date('Y-m-d G:i:s');
+			$timestamp = time();
 		}
-		$normalized = self::_normalizeDateTime($dateTime);
-		$timestamp = self::_timestamp(array_values($normalized));
+		else {
+			$timestamp = self::timestamp($dateTime);
+		}
 		return self::_trim(self::_getFinalDate($timestamp,self::_getValidDateTimeParts($dateTime),$format));
 	}
 	
