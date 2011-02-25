@@ -93,6 +93,8 @@ class Bbx_Model implements IteratorAggregate {
 	protected function _init() {
 		$this->_initRelationships();
 		Bbx_Model_Registry::get('Relationships')->endCurrentRegistration();
+		$this->_initAdaptors();
+		Bbx_Model_Registry::get('Adaptors')->endCurrentRegistration();
 		$this->_isInitialised = true;
 	}
 
@@ -100,6 +102,20 @@ class Bbx_Model implements IteratorAggregate {
 	}
 
 	protected function _initValidations(){
+	}
+
+	protected function _initAdaptors(){
+	}
+	
+	protected function _registerAdaptor($ad) {
+		return Bbx_Model_Registry::get('Adaptors')->register(get_class($this), $ad);
+	}
+	
+	public function getAdaptor($ad) {
+		if (!$this->_isInitialised) {
+			$this->_init();
+		}
+		return Bbx_Model_Registry::get('Adaptors')->getAdaptor($this, $ad)->setModel($this);
 	}
 
 	public function getTable() {
@@ -187,7 +203,7 @@ class Bbx_Model implements IteratorAggregate {
 
 		$args = func_get_args();
 		$select = $this->select();
-		
+
 		if (!empty($this->_defaultParams)) {
 			foreach($this->_defaultParams as $key=>$value) {
 				$select->$key($value);
