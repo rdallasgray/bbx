@@ -730,8 +730,12 @@ class Bbx_Model implements IteratorAggregate {
 	}
 	
 	public function __destruct() {
-		Bbx_Model_Registry::get('Relationships')->destroyRelationshipDataFor($this);
-		Bbx_Model_Registry::get('Validations')->destroyDataFor(get_class($this));
+		try {
+			Bbx_Model_Registry::get('Relationships')->destroyRelationshipDataFor($this);
+			Bbx_Model_Registry::get('Validations')->destroyDataFor(get_class($this));
+			Bbx_Model_Registry::get('Adaptors')->destroyDataFor(get_class($this));
+		}
+		catch (Exception $e) {}
 		unset($this->_iterator);
 		unset($this->_table);
 		unset($this->_rowData);
