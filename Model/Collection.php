@@ -160,7 +160,8 @@ class Bbx_Model_Collection implements IteratorAggregate, Countable, ArrayAccess 
 		if ($limit > 0) {
 			$array = array_slice($array, 0, $limit);
 		}
-		$keys = (array)array_rand($array,$num);
+		$num = $num > count($array) ? count($array) : $num;
+		$keys = (array)array_rand($array, $num);
 		$rand = array_values(array_intersect_key($array,array_flip($keys)));
 		if ($num == 1) {
 			return $this->_instantiateRowModel($rand[0]);
