@@ -40,6 +40,11 @@ class Bbx_View_Helper_Model extends Zend_View_Helper_Abstract {
 		return $this;		
 	}
 	
+	public function setModel($m) {
+		$this->_model = $m;
+		return $this;
+	}
+	
 	public function link($cond = true) {
 		if ($cond && $this->_model->isLinkable()) {
 			$this->_text = '<a href="' . $this->_model->url() . '">' . $this->_text . '</a>';
@@ -48,8 +53,8 @@ class Bbx_View_Helper_Model extends Zend_View_Helper_Abstract {
 	}
 	
 	public function wrapLink() {
-		
 		$this->_text = '<a href="' . $this->_model->url() . '">' . $this->_text . '</a>';
+		return $this;
 	}
 	
 	public function __toString() {
