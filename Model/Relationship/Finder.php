@@ -91,6 +91,10 @@ class Bbx_Model_Relationship_Finder implements IteratorAggregate, Countable, Arr
 	}
 	
 	public function find($params) {
+		if (is_numeric($params)) {
+			$tableName = $this->_collection()->getTableName();
+			$params = array('id' => $params);
+		}
 		return $this->findAll($params)->current();
 	}
 	
