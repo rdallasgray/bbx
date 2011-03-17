@@ -37,16 +37,16 @@ class Bbx_Model_Collection implements IteratorAggregate, Countable, ArrayAccess 
 		$this->_primary = implode('-',$info['primary']);
 	}
 	
-	protected function _table() {
-		return $this->_rowset->getTable();
-	}
-	
 	public function getPrimary() {
 		return $this->_primary;
 	}
 	
 	public function getModelName() {
 		return $this->_childModelName;
+	}
+	
+	public function getTableName() {
+		return $this->_rowset->getTable()->info('name');
 	}
 	
 	public function getRowset() {
