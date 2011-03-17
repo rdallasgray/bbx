@@ -18,81 +18,31 @@ You should have received a copy of the GNU General Public License along with Bac
 
 class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 
-	public function preDispatch() {
-		if ($this->_getParam('final')) {
-			return;
-		}
-		$params = $this->_getAllParams();
-		$request = $this->getRequest();
-
-		if (isset($params['rel'])) {
-			$initialRequest = clone $request;
-			$initialRequest->setDispatched(true);
-			
-			$rel_id = isset($params['rel_id']) ? $params['rel_id'] : null;
-			$userParams = $this->_helper->Model->parseParams($params);
-			$parentModel = $this->_helper->Model->getModel();
-			
-			$newParams = array_merge(
-				array(
-					'rel'            => null,
-					'rel_id'         => null,
-					'id'             => $rel_id,
-					'parentModel'    => $parentModel,
-					'controller'     => $params['rel'],
-					'initialRequest' => $initialRequest
-				),
-				$userParams
-			);
-			
-			return $this->_forward(
-				$request->getActionName(),
-				$params['rel'],
-				$request->getModuleName(),
-				$newParams
-			);
-		}
-		
-		if ($this->_context === 'csv') {
-			$this->_helper->authenticate();
-		}
-
-		if (@$params['download'] === "true") {
-			$this->_helper->authenticate();
-			$this->_helper->download($this->_helper->Model->getModel());
-		}
-	}
-	
-	public function postDispatch() {
-		if ($this->_hasParam('initialRequest')) {
-			$r = $this->_getParam('initialRequest');
-			Zend_Controller_Front::getInstance()->setRequest($r);
-		}
-	}
-	
-	protected function _doRequestMethod() {
-		$method = '_' . strtolower($this->getRequest()->getMethod());
-		if (method_exists($this, $method)) {
-			$this->$method();
-		}
-	}
-
 	public function indexAction() {
 		$this->_doRequestMethod();
 		if ($this->getRequest()->isHead()) {
 			return;
 		}
 		$collection = $this->_getIndexData();
-		$this->_setEtag($collection->etag($this->_helper->contextSwitch()->getCurrentContext()));
-		$collectionName = Inflector::tableize($collection->getModelName());
-		$this->view->$collectionName = $collection;
+		$this->_assign($collection);
+	}
 
-
-		if ($this->_context === 'json' || $this->_context === 'csv') {
-			$options = ($this->_context === 'json') ? array('deep' => true) : null;
-			$this->view->assign($this->view->$collectionName->toArray($options));
-			unset($this->view->$collectionName);
+	public function showAction() {
+		$this->_doRequestMethod();
+		if ($this->getRequest()->isHead()) {
+			return;
 		}
+		$model = $this->_getShowData();
+		$this->_assign($model);
+	}
+	
+	public function newAction() {
+		$this->_helper->authenticate();
+		if ($this->getRequest()->isHead()) {
+			return;
+		}
+		$model = $this->_helper->Model->getModel();
+		$this->view->assign($model->newModel());
 	}
 	
 	protected function _getIndexData() {
@@ -103,78 +53,55 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		return $this->_helper->Model->getModel();
 	}
 	
-	protected function _htmlIndexRel() {
+	protected function _doRequestMethod() {
+		$method = '_' . strtolower($this->getRequest()->getMethod());
+		if (method_exists($this, $method)) {
+			$this->$method();
+		}
+	}
+
+	protected function _assign($model) {
 		$request = $this->getRequest();
-		$action = $request->getActionName();
-		if ($action !== 'index' && $action !== 'show') {
-			if (method_exists($this, $action . 'Action')) {
-				return;
-			}
+		$this->_setEtag($model->etag($this->_context));
+
+		$modelName = $model instanceof Bbx_Model ? 
+			Inflector::tableize(get_class($model)) : Inflector::tableize($model->getModelName());
+			
+		if ($request->getParam('list') === 'true') {
+			$model->renderAsList();
 		}
 		
-		if (!$this->_hasParam('parentModel')) {
-			throw new Zend_View_Exception('Not Found');
+		if ($this->_context === 'csv') {
+			$this->_helper->authenticate();
 		}
-		$subject = $this->_getParam('parentModel');
-		$subjectType = Inflector::underscore(get_class($subject));
-		$controller = Inflector::interscore(Inflector::pluralize($subjectType));
-		$action = $this->_getParam('controller');
-		
-		$controllerClass = ucfirst($controller) . 'Controller';
-		if (class_exists($controllerClass)) {
-			$actionName = $action . 'Action';
-			if (method_exists($controllerClass, $actionName)) {
-				return $this->_forward(
-					$action,
-					$controller,
-					$request->getModuleName(),
-					array('id' => $subject->id)
-				);
-			}
+		if ($request->getParam('download') == 'true') {
+			$this->_helper->authenticate();
+			$this->_helper->download($model);
 		}
 
-		$this->view->$subjectType = $subject;
-		
-		$this->_helper->viewRenderer($controller.'/'.$action,  null, true);
-	}
-
-	public function showAction() {
-		$this->_doRequestMethod();
-		if ($this->getRequest()->isHead()) {
-			return;
-		}
-		$model = $this->_getShowData();
-	
-		$this->_setEtag($model->etag($this->_helper->contextSwitch()->getCurrentContext()));
-
-		$modelName = Inflector::underscore(get_class($model));
-		$this->view->$modelName = $model;
-
-		if ($this->_helper->contextSwitch()->getCurrentContext() === 'json') {
-			$this->view->assign($this->view->$modelName->toArray());
-			unset($this->view->$modelName);
-		}
-	}
-	
-	public function newAction() {
-		$this->_helper->authenticate();
-		if ($this->getRequest()->isHead()) {
-			return;
-		}
-		$model = $this->_helper->Model->getModel();
-		if ($model instanceof Bbx_Model) {		
-			$this->view->assign($model->newModel());
+		if ($this->_context === 'json') {
+			$options = ($this->_context === 'json') ? array('deep' => true) : null;
+			$this->view->assign($model->toArray($options));
 		}
 		else {
-			throw new Bbx_Controller_Rest_Exception(null,404);
+			$this->view->$modelName = $model;
 		}
 	}
 
 	protected function _post() {
 		$this->_helper->authenticate();
-		$model = $this->_helper->Model->getModel();
-		
-		$new_model = $model->create($this->_getBodyData());
+		$collection = $this->_helper->Model->getCollection();
+		if ($collection instanceof Bbx_Model) {
+			// It's a hasOne-type model
+			throw new Bbx_Controller_Rest_Exception(null, 405, array('allowed_methods' => 'GET,PUT'));
+		}
+		$model = Bbx_Model::load($collection->getModelName());
+		if ($model instanceof Bbx_Model_Default_Media) {
+			$new_model = $this->_helper->Media->handleUpload($collection);
+		}
+		else {
+			$new_model = $collection->create($this->_getBodyData());
+		}
 		
 		$this->getResponse()->setHttpResponseCode(201)
 			->setHeader('Location',$new_model->url(true))
@@ -186,14 +113,16 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 
 	protected function _put($data = null) {
 		$this->_helper->authenticate();
-		if (!$this->_hasParam('id')) {
-			$e = new Bbx_Controller_Rest_Exception(null,405,array('allowed_methods'=>'GET,POST'));
-			throw $e;
+		$model = $this->_helper->Model->getModel();
+		if (!$model instanceof Bbx_Model) {
+			throw new Bbx_Controller_Rest_Exception(null, 405, array('allowed_methods' => 'GET,POST'));
 		}
+		// If model is empty we use create, otherwise update
+		$method = ($model->id === null) ? 'create' : 'update';
 		if ($data === null) {
 			$data = $this->_getBodyData();
 		}
-		$this->_helper->Model->getModel()->update($data);
+		$model->$method($data);
 	}
 
 	protected function _delete() {
