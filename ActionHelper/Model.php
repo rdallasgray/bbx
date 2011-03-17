@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License along with Bac
 
 class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 	
-	private $_privateParams = array('rel','rel_id','controller','id','parentModel','module','action','format','initialRequest');
+	private $_privateParams = array('rel','rel_id','controller','id','module','action','format');
 		
 	public function parseParams($allParams) {
 		
@@ -35,58 +35,49 @@ class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 		$controller = $this->getActionController();
 		$request = $this->getRequest();
 		$controllerName = $request->getControllerName();
-		
 		if ($controllerName == 'error') {
 			return;
 		}
-
-		if ($parentModel = $request->getParam('parentModel')) {
-			$params = $this->parseParams($request->getUserParams());
-			if (method_exists($parentModel->$controllerName, 'findAll') && !empty($params)) {
-				$model = $parentModel->$controllerName->findAll($params);
-			}
-			else {
-				$model = $parentModel->$controllerName;
+		
+		$params = $this->parseParams($request->getParams());
+		$model = Bbx_Model::load($controllerName);
+		
+		if (($id = $request->getParam('id'))) {
+			$model = $model->find((int) $id);
+			if ($rel = $request->getParam('rel')) {
+				$model = $model->$rel;
+				if ($relId = $request->getParam('rel_id')) {
+					$model = $model->find((int) $relId);
+				}
 			}
 		}
 		
-		else {
-			try {
-				$model = Bbx_Model::load($controllerName);
-				if ($id = $request->getParam('id')) {
-					$model = $model->find((int)$id);
-				}
-				if ($request->getParam('rel') && !$request->getParam('id')) {
-					$model = Bbx_Model::load($controllerName)->find();
-				}
-				if (!$model instanceof Bbx_Model) {
-					throw new Bbx_Controller_Rest_Exception(null,404);
-				}
-			}
-			catch (Exception $e) {
-				throw new Bbx_Controller_Rest_Exception(null,404);
-			}
-		}
-		
-		if ($request->getParam('list') === 'true') {
-			$model->renderAsList();
+		if (!$model instanceof Bbx_Model) {
+			throw new Bbx_Controller_Rest_Exception(null, 404);
 		}
 
 		return $model;
 	}
 	
 	public function getCollection() {
-		$params = $this->parseParams($this->getRequest()->getParams());
-		$collection = $this->getModel();
-
-		if (!$collection instanceof Bbx_Model_Collection) {
-			$collection = $collection->findAll($params);
+		$controller = $this->getActionController();
+		$request = $this->getRequest();
+		$controllerName = $request->getControllerName();		
+		if ($controllerName == 'error') {
+			return;
 		}
-
-		if (@$params['list'] === 'true') {
-			$collection->renderAsList();
+		
+		$params = $this->parseParams($request->getParams());
+		$collection = Bbx_Model::load($controllerName);
+		
+		if (($id = $request->getParam('id')) && ($rel = $request->getParam('rel'))) {
+			$collection = $collection->find((int) $id)->$rel;
+			if ($collection instanceof Bbx_Model) {
+				return $collection;
+			}
 		}
-
+		$collection = $collection->findAll($params);
+		
 		return $collection;
 	}
 
