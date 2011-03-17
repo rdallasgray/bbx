@@ -18,9 +18,7 @@ You should have received a copy of the GNU General Public License along with Bac
 
 class Bbx_Controller_Rest extends Zend_Controller_Action {
 	
-	protected $_resolver;
 	protected $_context;
-	protected $_authenticated;
 	
 	public $contexts = array(
 		'index' => array('json','csv'),
