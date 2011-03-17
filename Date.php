@@ -2,18 +2,25 @@
 
 class Bbx_Date {
 	
+	const YEAR_PATTERN = '[1-2][0-9][0-9][0-9]';
+	const MONTH_PATTERN = '[0-1][0-9]';
+	const DAY_PATTERN = '[0-3][0-9]';
+	const HOUR_PATTERN = '[0-2][0-9]';
+	const MINUTE_PATTERN = '[0-5][0-9]';
+	const SECOND_PATTERN = '[0-5][0-9]';
+	
 	public static function getDateParts($str) {
 		$dtParts = self::_getDateTimeParts($str);
 		$parts = explode('-',$dtParts[0]);
 		$parts = array_pad($parts, 3, "00");
 		
-		if (preg_match('/^[1-2][0-9][0-9][0-9]$/',$parts[0]) === 0) {
+		if (preg_match('/^' . self::YEAR_PATTERN . '$/',$parts[0]) === 0) {
 			$parts[0] = "0000";
 		}
-		if (preg_match('/^[0-1][0-9]$/',$parts[1]) === 0) {
+		if (preg_match('/^' . self::MONTH_PATTERN . '$/',$parts[1]) === 0) {
 			$parts[1] = "00";
 		}
-		if (preg_match('/^[0-3][0-9]$/',$parts[2]) === 0) {
+		if (preg_match('/^' . self::DAY_PATTERN . '$/',$parts[2]) === 0) {
 			$parts[2] = "00";
 		}
 		return $parts;
@@ -24,13 +31,13 @@ class Bbx_Date {
 		$parts = explode(':', $dtParts[1]);
 		$parts = array_pad($parts,3,"00");
 		
-		if (preg_match('/^[0-2][0-9]$/',$parts[0]) === 0) {
+		if (preg_match('/^' . self::HOUR_PATTERN . '$/',$parts[0]) === 0) {
 			$parts[0] = "00";
 		}
-		if (preg_match('/^[0-5][0-9]$/',$parts[1]) === 0) {
+		if (preg_match('/^' . self::MINUTE_PATTERN . '$/',$parts[1]) === 0) {
 			$parts[1] = "00";
 		}
-		if (preg_match('/^[0-5][0-9]$/',$parts[2]) === 0) {
+		if (preg_match('/^' . self::SECOND_PATTERN . '$/',$parts[2]) === 0) {
 			$parts[2] = "00";
 		}
 		return $parts;
@@ -251,8 +258,14 @@ class Bbx_Date {
 	}
 	
 	protected static function _getDateTimeParts($str) {
-		$parts = explode(' ',$str);
-		$parts[1] = isset($parts[1]) ? $parts[1] : '';
+		$parts = array('', '');
+		$matches = array();
+		if (preg_match('/' . self::YEAR_PATTERN . '-' . self::MONTH_PATTERN . '-' . self::DAY_PATTERN . '/', $str, $matches) > 0) {
+			$parts[0] = $matches[0];
+		}
+		if (preg_match('/' . self::HOUR_PATTERN . ':' . self::MINUTE_PATTERN . ':' . self::SECOND_PATTERN . '/', $str, $matches) > 0) {
+			$parts[1] = $matches[0];
+		}
 		return $parts;
 	}
 	
@@ -278,14 +291,14 @@ class Bbx_Date {
 
 		$valid = array();
 		
-		if (preg_match('/^[1-2][0-9][0-9][0-9]$/',$dateParts[0]) !== 0) {
+		if (preg_match('/^' . self::YEAR_PATTERN . '$/',$dateParts[0]) !== 0) {
 			$valid['YEAR'] = $dateParts[0];
 		}
 		else {
 			return $valid;
 		}
 		
-		if (preg_match('/^[0-1][0-9]$/',$dateParts[1]) !== 0) {
+		if (preg_match('/^' . self::MONTH_PATTERN . '$/',$dateParts[1]) !== 0) {
 			if ((int)$dateParts[1] > 0 && (int)$dateParts[1] < 13) {
 				$valid['MONTH'] = $dateParts[1];
 			}
@@ -294,7 +307,7 @@ class Bbx_Date {
 			}
 		}
 		
-		if (preg_match('/^[0-3][0-9]$/',$dateParts[2]) !== 0) {
+		if (preg_match('/^' . self::DAY_PATTERN . '$/',$dateParts[2]) !== 0) {
 			$day_count = 31;
 			$thirty_days = array("04","06","09","11");
 			
@@ -329,7 +342,7 @@ class Bbx_Date {
 		
 		$valid = array();
 		
-		if (preg_match('/^[0-2][0-9]$/',$timeParts[0]) !== 0) {
+		if (preg_match('/^' . self::HOUR_PATTERN . '$/',$timeParts[0]) !== 0) {
 			if ((int)$timeParts[0] < 24) {
 				$valid['HOUR'] = $timeParts[0];
 			}
@@ -338,11 +351,11 @@ class Bbx_Date {
 			}
 		}
 		
-		if (preg_match('/^[0-5][0-9]$/',$timeParts[1]) !== 0) {
+		if (preg_match('/^' . self::MINUTE_PATTERN . '$/',$timeParts[1]) !== 0) {
 			$valid['MINUTE'] = $timeParts[1];
 		}
 		
-		if (preg_match('/^[0-5][0-9]$/',$timeParts[2]) !== 0) {
+		if (preg_match('/^' . self::SECOND_PATTERN . '$/',$timeParts[2]) !== 0) {
 			$valid['SECOND'] = $timeParts[2];
 		}
 		
