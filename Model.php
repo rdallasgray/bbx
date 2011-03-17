@@ -52,6 +52,16 @@ class Bbx_Model implements IteratorAggregate {
 		}
 		return $this->_iterator;
 	}
+	
+	public function isEmpty() {
+		try {
+			$this->_rowData();
+			return false;
+		}
+		catch (Bbx_Model_Exception $e) {
+			return true;
+		}
+	}
 
 	public static function load($name, $forceInit = false) {
 		$class = Inflector::classify($name);
@@ -268,12 +278,18 @@ class Bbx_Model implements IteratorAggregate {
 		
 		$parsedParams = array();
 		
-		foreach($params as $key=>$val) {
-			if (in_array($key,$cols)) {
+		foreach($params as $key => $val) {
+			if (in_array($key, $cols)) {
+				if (strpos($key, '`') === false) {
+					$key = '`' . $key . '`';
+				}
+				if (strpos($key, '`' . $this->getTableName() . '`') === false) {
+					$key = '`' . $this->getTableName() . '`.' . $key;
+				}
 				$parsedParams[$key] = $val;
 			}
 			else {
-				$whereCondition = $this->_conditionFromParam($key,$val);
+				$whereCondition = $this->_conditionFromParam($key, $val);
 				if ($whereCondition) {
 					$parsedParams[$whereCondition] = $val;
 				}
@@ -481,6 +497,12 @@ class Bbx_Model implements IteratorAggregate {
 	}
 
 	public function __get($key) {
+		if ($this->isEmpty()) {
+			$cols = $this->columns();
+			if (array_key_exists($key, $cols)) {
+				return null;
+			}
+		}
 		$derivedParam = 'dp' . ucfirst($key);
 		if (isset($this->_rowData()->$key)) {
 			$value = $this->_rowData()->$key;
@@ -496,7 +518,7 @@ class Bbx_Model implements IteratorAggregate {
 			}
 			catch (Exception $e) {
 				Bbx_Log::debug($e->getMessage());
-				throw new Bbx_Model_Exception("Trying to get value of uninitialised variable '$key': ".get_class($this));
+				throw new Bbx_Model_Exception_NotFound("Trying to get value of uninitialised variable '$key': ".get_class($this));
 			}
 		}
 	}
@@ -549,11 +571,8 @@ class Bbx_Model implements IteratorAggregate {
 	}
 	
 	public function toArray() {
-		try {
-			$this->_rowData();
-		}
-		catch (Exception $e) {
-			throw new Bbx_Model_Exception('Model has no data: '.get_class($this));
+		if ($this->isEmpty()) {
+			return $this->newModel();
 		}
 
 		if ($this->_renderAsList) {
@@ -714,19 +733,21 @@ class Bbx_Model implements IteratorAggregate {
 	}
 
 	public function etag($extra = null) {
-		
-		if (isset($this->updated_at)) {
-			return md5($this->updated_at.$extra);
+		if ($this->isEmpty()) {
+			return md5(get_class($this) . $extra);
 		}
-		
+		if (isset($this->updated_at)) {
+			return md5($this->updated_at . $extra);
+		}
+
 		$cols = $this->columns();
 		$etagArray = array();
-		
+
 		foreach($cols as $col) {
 			$etagArray[] = $this->$col;
 		}
-		
-		return md5(implode('-',$etagArray).$extra); 
+
+		return md5(implode('-', $etagArray) . $extra); 
 	}
 	
 	public function __destruct() {
