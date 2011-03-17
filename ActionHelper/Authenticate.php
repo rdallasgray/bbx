@@ -25,7 +25,7 @@ class Bbx_ActionHelper_Authenticate extends Zend_Controller_Action_Helper_Abstra
 		}
 		
 		if (!$this->_httpAuth()) {
-			throw new Bbx_Controller_Rest_Exception(null,401);
+			throw new Bbx_Controller_Rest_Exception(null, 401);
 		}
 		$this->_authenticated = true;
 	}
@@ -47,7 +47,10 @@ class Bbx_ActionHelper_Authenticate extends Zend_Controller_Action_Helper_Abstra
 		return $adaptor->authenticate()->isValid();
 	}
 	
-	public function getUser() {
+	public function getUser() {		
+		if (!$this->_httpAuth()) {
+			throw new Bbx_Controller_Rest_Exception(null, 401);
+		}
 		return $this->_resolver->getUser();
 	}
 
