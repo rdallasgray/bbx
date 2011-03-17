@@ -118,7 +118,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			throw new Bbx_Controller_Rest_Exception(null, 405, array('allowed_methods' => 'GET,POST'));
 		}
 		// If model is empty we use create, otherwise update
-		$method = ($model->id === null) ? 'create' : 'update';
+		$method = ($model->isEmpty()) ? 'create' : 'update';
 		if ($data === null) {
 			$data = $this->_getBodyData();
 		}
