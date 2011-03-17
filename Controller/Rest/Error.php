@@ -30,6 +30,7 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 
 	public function errorAction() {
 		$this->_error = $this->_getParam('error_handler');
+		$response = $this->getResponse();
 
 		switch ($this->_error->type) {
 			case Zend_Controller_Plugin_ErrorHandler::EXCEPTION_NO_CONTROLLER:
@@ -38,29 +39,35 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 			break;
 
 			default:
-			if ($this->_error['exception'] instanceof Zend_View_Exception) {
+			if ($this->_error['exception'] instanceof Zend_View_Exception
+				|| $this->_error['exception'] instanceof Bbx_Model_Exception_NotFound) {
 				$this->_set404();
 				break;
 			}
 			
 			if ($this->_error['exception'] instanceof Bbx_Controller_Rest_Exception) {
-				$this->getResponse()->setHttpResponseCode($this->_error['exception']->getCode());
+				$response->setHttpResponseCode($this->_error['exception']->getCode());
+				if ($this->_error['exception']->getCode() == 404) {
+					$this->_set404();
+					break;
+				}
 				if ($this->_error['exception']->getCode() == 401) {
 					// send the auth request immediately
-					$this->getResponse()->sendResponse();
+					$response->sendResponse();
 					exit();
 				}
 			}
 			else {
-				$this->getResponse()->setHttpResponseCode(500);
+				$response->setHttpResponseCode(500);
 			}
 			$this->view->error = $this->_error['exception']->getMessage();
+			$this->view->responseCode = $response->getHttpResponseCode();
 		
 			if (isset($this->_error['exception']->errorVars)) {
 				$this->view->errorVars = $this->_error['exception']->errorVars;
 			}
 		
-			if ($this->getResponse()->getHttpResponseCode() == 500) {
+			if ($response->getHttpResponseCode() == 500) {
 				$this->_notify();
 			}
 			else {
@@ -71,9 +78,9 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 			
 		if ($this->_helper->contextSwitch()->getCurrentContext() === 'json') {
 			$vars = isset($this->view->errorVars) ? $this->view->errorVars : array();
-			$this->getResponse()->setBody($this->view->error."\n\n".implode("\n",$vars));
+			$response->setBody($this->view->error."\n\n".implode("\n",$vars));
 			$this->view->clearVars();
-			$this->getResponse()->sendResponse();
+			$response->sendResponse();
 			exit();
 		}
 	}
@@ -81,6 +88,7 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 	protected function _set404() {
 		$this->getResponse()->setHttpResponseCode(404);
 		$this->view->error = 'Not Found';
+		$this->view->responseCode = '404';
 		$url = $this->getRequest()->getRequestUri();
 		$this->view->errorVars = array('url'=>$url);
 	}
