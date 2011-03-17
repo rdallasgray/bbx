@@ -196,15 +196,23 @@ class Bbx_Model_Relationship_Abstract {
 		
 		$this->_clearSelect();
 		
-		if ($this->_type == 'belongsto' || $this->_type == 'hasone' || $this->_type == 'hasonethrough') {
-			if ($this->_collections[$parentModel->id]->current() instanceof Bbx_Model) {
-				if (!$forceCollection) {
-					return $this->_collections[$parentModel->id]->current();
+		if (!$forceCollection) {
+			if ($this->_type == 'belongsto' || $this->_type == 'hasone' || $this->_type == 'hasonethrough') {
+				if ($this->_collections[$parentModel->id]->current() instanceof Bbx_Model) {
+					// here we should return an uninitialised model!
+						return $this->_collections[$parentModel->id]->current();
+				}
+				else {
+					return Bbx_Model::load($this->_childModelName);
 				}
 			}
 		}
 		
 		return $this->_collections[$parentModel->id];
+	}
+	
+	public function isEmpty() {
+		return count($this->_collections[$parentModel->id]) == 0;
 	}
 	
 	public function destroyCollectionsFor($id) {
@@ -230,9 +238,6 @@ class Bbx_Model_Relationship_Abstract {
 				return;
 			}
 			foreach($parsedParams as $key=>$val) {
-				if (strpos($key,'`') === false) {
-					$key = '`'.$key.'`';
-				}
 				if (strpos($key, ':value') === false) {
 					$conditions['where'][] = Zend_Registry::get('db')->quoteInto($key.' = ?',$val);
 				}
