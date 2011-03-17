@@ -16,25 +16,48 @@ You should have received a copy of the GNU General Public License along with Bac
 
 class Bbx_ActionHelper_Download extends Zend_Controller_Action_Helper_Abstract {
 	
-	public function direct(Bbx_Model $model) {
+	public function direct($model) {
+		$extension = ($model instanceof Bbx_Model_Default_Media) ? 
+			$model->getExtension() :  $this->getRequest()->getParam('format');
+		$filename = $this->_getFilename($model);
+		$this->getResponse()->setHeader('Content-disposition','attachment; filename=' . $filename . '.' . $extension, true);
 
 		if ($model instanceof Bbx_Model_Default_Media) {
-			$extension = $model->getExtension();
-		}
-		else {
-			$extension = $this->getRequest()->getParam('format');
+			return $this->_doMediaDownload($model);
 		}
 		
-		$filename = 'file';
-		
+	}
+	
+	private function _doMediaDownload($model) {
+		Zend_Controller_Action_HelperBroker::getExistingHelper('viewRenderer')->setNoRender(true);
 		try {
-			$filename = Bbx_ActionHelper_Filename::fromModel($model);
+			$this->getResponse()->setHeader('Content-Type', $model->getMimeType());
+			if ($this->getRequest()->isHead()) {
+				$this->getResponse()->setHeader('Content-Length', 0)->sendResponse();
+				exit();
+			}
+			else {
+				$this->getResponse()
+					->setHeader('Content-Length', filesize($model->getMediaPath()))
+					->setBody(readfile($model->getMediaPath()))->sendResponse();
+				exit();
+			}
 		}
 		catch (Exception $e) {
+			throw new Bbx_Controller_Rest_Exception("Couldn't read file information for download: "
+				.$this->getRequest()->getRequestUri(), 500);
+		}
+	}
+	
+	private function _getFilename($model) {
+		$filename = 'file';
+		if ($model instanceof Bbx_Model) {
+			$filename = Bbx_ActionHelper_Filename::fromModel($model);
+		}
+		else {
 			$filename = Bbx_ActionHelper_Filename::fromUrl($this->getRequest()->getRequestUri());
 		}
-
-		$this->getResponse()->setHeader('Content-disposition','attachment; filename=' . $filename . '.' . $extension, true);
+		return $filename;
 	}
 
 }
