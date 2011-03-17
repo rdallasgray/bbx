@@ -91,6 +91,9 @@ class Bbx_Format_Csv {
 				}
 				$csvArr[] = self::_encodeModel($row);
 			}
+			else if ($row instanceof Bbx_Model_Collection) {
+				return self::_encodeCollection($row);
+			}
 			else {
 				throw new Zend_Exception('Trying to convert unknown type to CSV');
 			}
