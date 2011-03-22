@@ -30,6 +30,7 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 
 	public function errorAction() {
 		$this->_error = $this->_getParam('error_handler');
+		Bbx_Log::write(print_r($this->_error, true));
 		$response = $this->getResponse();
 
 		switch ($this->_error->type) {
@@ -47,6 +48,7 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 			
 			if ($this->_error['exception'] instanceof Bbx_Controller_Rest_Exception) {
 				$response->setHttpResponseCode($this->_error['exception']->getCode());
+				$this->view->error = $this->_error['exception']->getMessage();
 				if ($this->_error['exception']->getCode() == 404) {
 					$this->_set404();
 					break;
@@ -59,8 +61,8 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 			}
 			else {
 				$response->setHttpResponseCode(500);
+				$this->view->error = 'Server Error';
 			}
-			$this->view->error = $this->_error['exception']->getMessage();
 			$this->view->responseCode = $response->getHttpResponseCode();
 		
 			if (isset($this->_error['exception']->errorVars)) {
