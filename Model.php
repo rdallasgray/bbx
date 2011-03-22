@@ -220,14 +220,18 @@ class Bbx_Model implements IteratorAggregate {
 			}
 		}
 		if (empty($args)) {
-			$c = new Bbx_Model_Collection($this,$this->_table()->fetchAll($select));
-			return $c;
+			return new Bbx_Model_Collection($this,$this->_table()->fetchAll($select));
 		}
 		if (is_numeric($args[0])) {
-			$c = new Bbx_Model_Collection($this,$this->_table()->find($args[0]));
-			return $c;
+			return new Bbx_Model_Collection($this,$this->_table()->find($args[0]));
 		}
 		if (is_array($args[0])) {
+			if (count(array_intersect(array('where', 'order', 'limit'), array_keys($args[0]))) > 0) {
+				foreach ($args[0] as $key => $value) {
+					$select->$key($value);
+				}
+				return new Bbx_Model_Collection($this, $this->_table()->fetchAll($select));
+			}
 			return $this->findWithParams($args[0],$select);
 		}
 		if ($args[0] instanceof Zend_Db_Table_Select) {
