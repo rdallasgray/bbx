@@ -20,6 +20,18 @@ class Bbx_Autoloader implements Zend_Loader_Autoloader_Interface {
 
 	public function autoload($class) {
 
+		if (substr($class, 0, 10) === 'ViewHelper') {
+			
+			$class = substr($class, 11);
+			Bbx_Log::write($class);
+			$path = APPLICATION_PATH . '/modules/'.MODULE_NAME.'/views/helpers/'.$class.'.php';
+
+			if (Zend_Loader::isReadable($path)) {
+				@include $path;
+				return true;
+			}
+		}
+
 		if (substr($class,-10) === 'Controller') {
 			
 			$path = APPLICATION_PATH . '/modules/'.MODULE_NAME.'/controllers/'.$class.'.php';
