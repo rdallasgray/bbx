@@ -436,7 +436,7 @@ class Bbx_Model implements IteratorAggregate {
 		
 		return $this->save();
 	}
-
+	
 	public function delete() {
 		Bbx_Log::debug('deleting model: ('.get_class($this).') '.print_r($this->toArray(),true));
 		$this->_rowData()->delete();
