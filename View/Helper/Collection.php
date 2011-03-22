@@ -29,6 +29,21 @@ class Bbx_View_Helper_Collection extends Bbx_View_Helper_Model {
 		return implode(', ', $a);
 	}
 	
+	public function columnize($num_cols) {
+		$count = count($this->_model);
+		$cols = array();
+		$items_remaining = $count;
+		for ($i = ($num_cols - 1); $i > -1; $i--) {
+			$items_todo = (int) ($items_remaining / ($i + 1));
+			$cols[$i] = array();
+			for ($j = ($items_remaining - $items_todo); $j < ($items_remaining); $j++) {
+				$cols[$i][] = $this->_model[$j];
+			}
+			$items_remaining -= $items_todo;
+		}
+		return $cols;
+	}
+	
 }
 
 ?>
