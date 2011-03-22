@@ -47,10 +47,14 @@ class Bbx_View_Helper_HelperProxy extends Zend_View_Helper_Abstract {
 	}
 	
 	protected function _setStringMethod() {
-		$this->_stringMethod = '_noHelperString';
-		$h = $this->view->getHelper($this->_helperName);
-		if ($h instanceof Zend_View_Helper_Abstract && method_exists($h, $this->_helperMethod)) {
-			$this->_stringMethod = '_helperString';
+		try {
+			$h = $this->view->getHelper($this->_helperName);
+			if ($h instanceof Zend_View_Helper_Abstract && method_exists($h, $this->_helperMethod)) {
+				$this->_stringMethod = '_helperString';
+			}
+		}
+		catch(Exception $e) {
+			$this->_stringMethod = '_noHelperString';
 		}
 	}
 	
