@@ -65,7 +65,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		$this->_setEtag($model->etag($this->_context));
 
 		$modelName = $model instanceof Bbx_Model ? 
-			Inflector::tableize(get_class($model)) : Inflector::tableize($model->getModelName());
+			Inflector::underscore(get_class($model)) : Inflector::tableize($model->getModelName());
 			
 		if ($request->getParam('list') === 'true') {
 			$model->renderAsList();
