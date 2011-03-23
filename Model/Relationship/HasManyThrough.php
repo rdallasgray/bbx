@@ -19,13 +19,13 @@ You should have received a copy of the GNU General Public License along with Bac
 class Bbx_Model_Relationship_HasManyThrough extends Bbx_Model_Relationship_Abstract {
 
 	protected function _findRowset(Bbx_Model $parentModel) {
-		
+
 		$select = (isset($this->_select) && !empty($this->_select)) ? $this->_select() : $this->_model()->getTable()->select();
 
 		$this->_parentRelationship = Bbx_Model_Registry::get('Relationships')->getRelationshipDataFor(
 			$this->_parentModelName,$this->_throughName);
-			
-		$parentType = reset(array_keys($this->_parentRelationship));		
+
+		$parentType = reset(array_keys($this->_parentRelationship));	
 		$parentAttributes = $this->_parentRelationship[$parentType];
 		$relationshipType = 'Bbx_Model_Relationship_'.ucwords($parentType);
 		if (array_key_exists('through',$parentAttributes)) {
