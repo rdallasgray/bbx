@@ -703,7 +703,7 @@ class Bbx_Model implements IteratorAggregate {
 				$items[] = $i;
 			}
 		}
-		return $items;
+		return new Bbx_Model_Collection($this, $items);
 	}
 	
 	public function hasLinkable($key) {
