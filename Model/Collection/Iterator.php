@@ -22,43 +22,60 @@ class Bbx_Model_Collection_Iterator implements SeekableIterator {
 	
 	public function __construct(Bbx_Model_Collection $collection) {
 		$this->_collection = $collection;
+		$this->_backing = $this->_collection->getBacking();
 	}
 	
 	public function rewind() {
-		$this->_collection->getRowset()->rewind();
-		if ($this->_collection->getRowset()->valid()) {
-			return $this->_collection->getCurrentRowModel();
+		if ($this->_backing instanceof Zend_Db_Table_Rowset) {
+			$this->_backing->rewind();
+			if ($this->_backing->valid()) {
+				return $this->_collection->getCurrentRowModel();
+			}
+			return null;
 		}
-		return null;
+		else return reset($this->_backing);
 	}
 
 	public function current() {
-		if ($this->_collection->getRowset()->valid()) {
-			return $this->_collection->getCurrentRowModel();
+		if ($this->_backing instanceof Zend_Db_Table_Rowset) {
+			if ($this->_backing->valid()) {
+				return $this->_collection->getCurrentRowModel();
+			}
+			return null;
 		}
-		return null;
+		return current($this->_backing);
 	}
 
 	public function key() {
 		$primary = $this->_collection->getPrimary();
-		return $this->_collection->getRowset()->current()->$primary;
+		return $this->current()->$primary;
 	}
 	
 	public function next() {
-		$this->_collection->getRowset()->next();
-		if ($this->_collection->getRowset()->valid()) {
-			return $this->_collection->getCurrentRowModel();
+		if ($this->_backing instanceof Zend_Db_Table_Rowset) {
+			$this->_backing->next();
+			if ($this->_backing->valid()) {
+				return $this->_collection->getCurrentRowModel();
+			}
+			return null;
 		}
-		return null;
+		return next($this->_backing);
 	}
 	
 	public function valid() {
-		return $this->_collection->getRowset()->valid();
+		if ($this->_backing instanceof Zend_Db_Table_Rowset) {
+			return $this->_backing->valid();
+		}
+		return !!current($this->_backing);
 	}
 	
 	public function seek($position) {
-		$this->_collection->getRowset()->seek($position);
-		return $this->_collection->getCurrentRowModel();
+		if ($this->_backing instanceof Zend_Db_Table_Rowset) {
+			$this->_backing->seek($position);
+			return $this->_collection->getCurrentRowModel();
+		}
+		$backing = $this->_backing;
+		return $backing[$position];
 	}
 	
 	public function __destruct() {
