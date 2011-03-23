@@ -18,6 +18,16 @@ You should have received a copy of the GNU General Public License along with Bac
 
 class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 
+	public function preDispatch() {
+		parent::preDispatch();
+		$request = $this->getRequest();
+		if (($rel = $request->getParam('rel')) 
+			&& method_exists($this, $rel . 'Action') 
+			&& !$request->getParam('final')) {
+			$request->setActionName($rel)->setParam('final', true)->setDispatched(false);
+		}
+	}
+	
 	public function indexAction() {
 		$this->_doRequestMethod();
 		if ($this->getRequest()->isHead()) {
@@ -62,15 +72,15 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 
 	protected function _assign($model) {
 		$request = $this->getRequest();
+	
 		$this->_setEtag($model->etag($this->_context));
-
+	
 		$modelName = $model instanceof Bbx_Model ? 
-			Inflector::underscore(get_class($model)) : Inflector::tableize($model->getModelName());
-			
+				Inflector::underscore(get_class($model)) : Inflector::tableize($model->getModelName());
+	
 		if ($request->getParam('list') === 'true') {
 			$model->renderAsList();
-		}
-		
+		}		
 		if ($this->_context === 'csv') {
 			$this->_helper->authenticate();
 		}
