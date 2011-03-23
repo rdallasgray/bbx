@@ -19,7 +19,7 @@ You should have received a copy of the GNU General Public License along with Bac
 class Bbx_Model_Collection implements IteratorAggregate, Countable, ArrayAccess {
 	
 	protected $_parentModel;
-	protected $_rowset;
+	protected $_backing;
 	protected $_models = array();
 	protected $_table;
 	protected $_primary;
@@ -27,14 +27,13 @@ class Bbx_Model_Collection implements IteratorAggregate, Countable, ArrayAccess 
 	protected $_iterator;
 	protected $_renderAsList = false;
 
-	public function __construct(Bbx_Model $parentModel, Bbx_Db_Table_Rowset $rowset, $relationship = null, $childModelName = null) {
+	public function __construct(Bbx_Model $parentModel, $backing, $relationship = null, $childModelName = null) {
 		$this->_parentModel = $parentModel;
 		$this->_childModelName = $childModelName ? $childModelName : get_class($parentModel);
-		$this->_rowset = $rowset;
+		$this->_backing = $backing;
 		$this->_relationship = $relationship;
-		$this->_table = $this->_rowset->getTable();
-		$info = $this->_table->info();
-		$this->_primary = implode('-',$info['primary']);
+		$this->_table = Bbx_Model::load($this->_childModelName)->getTable();
+		$this->_primary = implode('-', $this->_table->info('primary'));
 	}
 	
 	public function getPrimary() {
@@ -46,25 +45,26 @@ class Bbx_Model_Collection implements IteratorAggregate, Countable, ArrayAccess 
 	}
 	
 	public function getTableName() {
-		return $this->_rowset->getTable()->info('name');
+		return $this->_table->info('name');
 	}
 	
-	public function getRowset() {
-		return $this->_rowset;
+	public function getBacking() {
+		return $this->_backing;
 	}
 	
 	public function getCurrentRowModel() {
-		return $this->_rowset->current() ? $this->_instantiateRowModel($this->_rowset->current()) : null;
+		$current = $this->_backing instanceof Bbx_Db_Table_Rowset ? $this->_backing->current() : current($this->_backing);
+		return $current ? $this->_instantiateRowModel($current) : null;
 	}
 	
-	protected function _instantiateRowModel(Zend_Db_Table_Row $row) {
-//		KEEPING REFERENCES TO THE MODELS INCREASES MEM USAGE * 5
-/*		if (array_key_exists($row->{$this->_primary},$this->_models)) {
-			return $this->_models[$row->{$this->_primary}];
+	protected function _instantiateRowModel($row) {
+		if ($row instanceof Bbx_Model) {
+			$model = $row;
 		}
-*/		$model = Bbx_Model::load($this->getModelName());
-		$model->setRowData($row);
-//		$this->_models[$row->{$this->_primary}] = $model;
+		else {
+			$model = Bbx_Model::load($this->getModelName());
+			$model->setRowData($row);
+		}
 		return $this->_renderAsList ? array('id' => $model->id, 'label' => $model->__toString()) : $model;
 	}
 	
@@ -81,10 +81,13 @@ class Bbx_Model_Collection implements IteratorAggregate, Countable, ArrayAccess 
 	}
 	
 	public function last() {
-		while ($this->getIterator()->next()) {
-			$i = $this->getIterator()->next();
+		if ($this->_backing instanceof Bbx_Db_Table_Rowset) {
+			while ($this->getIterator()->next()) {
+				$i = $this->getIterator()->next();
+			}
+			return $i;
 		}
-		return $i;
+		return end($this->_backing);
 	}
 		
 	public function getIterator() {
@@ -95,9 +98,8 @@ class Bbx_Model_Collection implements IteratorAggregate, Countable, ArrayAccess 
 	}
 	
 	public function offsetExists($offset) {
-		$rowSet = $this->getRowset();
-		$rowSet->seek($position);
-		return $rowSet->valid();
+		$this->getIterator()->seek($position);
+		return $this->getIterator()->valid();
 	}
 	
 	public function offsetGet($offset) {
@@ -121,7 +123,7 @@ class Bbx_Model_Collection implements IteratorAggregate, Countable, ArrayAccess 
 	}
 		
 	public function count() {
-		return $this->_rowset->count();
+		return count($this->_backing);
 	}
 	
 	public function toArray($options = array()) {
@@ -145,6 +147,9 @@ class Bbx_Model_Collection implements IteratorAggregate, Countable, ArrayAccess 
 	}
 	
 	protected function _toRowArray() {
+		if (is_array($this->_backing)) {
+			return $this->_backing;
+		}
 		$array = array();
 		foreach ($this->_rowset as $row) {
 			$array[] = $row;
@@ -202,12 +207,12 @@ class Bbx_Model_Collection implements IteratorAggregate, Countable, ArrayAccess 
 		$this->_models = array();
 		if (isset($this->_relationship)) {
 			$c = $this->_relationship->getCollection($model,true,true);
-			$this->_rowset = $c->getRowset();
+			$this->_backing = $c->getBacking();
 		}
 	}
 
 	public function etag($extra = null) {
-		$data = $this->getRowset()->getRawData();
+		$data = ($this->_backing instanceof Zend_Db_Table_Rowset) ? $this->_backing->getRawData() : $this->_backing;
 		return md5(serialize($data).$extra);
 	}
 	
@@ -222,7 +227,7 @@ class Bbx_Model_Collection implements IteratorAggregate, Countable, ArrayAccess 
 	public function __destruct() {		
 		unset($this->_relationship);
 		unset($this->_parentModel);
-		unset($this->_rowset);
+		unset($this->_backing);
 		unset($this->_models);
 		unset($this->_iterator);
 		unset($this->_table);
