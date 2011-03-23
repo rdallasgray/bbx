@@ -55,21 +55,18 @@ class Bbx_ControllerPlugin_ContextDependencies extends Zend_Controller_Plugin_Ab
 			case 'html':
 			$this->_initView();
 			$this->_initLayout();
-			$this->_initHelpers('html');
+			$this->_initHelpers();
 			break;
 			
 			case 'json':
-			$this->_initHelpers('json');
-			break;
-			
 			case 'csv':
-			$this->_initHelpers('csv');
+			$this->_initHelpers();
 			break;
 
 			default:
 			$this->_initView();
 			$this->_initLayout();
-			$this->_initHelpers('global');
+			$this->_initHelpers();
 		}
 	}
 	
@@ -96,11 +93,11 @@ class Bbx_ControllerPlugin_ContextDependencies extends Zend_Controller_Plugin_Ab
 		));
 	}
 	
-	protected function _initHelpers($context = 'global') {
+	protected function _initHelpers() {
 		
-		switch ($context) {
+//		switch ($context) {
 			
-			case 'csv':
+//			case 'csv':
 			$csvHelper = new Bbx_ActionHelper_Csv;
 			Zend_Controller_Action_HelperBroker::addHelper($csvHelper);
 			Zend_Controller_Action_HelperBroker::getStaticHelper('contextSwitch')->addContext(
@@ -114,10 +111,10 @@ class Bbx_ControllerPlugin_ContextDependencies extends Zend_Controller_Plugin_Ab
 					)
 				)
 			);
-			break;
+//			break;
 			
-			default:
-		}
+//			default:
+//		}
 	}
 
 }
