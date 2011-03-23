@@ -72,9 +72,8 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 
 	protected function _assign($model) {
 		$request = $this->getRequest();
-	
 		$this->_setEtag($model->etag($this->_context));
-	
+
 		$modelName = $model instanceof Bbx_Model ? 
 				Inflector::underscore(get_class($model)) : Inflector::tableize($model->getModelName());
 	
