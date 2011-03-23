@@ -207,7 +207,6 @@ class Bbx_Model_Relationship_Abstract {
 				}
 			}
 		}
-		
 		return $this->_collections[$parentModel->id];
 	}
 	
