@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License along with Bac
 
 class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 	
-	private $_privateParams = array('rel','rel_id','controller','id','module','action','format');
+	private $_privateParams = array('rel', 'rel_id', 'final', 'controller', 'id', 'module', 'action', 'format');
 		
 	public function parseParams($allParams) {
 		
@@ -31,7 +31,7 @@ class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 		return $userParams;
 	}
 
-	public function getModel() {
+	public function getModel($routePart = null) {
 		$controller = $this->getActionController();
 		$request = $this->getRequest();
 		$controllerName = $request->getControllerName();
@@ -44,9 +44,9 @@ class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 		
 		if (($id = $request->getParam('id'))) {
 			$model = $model->find((int) $id);
-			if ($rel = $request->getParam('rel')) {
+			if ($rel = $request->getParam('rel') && $routePart != 'id') {
 				$model = $model->$rel;
-				if ($relId = $request->getParam('rel_id')) {
+				if ($relId = $request->getParam('rel_id') && $routePart != 'rel') {
 					$model = $model->find((int) $relId);
 				}
 			}
@@ -77,7 +77,6 @@ class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 			}
 		}
 		$collection = $collection->findAll($params);
-		
 		return $collection;
 	}
 
