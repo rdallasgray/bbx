@@ -50,6 +50,22 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 		}
 	}
 	
+	public function getMinHeightForSize($size) {
+		if (!array_key_exists($size, $this->_sizes)) {
+			return 0;
+		}
+		list($width, $height) = explode('x', $this->_sizes[$size]);
+		return $height;
+	}
+	
+	public function getMinWidthForSize($size) {
+		if (!array_key_exists($size, $this->_sizes)) {
+			return 0;
+		}
+		list($width, $height) = explode('x', $this->_sizes[$size]);
+		return $width;
+	}
+	
 	public function setSize($size) {
 		$this->_size = $size;
 		return $this;
