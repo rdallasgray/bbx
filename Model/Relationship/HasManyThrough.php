@@ -33,12 +33,11 @@ class Bbx_Model_Relationship_HasManyThrough extends Bbx_Model_Relationship_Abstr
 		}
 		
 		$select->from($this->_childTableName);
-		
+
 		$select = call_user_func_array(
 			array($relationshipType,'getExternalConditions'),
 			array($select,$parentModel,$this->_throughName,$parentAttributes)
 		);
-
 		$this->_throughRelationship = Bbx_Model_Registry::get('Relationships')->getRelationshipDataFor(
 			$this->_throughModelName,$this->_childName);
 
