@@ -29,7 +29,7 @@ class Bbx_View_Helper_HelperProxy extends Zend_View_Helper_Abstract {
 		$this->_items = $arguments[0];
 		$this->_helperMethod = count($arguments) > 1 ? $arguments[1] : $method;
 		$this->_helperName = get_class($arguments[0][0]);
-		
+
 		$text = $this->_getOutput();
 		unset($this->_stringMethod);
 		return $text;		
@@ -51,6 +51,9 @@ class Bbx_View_Helper_HelperProxy extends Zend_View_Helper_Abstract {
 			$h = $this->view->getHelper($this->_helperName);
 			if ($h instanceof Zend_View_Helper_Abstract && method_exists($h, $this->_helperMethod)) {
 				$this->_stringMethod = '_helperString';
+			}
+			else {
+				$this->_stringMethod = '_noHelperString';
 			}
 		}
 		catch(Exception $e) {
