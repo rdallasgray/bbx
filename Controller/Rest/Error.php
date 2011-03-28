@@ -30,7 +30,10 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 
 	public function errorAction() {
 		$this->_error = $this->_getParam('error_handler');
-		Bbx_Log::write(print_r($this->_error, true));
+		if (!($this->_error['exception'] instanceof Bbx_Controller_Rest_Exception 
+			&& $this->_error['exception']->getCode() == 401)) {
+				Bbx_Log::write(print_r($this->_error, true));
+		}
 		$response = $this->getResponse();
 
 		switch ($this->_error->type) {
