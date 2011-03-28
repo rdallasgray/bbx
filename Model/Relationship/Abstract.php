@@ -199,11 +199,12 @@ class Bbx_Model_Relationship_Abstract {
 		if (!$forceCollection) {
 			if ($this->_type == 'belongsto' || $this->_type == 'hasone' || $this->_type == 'hasonethrough') {
 				if ($this->_collections[$parentModel->id]->current() instanceof Bbx_Model) {
-					// here we should return an uninitialised model!
-						return $this->_collections[$parentModel->id]->current();
+					return $this->_collections[$parentModel->id]->current();
 				}
 				else {
-					return Bbx_Model::load($this->_childModelName);
+					// this might be slightly dangerous as any access to a non-existent model
+					// creates a new entry in the db
+					return $this->create($parentModel, array());
 				}
 			}
 		}
