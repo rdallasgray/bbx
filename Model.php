@@ -228,6 +228,9 @@ class Bbx_Model implements IteratorAggregate {
 		if (is_array($args[0])) {
 			if (count(array_intersect(array('where', 'order', 'limit'), array_keys($args[0]))) > 0) {
 				foreach ($args[0] as $key => $value) {
+					if ($key == 'order') {
+						$select->reset(Zend_Db_Select::ORDER);
+					}
 					$select->$key($value);
 				}
 				return new Bbx_Model_Collection($this, $this->_table()->fetchAll($select));
