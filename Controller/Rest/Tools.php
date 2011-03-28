@@ -24,6 +24,21 @@ class Bbx_Controller_Rest_Tools extends Bbx_Controller_Rest {
 		exit();
 	}
 	
+	public function updateAllAction() {
+		$model = $this->_getParam('model');
+		try {
+			$models = Bbx_Model::load($model)->findAll();
+			foreach ($models as $m) {
+				$m->update(array());
+			}
+		}
+		catch (Exception $e) {
+			Bbx_Log::debug($e->getMessage());
+		}
+		$this->getResponse()->sendResponse();
+		exit();
+	}
+	
 	public function spiderAction() {
 		$reset = ($this->_getParam('reset') === 'true');
 		set_time_limit(7200);
