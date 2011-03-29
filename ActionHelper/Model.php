@@ -46,12 +46,11 @@ class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 			$model = $model->find((int) $id);
 			if (($rel = $request->getParam('rel')) && $routePart != 'id') {
 				$model = $model->$rel;
-				if ($relId = $request->getParam('rel_id') && $routePart != 'rel') {
+				if (($relId = $request->getParam('rel_id')) && $routePart != 'rel') {
 					$model = $model->find((int) $relId);
 				}
 			}
 		}
-		
 		if (!$model instanceof Bbx_Model) {
 			throw new Bbx_Controller_Rest_Exception(null, 404);
 		}
