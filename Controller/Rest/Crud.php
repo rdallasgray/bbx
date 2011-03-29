@@ -25,32 +25,23 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			&& method_exists($this, $rel . 'Action') 
 			&& !$request->getParam('final')) {
 			$request->setActionName($rel)->setParam('final', true)->setDispatched(false);
+			return;
 		}
+		$this->_doRequestMethod();
 	}
 	
 	public function indexAction() {
-		$this->_doRequestMethod();
-		if ($this->getRequest()->isHead()) {
-			return;
-		}
 		$collection = $this->_getIndexData();
 		$this->_assign($collection);
 	}
 
 	public function showAction() {
-		$this->_doRequestMethod();
-		if ($this->getRequest()->isHead()) {
-			return;
-		}
 		$model = $this->_getShowData();
 		$this->_assign($model);
 	}
 	
 	public function newAction() {
 		$this->_helper->authenticate();
-		if ($this->getRequest()->isHead()) {
-			return;
-		}
 		$model = $this->_helper->Model->getModel();
 		$this->view->assign($model->newModel());
 	}
@@ -71,6 +62,10 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 	}
 
 	protected function _assign($model) {
+		if ($this->getRequest()->isHead()) {
+			Zend_Controller_Action_HelperBroker::getExistingHelper('viewRenderer')->setNoRender(true);
+			return;
+		}
 		$request = $this->getRequest();
 		$this->_setEtag($model->etag($this->_context));
 
