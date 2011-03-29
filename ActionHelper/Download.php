@@ -34,18 +34,18 @@ class Bbx_ActionHelper_Download extends Zend_Controller_Action_Helper_Abstract {
 			$this->getResponse()->setHeader('Content-Type', $model->getMimeType());
 			if ($this->getRequest()->isHead()) {
 				$this->getResponse()->setHeader('Content-Length', 0)->sendResponse();
-				exit();
+				exit(); // nb file corrupts if no exit
 			}
 			else {
 				$this->getResponse()
 					->setHeader('Content-Length', filesize($model->getMediaPath()))
 					->setBody(readfile($model->getMediaPath()))->sendResponse();
-				exit();
+				exit(); // nb file corrupts if no exit
 			}
 		}
 		catch (Exception $e) {
 			throw new Bbx_Controller_Rest_Exception("Couldn't read file information for download: "
-				.$this->getRequest()->getRequestUri(), 500);
+				. $this->getRequest()->getRequestUri(), 500);
 		}
 	}
 	
