@@ -19,7 +19,12 @@ class Bbx_View_Helper_Collection extends Bbx_View_Helper_Model {
 	public function linkList() {
 		$a = array();
 		foreach ($this->_model as $model) {
-			$a[] = '<a href="' . $model->url() . '">' . (string) $model . '</a>';
+			if ($model->isLinkable()) {
+				$a[] = '<a href="' . $model->url() . '">' . (string) $model . '</a>';
+			}
+			else {
+				$a[] = (string) $model;
+			}
 		}
 		return implode(', ', $a);
 	}
