@@ -53,11 +53,7 @@ class Bbx_Media_Image extends Bbx_Media_Abstract {
 			Zend_Registry::set('ImageProcessor','Bbx_Media_Image_Processor_Magickwand');
 		}
 		else {
-			if (!is_array(gd_info())) {
-				throw new Bbx_Media_Image_Processor_Exception('No image processor found');
-			}
-			$this->_processor = new Bbx_Media_Image_Processor_Gd;
-			Zend_Registry::set('ImageProcessor','Bbx_Media_Image_Processor_Gd');
+			throw new Bbx_Media_Image_Processor_Exception('No image processor found');
 		}
 		return $this->_processor;
 	}
