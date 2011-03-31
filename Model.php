@@ -23,7 +23,6 @@ class Bbx_Model implements IteratorAggregate {
 	protected $_rowData;
 	protected $_primary;
 	protected $_to_string_pattern = ':id';
-	protected $_url;
 	protected $_select;
 	protected $_alwaysLinked = array();
 	protected $_neverLinked = array();
@@ -87,6 +86,11 @@ class Bbx_Model implements IteratorAggregate {
 			Zend_Registry::set("tables:".$this->_tableName.":columns",$this->_table()->info('cols'));
 		}
 		return Zend_Registry::get("tables:".$this->_tableName.":columns");
+	}
+	
+	protected function _hasColumn($col) {
+		$cols = $this->columns();
+		return in_array($col, $cols);
 	}
 	
 	protected function _metadata() {
@@ -596,18 +600,16 @@ class Bbx_Model implements IteratorAggregate {
 	}
 
 	public function url($absolute = false) {
-		$external = false;
-		if (isset($this->_url)) {
-			return ($this->_url);
-		}
-		if (isset($this->url)) {
-				$this->_url = 'http://'.$this->url;
-				$external = true;
+		if ($this->_hasColumn('url')) {
+			if (!empty($this->url)) {
+				return 'http://' . $this->url;
+			}
+			return '';
 		}
 		else {
-			$this->_url = $this->_defaultRoute();
+			$url = $this->_defaultRoute();
 		}
-		return $absolute && !$external ? 'http://'.$_SERVER['SERVER_NAME'].$this->_url : $this->_url;
+		return $absolute ? 'http://'.$_SERVER['SERVER_NAME'] . $url : $url;
 	}
 
 	public function toHtml() {
