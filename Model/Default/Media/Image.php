@@ -126,7 +126,9 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 		$sizes[] = 'original';
 		
 		foreach ($sizes as $size) {
-			@unlink($this->getMediaPath($size));
+			if (!@unlink($this->getMediaPath($size))) {
+				Bbx_Log::debug('Unable to delete media ' . $this->_getMediaPath($size));
+			}
 		}
 	}
 	
@@ -169,11 +171,12 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 		}
 	}
 	
-	protected function _calculateImageGeometry($size, $img) {
-		
-		list($reqWidth, $reqHeight) = explode('x', $size);
-		$reqWidth = (int) $reqWidth;
-		$reqHeight = (int) $reqHeight;
+	protected function _calculateImageGeometry($geom, $img) {
+		preg_match('/(?<width>^\d*)x(?<height>\d*)(?<modifier>\^{0,1})/', $geom, $matches);
+		$reqWidth = (int) $matches['width'];
+		$reqHeight = (int) $matches['height'];
+		$modifier = $matches['modifier'];
+		$minSize = ($modifier == '^');
 		
 		$newWidth = $reqWidth;
 		$newHeight = $reqHeight;
@@ -182,30 +185,26 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 		$origHeight = $img->height();
 				
 		if ($reqWidth === 0 || ($reqHeight > 0 && (($reqWidth/$reqHeight) > ($origWidth/$origHeight)))) {
+			// width is not specified, or required width/height ratio is greater than original width/height ratio --
+			// height should be newHeight, and width is scaled to proportion.
 			$newWidth = floor($origWidth * ($reqHeight/$origHeight));
 		}
 		else {
+			// width is specified, or required width/height ratio is less than original width/height ratio --
+			// width should be newWidth, and height is scaled to proportion.
 			$newHeight = floor($origHeight * ($reqWidth/$origWidth));
 		}
+		if ($minSize) {
+			if ($newWidth < $reqWidth) {
+				$newWidth = $reqWidth;
+				$newHeight = floor($origHeight * ($reqWidth/$origWidth));
+			}
+			else if ($newHeight < $reqHeight) {
+				$newHeight = $reqHeight;
+				$newWidth = floor($origWidth * ($reqHeight/$origHeight));
+			}
+		}
 		return array($newWidth, $newHeight);
-	}
-		
-	public function getCaption() {
-		try {
-			$view = Zend_Registry::get('view');
-		}
-		catch (Exception $e) {
-			return (string) $this->subject;
-		}
-		$helperName = Inflector::camelize(get_class($this->subject), false);
-		if (!isset($stringMethod)) {
-			try {
-				return $view->$helperName($this->subject)->imageCaption($this);
-			}
-			catch (Exception $e) {
-				return (string) $this->subject;
-			}
-		}
 	}
 
 }
