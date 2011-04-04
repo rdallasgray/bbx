@@ -11,7 +11,10 @@ class Bbx_View_Helper_BasicNavigation extends Zend_View_Helper_Abstract {
 	public function setNavigation($id, $model) {
 		$this->_navigation = Zend_Registry::get('Zend_Navigation')->findOneById($id);
 		$this->findAssociations($model);
-		return $this->view->navigation()->menu($this->_navigation)->setRenderInvisible(true);
+		return $this->view->navigation()
+			->findHelper('menu')
+			->menu($this->_navigation)
+			->setRenderInvisible(true);
 	}
 	
 	public function findAssociations($model) {
