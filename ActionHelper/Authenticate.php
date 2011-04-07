@@ -16,18 +16,27 @@ You should have received a copy of the GNU General Public License along with Bac
 
 class Bbx_ActionHelper_Authenticate extends Zend_Controller_Action_Helper_Abstract {
 	
-	protected $_authenticated;
+	protected $_user;
 	protected $_resolver;
+	protected $_redirect;
 	
-	public function direct() {
-		if ($this->_authenticated === true) {
-			return true;
-		}
-		
-		if (!$this->_httpAuth()) {
+	public function direct() {	
+		if (!$this->asPrivilege('staff')) {
 			throw new Bbx_Controller_Rest_Exception(null, 401);
 		}
-		$this->_authenticated = true;
+	}
+	
+	public function setRedirect($redirect) {
+		$this->_redirect = $redirect;
+		return $this;
+	}
+	
+	public function asRole($name) {
+		return $this->getUser()->role->name == $name;
+	}
+	
+	public function asPrivilege($roleName) {
+		return $this->getUser()->hasPrivilege($roleName);
 	}
 	
 	protected function _httpAuth() {
@@ -39,19 +48,56 @@ class Bbx_ActionHelper_Authenticate extends Zend_Controller_Action_Helper_Abstra
 		);
 		$adaptor = new Zend_Auth_Adapter_Http($config);
 		$this->_resolver = new Bbx_Auth_Resolver_Db;
-		$adaptor->setDigestResolver($this->_resolver);
+		$adaptor
+			->setDigestResolver($this->_resolver)
+			->setRequest($this->getRequest())
+			->setResponse($this->getResponse());
 		
-		$adaptor->setRequest($this->getRequest());
-		$adaptor->setResponse($this->getResponse());
-
-		return $adaptor->authenticate()->isValid();
-	}
-	
-	public function getUser() {		
-		if (!$this->_httpAuth()) {
+		try {
+			$auth = $adaptor->authenticate();
+			if (!$auth->isValid()) {
+				if (isset($this->_redirect)) {
+					$body = $this->_getRedirectBody();
+				}
+				else {
+					$body = $this->_get403Body();
+				}
+				$this->getResponse()->setHttpResponseCode(401)->setBody($body)->sendResponse();
+				exit();
+			}
+			return $auth->isValid();
+		}
+		catch (Exception $e) {
+			Bbx_Log::write('Exception during authentication: ' . $e->getMessage());
 			throw new Bbx_Controller_Rest_Exception(null, 401);
 		}
-		return $this->_resolver->getUser();
+	}
+	
+	protected function _getRedirectBody() {
+		return '<html><meta http-equiv="refresh" content="1;url=' . $this->_redirect . '"></html>';
+	}
+	
+	protected function _get403Body() {
+		$file = APPLICATION_PATH . '/../www/static/html/403.html';
+		if (file_exists($file)) {
+			return file_get_contents($file);
+		}
+		return '403: Forbidden';
+	}
+	
+	public function getUser() {
+		if (!isset($this->_user)) {
+			if (!$this->_httpAuth()) {
+				if (isset($this->_redirect)) {
+					Zend_Controller_Action_HelperBroker::getStaticHelper('redirector')->gotoUrl($this->_redirect);
+				}
+				else {
+					throw new Bbx_Controller_Rest_Exception(null, 403);
+				}
+			}
+			$this->_user = $this->_resolver->getUser();
+		}
+		return $this->_user;
 	}
 
 }
