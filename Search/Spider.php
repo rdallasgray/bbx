@@ -19,7 +19,7 @@ You should have received a copy of the GNU General Public License along with Bac
 class Bbx_Search_Spider {
 
 	protected $_visited = array();
-	protected $_maxLinks = 1000;
+	protected $_maxLinks = 10000;
 	protected $_indexed = 0;
 	protected $_host;
 	protected $_report;
@@ -28,7 +28,8 @@ class Bbx_Search_Spider {
 
 	public function __construct() {
 		Zend_Search_Lucene_Document_Html::setExcludeNoFollowLinks(true);
-		$this->_client = new Zend_Http_Client;
+		$this->_client = new Zend_Http_Client();
+		$this->_client->setConfig(array('timeout' => 60));
 	}
 	
 	protected function _search() {
@@ -100,9 +101,10 @@ class Bbx_Search_Spider {
 	
 	protected function _spider($url = '/', $reset = false) {
 		if ($reset) {
+			Bbx_Log::write('Resetting search index');
 			$this->_search->reset();
 		}
-		if ($url = $this->_sanitizeUrl($url)) {
+		if (($url = $this->_sanitizeUrl($url))) {
 			if (!$this->_isVisited($url)) {
 				$this->_client->setUri($this->_getAbsoluteUrl($url));
 				$response = $this->_client->request();
