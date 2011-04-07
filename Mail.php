@@ -37,6 +37,10 @@ class Bbx_Mail extends Zend_Mail {
 
 	static public function instance() {
 		$args = func_get_args();
+		$userOptions = array();
+		if (count($args) > 0) {
+			$userOptions = $args[0];
+		}
 		if (self::$_instance === null) {
 			$options = array();
 			if (isset(Bbx_Config::get()->site->smtp_username)) {
@@ -46,7 +50,12 @@ class Bbx_Mail extends Zend_Mail {
 					'password'=>Bbx_Config::get()->site->smtp_password
 				);
 			}
-			$transport = new Zend_Mail_Transport_Smtp(Bbx_Config::get()->site->smtp_server,$options);
+			if (isset(Bbx_Config::get()->site->smtp_port)) {
+				$options['port'] = Bbx_Config::get()->site->smtp_port;
+			}
+			$port = array_key_exists('port', $options) ? $options['port'] : 25;
+			$options = array_merge($options, $userOptions);
+			$transport = new Zend_Mail_Transport_Smtp(Bbx_Config::get()->site->smtp_server, $options);
 			Zend_Mail::setDefaultTransport($transport);
 			self::$_instance = new Bbx_Mail();
 		}
