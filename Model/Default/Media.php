@@ -43,7 +43,7 @@ class Bbx_Model_Default_Media extends Bbx_Model {
 	public function attachMedia($filePath, $overwrite = true) {
 		Bbx_Log::debug("trying to attach media to " . get_class($this) . ' ' . $this->id);
 		
-		if (!rename($filePath, $this->getMediaPath())) {
+		if (!copy($filePath, $this->getMediaPath())) {
 			throw new Bbx_Model_Exception('Unable to save media ' . $filePath . ' to ' . $this->getMediaPath());
 		}
 	}
@@ -66,6 +66,7 @@ class Bbx_Model_Default_Media extends Bbx_Model {
 		}
 		parent::delete();
 	}
+	
 }
 
 ?>
