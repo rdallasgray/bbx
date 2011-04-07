@@ -101,9 +101,11 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 		}
 		catch (Exception $e) {
 			throw new Bbx_Model_Exception("Couldn't load image ".$filePath);
+			Bbx_Log::write(print_r($e, true));
 		}
 		try {
 			if (file_exists($this->getMediaPath('original')) && !$overwrite) {
+				Bbx_Log::debug('original exists (' . $this->getMediaPath('original') . ')');
 				return $this->_createSizedMedia(null, $overwrite);
 			}
 			$img->setResolution(300)->save($this->getMediaPath());
@@ -127,7 +129,7 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 		
 		foreach ($sizes as $size) {
 			if (!@unlink($this->getMediaPath($size))) {
-				Bbx_Log::debug('Unable to delete media ' . $this->_getMediaPath($size));
+				Bbx_Log::debug('Unable to delete media ' . $this->getMediaPath($size));
 			}
 		}
 	}
@@ -137,31 +139,29 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 	}
 	
 	protected function _createSizedMedia($size = null, $overwrite = true) {
-		$img = Bbx_Media_Image::load($this->getMediaPath('original'));
 
 		if ($size !== null) {
 			if (!array_key_exists($size, $this->_sizes)) {
 				return Bbx_Log::debug("Image size '".$size."' does not exist");
 			}
-			return $this->_resizeImage($img, $size, $overwrite);
+			return $this->_resizeImage($size, $overwrite);
 		}
 	
 		foreach(array_keys($this->_sizes) as $size) {
-			$this->_resizeImage($img, $size, $overwrite);
+			$this->_resizeImage($size, $overwrite);
 		}
 	}
 	
-	protected function _resizeImage($img, $size, $overwrite) {
+	protected function _resizeImage($size, $overwrite) {
 
 		if (file_exists($this->getMediaPath($size)) && !$overwrite) {
+			Bbx_Log::debug($size . ' exists (' . $this->getMediaPath($size) . ')');
 			return;
 		}
 		
+		$img = Bbx_Media_Image::load($this->getMediaPath('original'));
 		list($width, $height) = $this->_calculateImageGeometry($this->_sizes[$size], $img);
 		
-		if ($width > $img->width() || $height > $img->height()) {
-			$img = Bbx_Media_Image::load($this->getMediaPath('original'));
-		}
 		try {
 			$img->resize((int) $width, (int) $height)->save($this->getMediaPath($size));
 		}
