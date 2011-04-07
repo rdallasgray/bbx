@@ -17,35 +17,40 @@ You should have received a copy of the GNU General Public License along with Bac
 class Bbx_ActionHelper_Download extends Zend_Controller_Action_Helper_Abstract {
 	
 	public function direct($model) {
-		$extension = ($model instanceof Bbx_Model_Default_Media) ? 
-			$model->getExtension() :  $this->getRequest()->getParam('format');
-		$filename = $this->_getFilename($model);
+		$this->_setCDHeader($this->_getFilename($model), $this->getRequest()->getParam('format'));
+	}
+	
+	public function media($model) {
+		$this->_setCDHeader($this->_getFilename($model), $model->getExtension());
+		return $this->_doMediaDownload($model);
+	}
+	
+	public function sendHeadResponse() {
+		$this->getResponse()->setHeader('Content-Length', 0)->sendResponse();
+		exit();
+	}
+	
+	private function _setCDHeader($filename, $extension) {
 		$this->getResponse()->setHeader('Content-disposition','attachment; filename=' . $filename . '.' . $extension, true);
-
-		if ($model instanceof Bbx_Model_Default_Media) {
-			return $this->_doMediaDownload($model);
-		}
-		
 	}
 	
 	private function _doMediaDownload($model) {
 		Zend_Controller_Action_HelperBroker::getExistingHelper('viewRenderer')->setNoRender(true);
+		Zend_Controller_Action_HelperBroker::getExistingHelper('layout')->disableLayout();
 		try {
 			$this->getResponse()->setHeader('Content-Type', $model->getMimeType());
 			if ($this->getRequest()->isHead()) {
-				$this->getResponse()->setHeader('Content-Length', 0)->sendResponse();
-				exit(); // nb file corrupts if no exit
+				$this->sendHeadResponse();
 			}
 			else {
-				$this->getResponse()
-					->setHeader('Content-Length', filesize($model->getMediaPath()))
-					->setBody(readfile($model->getMediaPath()))->sendResponse();
+				$this->getResponse()->setHeader('Content-Length', filesize($model->getMediaPath()))->sendHeaders();
+				readfile($model->getMediaPath());
 				exit(); // nb file corrupts if no exit
 			}
 		}
 		catch (Exception $e) {
 			throw new Bbx_Controller_Rest_Exception("Couldn't read file information for download: "
-				. $this->getRequest()->getRequestUri(), 500);
+				. $this->getRequest()->getRequestUri() . '(' . $e->getMessage() . ')', 500);
 		}
 	}
 	
