@@ -50,35 +50,20 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 			}
 			
 			if ($this->_error['exception'] instanceof Bbx_Controller_Rest_Exception) {
-				$response->setHttpResponseCode($this->_error['exception']->getCode());
-				$this->view->error = $this->_error['exception']->getMessage();
-				if ($this->_error['exception']->getCode() == 404) {
-					$this->_set404();
-					break;
-				}
 				if ($this->_error['exception']->getCode() == 401) {
 					// send the auth request immediately
 					$response->sendResponse();
 					exit();
 				}
+				$method = '_set' . $this->_error['exception']->getCode();
+				if (!method_exists($this, $method)) {
+					$method = '_set500';
+				}
+				$this->$method();
 			}
 			else {
-				$response->setHttpResponseCode(500);
-				$this->view->error = 'Server Error';
+				$this->_set500();
 			}
-			$this->view->responseCode = $response->getHttpResponseCode();
-		
-			if (isset($this->_error['exception']->errorVars)) {
-				$this->view->errorVars = $this->_error['exception']->errorVars;
-			}
-		
-			if ($response->getHttpResponseCode() == 500) {
-				$this->_notify();
-			}
-			else {
-				$this->_log();
-			}
-			break;
 		}
 			
 		if ($this->_helper->contextSwitch()->getCurrentContext() === 'json') {
@@ -92,10 +77,42 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 	
 	protected function _set404() {
 		$this->getResponse()->setHttpResponseCode(404);
+		$this->view->errorType = 'Not Found';
 		$this->view->error = 'Not Found';
 		$this->view->responseCode = '404';
 		$url = $this->getRequest()->getRequestUri();
 		$this->view->errorVars = array('url'=>$url);
+		$this->_log();
+	}
+	
+	protected function _set403() {
+		$this->getResponse()->setHttpResponseCode(403);
+		$this->view->errorType = 'Forbidden';
+		$this->view->error = 'Forbidden';
+		$this->view->responseCode = '403';
+		$url = $this->getRequest()->getRequestUri();
+		$this->view->errorVars = array('url'=>$url);
+		$this->_log();
+	}
+	
+	protected function _set401() {
+		$this->getResponse()->setHttpResponseCode(401);
+		$this->view->errorType = 'Authorization Required';
+		$this->view->error = 'Authorization Required';
+		$this->view->responseCode = '401';
+		$url = $this->getRequest()->getRequestUri();
+		$this->view->errorVars = array('url'=>$url);
+		$this->_log();
+	}
+	
+	protected function _set500() {
+		$this->getResponse()->setHttpResponseCode(500);
+		$this->view->errorType = 'Server Error';
+		$this->view->error = $this->_error['exception']->getMessage();;
+		$this->view->responseCode = '500';
+		$url = $this->getRequest()->getRequestUri();
+		$this->view->errorVars = array('url'=>$url);
+		$this->_notify();
 	}
 
 	protected function _log() {
