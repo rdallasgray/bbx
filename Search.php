@@ -30,10 +30,15 @@ class Bbx_Search {
 			new Zend_Search_Lucene_Analysis_Analyzer_Common_Utf8Num_CaseInsensitive());
 		$indexPath = APPLICATION_PATH . '/modules/' . MODULE_NAME . '/search/index';
 		if (file_exists($indexPath)) {
+			Bbx_Log::debug('Index file exists');
 			$this->_index = Zend_Search_Lucene::open($indexPath);
 		}
 		else {
+			Bbx_Log::debug('Creating index file');
 			$this->_index = Zend_Search_Lucene::create($indexPath);
+			if (!$this->_index instanceof Zend_Search_Lucene_Interface) {
+				Bbx_Log::debug('Unable to create index file');
+			}
 		}
 	}
 	
