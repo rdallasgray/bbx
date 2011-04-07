@@ -51,6 +51,9 @@ class Bbx_ControllerPlugin_ContextDependencies extends Zend_Controller_Plugin_Ab
 	}
 	
 	protected function _initDependencies($context) {
+		
+		$this->_initDbCache();
+		
 		switch ($context) {
 			case 'html':
 			$this->_initView();
@@ -68,6 +71,17 @@ class Bbx_ControllerPlugin_ContextDependencies extends Zend_Controller_Plugin_Ab
 			$this->_initLayout();
 			$this->_initHelpers();
 		}
+	}
+	
+	protected function _initDbCache() {
+		$frontendOptions = array(
+			'automatic_serialization' => true
+		);
+		$backendOptions  = array(
+			'cache_dir' => APPLICATION_PATH . '/../cache'
+		);
+		$cache = Zend_Cache::factory('Core', 'File', $frontendOptions, $backendOptions);
+		Zend_Db_Table_Abstract::setDefaultMetadataCache($cache);
 	}
 	
 	protected function _initView() {
