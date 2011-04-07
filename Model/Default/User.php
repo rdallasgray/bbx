@@ -25,6 +25,7 @@ class Bbx_Model_Default_User extends Bbx_Model {
 		$this->hasOne('last_admin_session')->source('admin_sessions')->select(array('order'=>'id DESC', 'limit'=>1));
 		$this->hasOne('current_admin_session')->source('admin_sessions')
 			->select(array('order'=>'id DESC','where'=>"logged_in_at < NOW() AND logged_out_at = '0000-00-00 00:00:00'",'limit'=>1));
+		$this->belongsTo('role');
 	}
 		
 	protected function _initValidations() {
@@ -39,6 +40,14 @@ class Bbx_Model_Default_User extends Bbx_Model {
 			|| ($this->password !== $this->_oldData['password'] || $this->username !== $this->_oldData['username'])) {
 			$this->password = md5($this->username.':'.Bbx_Config::get()->site->location.':'.$this->password);
 		}
+	}
+	
+	public function hasPrivilege($roleName) {
+		$role = Bbx_Model::load('Role')->find(array('name' => $roleName));
+		if (!$role instanceof Role) {
+			return false;
+		}
+		return (int) $this->role->precedence <= (int) $role->precedence;
 	}
 }
 
