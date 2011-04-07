@@ -78,7 +78,7 @@ class Bbx_Controller_Rest_Crud_Users extends Bbx_Controller_Rest_Crud {
 	
 	protected function _userIsAdmin() {
 		$userRequesting = $this->_helper->Authenticate->getUser();
-		if ($userRequesting->is_admin) {
+		if ($userRequesting->role->name == 'admin') {
 			return true; //admins can do anything
 		}
 		// user isn't an admin
