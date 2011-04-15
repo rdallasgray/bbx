@@ -21,11 +21,12 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 	public function preDispatch() {
 		parent::preDispatch();
 		$request = $this->getRequest();
-		if (($rel = $request->getParam('rel')) 
-			&& method_exists($this, $rel . 'Action') 
-			&& !$request->getParam('final')) {
-			$request->setActionName($rel)->setParam('final', true)->setDispatched(false);
-			return;
+		if (($rel = $request->getParam('rel'))) {
+			if (method_exists($this, $rel . 'Action') && !$request->getParam('final'))  {
+				$request->setActionName($rel)->setParam('final', true)->setDispatched(false);
+				return;
+			}
+			Zend_Controller_Action_HelperBroker::getExistingHelper('viewRenderer')->setScriptAction($rel);
 		}
 		$this->_doRequestMethod();
 	}
@@ -117,16 +118,18 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 
 	protected function _put($data = null) {
 		$this->_helper->authenticate();
-		$model = $this->_helper->Model->getModel();
-		if (!$model instanceof Bbx_Model) {
+		try {
+			$model = $this->_helper->Model->getModel();
+			$method = ($model->isEmpty()) ? 'create' : 'update';
+			if ($data === null) {
+				$data = $this->_getBodyData();
+			}
+			$model->$method($data);
+		}
+		catch (Exception $e) {
+			Bbx_Log::write('Unable to _put to model: ' . $e->getMessage());
 			throw new Bbx_Controller_Rest_Exception(null, 405, array('allowed_methods' => 'GET,POST'));
 		}
-		// If model is empty we use create, otherwise update
-		$method = ($model->isEmpty()) ? 'create' : 'update';
-		if ($data === null) {
-			$data = $this->_getBodyData();
-		}
-		$model->$method($data);
 	}
 
 	protected function _delete() {
