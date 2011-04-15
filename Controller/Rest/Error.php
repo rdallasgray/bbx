@@ -85,6 +85,16 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 		$this->_log();
 	}
 	
+	protected function _set405() {
+		$this->getResponse()->setHttpResponseCode(405);
+		$this->view->errorType = 'Method Not Allowed';
+		$this->view->error = 'Method Not Allowed';
+		$this->view->responseCode = '405';
+		$url = $this->getRequest()->getRequestUri();
+		$this->view->errorVars = array('url'=>$url);
+		$this->_log();
+	}
+	
 	protected function _set403() {
 		$this->getResponse()->setHttpResponseCode(403);
 		$this->view->errorType = 'Forbidden';
@@ -116,27 +126,11 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 	}
 
 	protected function _log() {
-		Bbx_Log::debug($this->_error->exception->getMessage()."::".$this->_error->request->getRequestUri());
+		$this->_helper->Error->log($this->_error['exception']);
 	}
 
 	protected function _notify() {
-		if (isset(Bbx_Config::get()->site->support_address) && APPLICATION_ENV == 'production') {
-			try {
-				$mail = Bbx_Mail::instance();
-				$mail->setFrom('error@'.Bbx_Config::get()->site->location,Bbx_Config::get()->site->location);
-				$mail->setBodyText(print_r($this->_error,true));
-				$mail->addTo(Bbx_Config::get()->site->support_address);
-				$mail->setSubject('Error at '.Bbx_Config::get()->site->location);
-				$mail->send();
-			}
-			catch (Exception $e) {
-				Bbx_Log::debug(print_r($this->_error,true));
-				Bbx_Log::debug("Couldn't send mail: ".$e->getMessage());
-			}
-		}
-		else {
-			Bbx_Log::debug(print_r($this->_error,true));
-		}
+		$this->_helper->Error->notify($this->_error['exception']);
 	}
 }
 
