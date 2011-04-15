@@ -32,6 +32,7 @@ class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 	}
 
 	public function getModel($routePart = null) {
+		Bbx_Log::write('OK');
 		$controller = $this->getActionController();
 		$request = $this->getRequest();
 		$controllerName = $request->getControllerName();
@@ -44,15 +45,15 @@ class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 		
 		if (($id = $request->getParam('id'))) {
 			$model = $model->find((int) $id);
+			if (!$model instanceof Bbx_Model) {
+				throw new Bbx_Controller_Rest_Exception(null, 404);
+			}
 			if (($rel = $request->getParam('rel')) && $routePart != 'id') {
 				$model = $model->$rel;
 				if (($relId = $request->getParam('rel_id')) && $routePart != 'rel') {
 					$model = $model->find((int) $relId);
 				}
 			}
-		}
-		if (!$model instanceof Bbx_Model) {
-			throw new Bbx_Controller_Rest_Exception(null, 404);
 		}
 
 		return $model;
