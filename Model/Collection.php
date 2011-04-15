@@ -203,6 +203,14 @@ class Bbx_Model_Collection implements IteratorAggregate, Countable, ArrayAccess 
 		return $this;
 	}
 	
+	public function isLinkable() {
+		foreach($this as $model) {
+			if ($model->isLinkable()) {
+				return true;
+			}
+		}
+	}
+	
 	protected function _reload(Bbx_Model $model) {
 		$this->_models = array();
 		if (isset($this->_relationship)) {
