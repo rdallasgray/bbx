@@ -77,17 +77,9 @@ class Bbx_Search {
 				$this->_deleteDocument($oldDoc->id);
 			}
 		}
-		$html = $doc->getHTML();
-		$contentStart = strpos($html, '<section id="main-content">');
-		$contentEnd = strpos($html, '</section>') - $contentStart;
-		if ($contentStart !== false) {
-			$html = substr($html, $contentStart, $contentEnd);
-		}
-		$html = str_replace(array('</', '<br'), array(' </', ' <br'), $html);
-		$html = strip_tags($html);
-		$contentSample = preg_replace('/[\t\s\n]+/', ' ', $html);
+		$contentSample = preg_replace('/[\t\s\n]+/', ' ', strip_tags($doc->getHtmlBody()));
 		$contentSample = trim($contentSample);
-		$contentSample = utf8_excerpt($contentSample, 128, false);
+		$contentSample = utf8_excerpt($contentSample, 128, false, true);
 		$fields['contentSample'] = htmlentities($contentSample, ENT_COMPAT, 'UTF-8');
 		$this->_indexDocument($doc, $fields);
 	}
