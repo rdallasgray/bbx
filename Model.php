@@ -179,7 +179,7 @@ class Bbx_Model implements IteratorAggregate {
 		if (!$this->_isInitialised) {
 			$this->_init();
 		}
-		return Bbx_Model_Registry::get('Relationships')->getRelationship($this,$childName);
+		return Bbx_Model_Registry::get('Relationships')->getRelationship($this, $childName);
 	}
 
 	public function getRelationshipData($childName = null) {
@@ -244,7 +244,7 @@ class Bbx_Model implements IteratorAggregate {
 		if ($args[0] instanceof Zend_Db_Table_Select) {
 			return new Bbx_Model_Collection($this, $this->_table()->fetchAll($args[0]));
 		}
-		throw new Bbx_Model_Exception('Bbx_Model::find() requires one numeric argument or one Zend_Db_Table_Select');
+		throw new Bbx_Model_Exception('Bbx_Model::find() requires one numeric argument, one array of params or one Zend_Db_Table_Select');
 	}
 	
 	public function find() {
@@ -716,15 +716,13 @@ class Bbx_Model implements IteratorAggregate {
 		if (method_exists($this, $method)) {
 			return $this->$method();
 		}
-		if ($this->$key instanceof Bbx_Model) {
+		try {
 			return $this->$key->isLinkable();
 		}
-		foreach($this->$key as $i) {
-			if ($i->isLinkable()) {
-				return true;
-			}
+		catch (Exception $e) {
+			Bbx_Log::write('Exception when checking isLinkable (' . $key . '): ' . $e->getMessage());
+			return false;
 		}
-		return false;
 	}
 	
 	public function hasLinkableRows() {
