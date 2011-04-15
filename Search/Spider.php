@@ -74,7 +74,7 @@ class Bbx_Search_Spider {
 		return 'http://' . $this->_host . $url;
 	}
 
-	public function start($url, $host = null) {
+	public function start($url, $host = null, $reset = false) {
 
 		if (empty($url)) {
 			return;
@@ -93,7 +93,7 @@ class Bbx_Search_Spider {
 		Bbx_Log::debug('Starting Spider with url ' . $url);
 		$this->_report = Bbx_Model::load('SearchIndexReport')->create();
 		$this->_report->start();
-		$this->_spider($url);
+		$this->_spider($url, $reset);
 		$this->_search()->optimize();
 		$this->_report->complete($this->_indexed);
 		Bbx_Log::debug('Spider done');
@@ -102,7 +102,7 @@ class Bbx_Search_Spider {
 	protected function _spider($url = '/', $reset = false) {
 		if ($reset) {
 			Bbx_Log::write('Resetting search index');
-			$this->_search->reset();
+			$this->_search()->reset();
 		}
 		if (($url = $this->_sanitizeUrl($url))) {
 			if (!$this->_isVisited($url)) {
