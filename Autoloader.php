@@ -23,7 +23,6 @@ class Bbx_Autoloader implements Zend_Loader_Autoloader_Interface {
 		if (substr($class, 0, 10) === 'ViewHelper') {
 			
 			$class = substr($class, 11);
-			Bbx_Log::write($class);
 			$path = APPLICATION_PATH . '/modules/'.MODULE_NAME.'/views/helpers/'.$class.'.php';
 
 			if (Zend_Loader::isReadable($path)) {
