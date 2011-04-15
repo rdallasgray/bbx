@@ -106,6 +106,14 @@ class Bbx_Model_Relationship_Finder implements IteratorAggregate, Countable, Arr
 		return $c;
 	}
 	
+	public function create($attributes = array(), $useId = false) {
+		return $this->_relationship->create($this->_parentModel, $attributes, $useId);
+	}
+	
+	public function delete($id) {
+		return $this->_relationship->delete($this->_parentModel, $id);
+	}
+	
 	public function __toString() {
 		return (string) $this->_collection()->__toString();
 	}
