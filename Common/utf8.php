@@ -86,10 +86,17 @@ function utf8_str_pad($input,$pad_length,$pad_string = '',$pad_type = 1,$charset
 	return $str;
 }
 
-function utf8_excerpt($text,$chars,$balance_tags = true) {
-	if (mb_strlen($text) > $chars) {
-		$text = $text." ";
-		$text = mb_substr($text,0,$chars);
+function utf8_excerpt($text, $chars, $balance_tags = true, $middle = false) {
+	$len = mb_strlen($text);
+	if ($len > $chars) {
+		$text = $text . " ";
+		if ($middle) {
+			$start = (int) ($len - $chars) / 2;
+		}
+		else {
+			$start = 0;
+		}
+		$text = mb_substr($text, $start, $chars);
 		$last_space = mb_strrpos($text, ' ');
 		if ($last_space !== false) {
 			$text = mb_substr($text, 0, $last_space);
