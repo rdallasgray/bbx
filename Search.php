@@ -30,7 +30,6 @@ class Bbx_Search {
 			new Zend_Search_Lucene_Analysis_Analyzer_Common_Utf8Num_CaseInsensitive());
 		$indexPath = APPLICATION_PATH . '/modules/' . MODULE_NAME . '/search/index';
 		if (file_exists($indexPath)) {
-			Bbx_Log::debug('Index file exists');
 			$this->_index = Zend_Search_Lucene::open($indexPath);
 		}
 		else {
@@ -77,7 +76,7 @@ class Bbx_Search {
 				$this->_deleteDocument($oldDoc->id);
 			}
 		}
-		$contentSample = preg_replace('/[\t\s\n]+/', ' ', strip_tags($doc->getHtmlBody()));
+		$contentSample = preg_replace('/([\s\r\n\t]*<[^>]+>[\s\r\n\t]*)+/', ' ', $doc->getHtmlBody());
 		$contentSample = trim($contentSample);
 		$contentSample = utf8_excerpt($contentSample, 128, false, true);
 		$fields['contentSample'] = htmlentities($contentSample, ENT_COMPAT, 'UTF-8');
