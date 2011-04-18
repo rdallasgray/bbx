@@ -101,12 +101,18 @@ function utf8_excerpt($text, $chars, $balance_tags = true, $middle = false) {
 		if ($last_space !== false) {
 			$text = mb_substr($text, 0, $last_space);
 		}
-		$text = $text." ...";
+		if ($middle) {
+			$first_space = mb_strpos($text, ' ');
+			if ($first_space !== false) {
+				$text = mb_substr($text, $first_space);
+			}
+		}
+		$text = $text." …";
 	}
 	if ($balance_tags) {
 		$text = balance_tags($text);
 	}
-	return $text;
+	return trim($text, "\t\n\r\0\x0B,.;'\"()-/");
 }
 
 ?>
