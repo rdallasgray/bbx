@@ -14,7 +14,7 @@ class Bbx_View_Helper_BasicNavigation extends Zend_View_Helper_Abstract {
 		return $this->view->navigation()
 			->findHelper('menu')
 			->menu($this->_navigation)
-			->setRenderInvisible(true);
+			->setRenderInvisible(false);
 	}
 	
 	public function findAssociations($model) {
