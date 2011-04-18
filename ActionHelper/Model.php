@@ -32,7 +32,6 @@ class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 	}
 
 	public function getModel($routePart = null) {
-		Bbx_Log::write('OK');
 		$controller = $this->getActionController();
 		$request = $this->getRequest();
 		$controllerName = $request->getControllerName();
