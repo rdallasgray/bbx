@@ -107,27 +107,32 @@ class Bbx_Search_Spider {
 		if (($url = $this->_sanitizeUrl($url))) {
 			if (!$this->_isVisited($url)) {
 				$this->_client->setUri($this->_getAbsoluteUrl($url));
-				$response = $this->_client->request();
-				$status = $response->getStatus();
-				Bbx_Log::write('Client response code ' . $status);
-				if ($status == '200') {
-					$data = $response->getBody();
-					$doc = Zend_Search_Lucene_Document_Html::loadHTML($data, false, 'utf-8');
-					$this->_search()->indexDoc($doc, $url);
-					$this->_indexed++;
-					$this->_visited[] = $url;
-					$links = array_diff($doc->getLinks(), $this->_visited);
-					foreach ($links as $link) {
-						if (count($this->_visited) < $this->_maxLinks) {
-							Bbx_Log::debug('Spidering url ' . $link);
-							$this->_spider($link);
-						}
-						else {
-							Bbx_Log::debug('Reached max number of links (' . $this->_maxLinks . '), returning');
+				try {
+					$response = $this->_client->request();
+					$status = $response->getStatus();
+					Bbx_Log::write('Client response code ' . $status);
+					if ($status == '200') {
+						$data = $response->getBody();
+						$doc = Zend_Search_Lucene_Document_Html::loadHTML($data, false, 'utf-8');
+						$this->_search()->indexDoc($doc, $url);
+						$this->_indexed++;
+						$this->_visited[] = $url;
+						$links = array_diff($doc->getLinks(), $this->_visited);
+						foreach ($links as $link) {
+							if (count($this->_visited) < $this->_maxLinks) {
+								Bbx_Log::debug('Spidering url ' . $link);
+								$this->_spider($link);
+							}
+							else {
+								Bbx_Log::debug('Reached max number of links (' . $this->_maxLinks . '), returning');
+							}
 						}
 					}
+					$this->_visited[] = $url;
 				}
-				$this->_visited[] = $url;
+				catch (Exception $e) {
+					Bbx_Log::write('Request failed: ' . $e->getMessage());
+				}
 			}
 		}
 	}
