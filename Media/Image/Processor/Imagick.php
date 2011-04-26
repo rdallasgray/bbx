@@ -68,7 +68,10 @@ class Bbx_Media_Image_Processor_Imagick extends Bbx_Media_Image_Processor_Abstra
 	}
 	
 	protected function _save($writePath) {
-		$this->_resource->setImageCompressionQuality(90);
+		$this->_resource->setImageColorspace(Imagick::COLORSPACE_RGB); 
+		$this->_resource->setCompression(Imagick::COMPRESSION_JPEG); 
+		$this->_resource->setCompressionQuality(90); 
+		$this->_resource->setImageFormat('jpeg');
 		try {
 			$this->_resource->writeImage($writePath);
 		}
