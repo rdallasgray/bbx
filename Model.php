@@ -549,6 +549,9 @@ class Bbx_Model implements IteratorAggregate {
 		if (isset($rowData->$key)) {
 			unset($rowData->$key);
 		}
+		else {
+			Bbx_Model_Registry::get('Relationships')->destroyRelationshipDataFor($this, $key);
+		}
 	}
 
 	public function __call($method,$arguments) {
