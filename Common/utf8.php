@@ -107,12 +107,12 @@ function utf8_excerpt($text, $chars, $balance_tags = true, $middle = false) {
 				$text = mb_substr($text, $first_space);
 			}
 		}
-		$text = $text." …";
 	}
 	if ($balance_tags) {
 		$text = balance_tags($text);
 	}
-	return trim($text, "\t\n\r\0\x0B,.;'\"()-/");
+	$text = preg_replace("/^[^a-zA-Z0-9]+/", "", $text);
+	return $text . ' …';
 }
 
 ?>
