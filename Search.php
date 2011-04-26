@@ -77,8 +77,7 @@ class Bbx_Search {
 			}
 		}
 		$contentSample = preg_replace('/([\s\r\n\t]*<[^>]+>[\s\r\n\t]*)+/', ' ', $doc->getHtmlBody());
-		$contentSample = trim($contentSample);
-		$contentSample = utf8_excerpt($contentSample, 128, false, true);
+		$contentSample = utf8_excerpt(trim($contentSample), 128, false, true);
 		$fields['contentSample'] = htmlentities($contentSample, ENT_COMPAT, 'UTF-8');
 		$this->_indexDocument($doc, $fields);
 	}
