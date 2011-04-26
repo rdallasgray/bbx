@@ -22,7 +22,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		parent::preDispatch();
 		$request = $this->getRequest();
 		if (($rel = $request->getParam('rel'))) {
-			if (method_exists($this, $rel . 'Action') && !$request->getParam('final'))  {
+			if (method_exists($this, Inflector::camelize($rel) . 'Action') && !$request->getParam('final'))  {
 				$request->setActionName($rel)->setParam('final', true)->setDispatched(false);
 				return;
 			}
