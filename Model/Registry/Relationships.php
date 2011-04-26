@@ -67,15 +67,25 @@ class Bbx_Model_Registry_Relationships extends Bbx_Model_Registry_Abstract {
 		throw new Zend_Exception('No relationship registered for '.$parentModelName.'-'.$childName);
 	}
 	
-	public function destroyRelationshipDataFor($parentModel) {
+	public function destroyRelationshipDataFor($parentModel, $childName = null) {
 		if (!isset($parentModel->id)) {
 			return;
 		}
 		$parentModelName = get_class($parentModel);
-		if (isset($this->_data[$parentModelName])) {
-			foreach($this->_data[$parentModelName] as $key => $value) {
-				if (array_key_exists('model', $this->_data[$parentModelName][$key])) {
-					unset($this->_data[$parentModelName][$key]['model']);
+		if (array_key_exists($parentModelName, $this->_data)) {
+			if ($childName != null) {
+				$childName = Inflector::singularize($childName);
+				if (array_key_exists($childName, $this->_data[$parentModelName])) {
+					if (array_key_exists('model', $this->_data[$parentModelName][$childName])) {
+						unset($this->_data[$parentModelName][$childName]['model']);
+					}
+				}
+			}
+			else {
+				foreach($this->_data[$parentModelName] as $key => $value) {
+					if (array_key_exists('model', $this->_data[$parentModelName][$key])) {
+						unset($this->_data[$parentModelName][$key]['model']);
+					}
 				}
 			}
 		}
