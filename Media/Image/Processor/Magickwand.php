@@ -69,7 +69,10 @@ class Bbx_Media_Image_Processor_Magickwand extends Bbx_Media_Image_Processor_Abs
 	
 	protected function _save($writePath) {
 		try {
-			MagickSetImageCompressionQuality($this->_resource,85);
+			MagickSetImageColorspace($this->_resource, MW_RGBColorspace);
+			MagickSetCompression($this->_resource, MW_JPEGCompression); 
+			MagickSetCompressionQuality($this->_resource,85);
+			MagickSetImageFormat($this->_resource, 'jpeg');
 			MagickWriteImage($this->_resource,$writePath);
 		}
 		catch (Exception $e) {
