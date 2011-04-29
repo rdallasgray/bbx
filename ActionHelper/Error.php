@@ -21,7 +21,7 @@ class Bbx_ActionHelper_Error extends Zend_Controller_Action_Helper_Abstract {
 	}
 
 	public function notify(Exception $e) {
-		if (isset(Bbx_Config::get()->site->support_address) && APPLICATION_ENV == 'production') {
+		if (isset(Bbx_Config::get()->site->support_address) && APPLICATION_ENV != 'development') {
 			try {
 				$mail = Bbx_Mail::instance();
 				$mail->setFrom('error@'.Bbx_Config::get()->site->location,Bbx_Config::get()->site->location);
