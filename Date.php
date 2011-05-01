@@ -132,7 +132,7 @@ class Bbx_Date {
 		$endDate = self::_getFinalDate($endTimestamp, $endParts, $format);
 		
 		return $startDate === $endDate 
-			? self::_trim($startDate) : self::_trim($startDate) . $separator  . '&#8203;' . self::_trim($endDate);
+			? self::_trim($startDate) : self::_trim($startDate) . $separator . self::_trim($endDate);
 	}
 	
 	public static function timeRange($start = null, $end = null, $format = null, $separator = '–') {
