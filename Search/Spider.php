@@ -19,7 +19,7 @@ You should have received a copy of the GNU General Public License along with Bac
 class Bbx_Search_Spider {
 
 	protected $_visited = array();
-	protected $_maxLinks = 10000;
+	protected $_maxLinks = 100000;
 	protected $_indexed = 0;
 	protected $_host;
 	protected $_report;
