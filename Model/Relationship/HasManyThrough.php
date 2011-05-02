@@ -31,13 +31,14 @@ class Bbx_Model_Relationship_HasManyThrough extends Bbx_Model_Relationship_Abstr
 		if (array_key_exists('through',$parentAttributes)) {
 			$relationshipType .= 'Through';
 		}
-		
+				
 		$select->from($this->_childTableName);
 
 		$select = call_user_func_array(
 			array($relationshipType,'getExternalConditions'),
 			array($select,$parentModel,$this->_throughName,$parentAttributes)
 		);
+		
 		$this->_throughRelationship = Bbx_Model_Registry::get('Relationships')->getRelationshipDataFor(
 			$this->_throughModelName,$this->_childName);
 
@@ -102,11 +103,16 @@ class Bbx_Model_Relationship_HasManyThrough extends Bbx_Model_Relationship_Abstr
 
 		$childName = array_key_exists('source',$attributes) ? attributes('source') : $childName;
 		$childModelName = Inflector::classify($childName);
-		$childTableName = Bbx_Model::load($childModelName)->getTableName(); 
+		$childModel = Bbx_Model::load($childModelName);
+		$childTableName = $childModel->getTableName();
+		$childColumns = $childModel->columns();
 
 		$throughName = $attributes['through']; 
 		$throughModelName = Inflector::classify($throughName);
-		$throughTableName = Bbx_Model::load($throughModelName)->getTableName();
+		$throughModel = Bbx_Model::load($throughModelName);
+		$throughTableName = $throughModel->getTableName();
+		$throughColumns = $throughModel->columns();
+		
 		
 		if (!array_key_exists($childTableName,$select->getPart('from'))) {
 			$select->from($childTableName,array()); 
@@ -119,11 +125,20 @@ class Bbx_Model_Relationship_HasManyThrough extends Bbx_Model_Relationship_Abstr
 		else {
 			$refColumn = Inflector::singularize($parentTableName).'_id';
 		}
+		
+		$childKey = Inflector::singularize($childTableName).'_id';
+		$throughKey = Inflector::singularize($throughTableName).'_id';
 
 		$select
 			->from($throughTableName,array()) 
-			->where("`".$throughTableName."`.`".$refColumn."` = ".$parentModel->id) 
-			->where("`".$throughTableName."`.`".Inflector::singularize($childTableName)."_id` = `".$childTableName."`.id");
+			->where("`".$throughTableName."`.`".$refColumn."` = ".$parentModel->id);
+			
+		if (in_array($childKey, $throughColumns)) {
+			$select->where("`".$throughTableName."`.`".$childKey."` = `".$childTableName."`.id");
+		}
+		else if (in_array($throughKey, $childColumns)) {
+			$select->where("`".$childTableName."`.`".$throughKey."` = `".$throughTableName."`.id");
+		}
 
 		if (array_key_exists('as',$attributes)) {
 			$select
