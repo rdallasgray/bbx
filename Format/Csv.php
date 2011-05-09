@@ -45,7 +45,12 @@ class Bbx_Format_Csv {
 		foreach ($cols as $key => $col) {
 			if (@strpos($col,'_id',(strlen($col)-3)) !== false) {
 				$col = substr($col,0,-3);
-				$a[] = $model->$col->__toString();
+				if ($model->$col instanceof Bbx_Model) {
+					$a[] = $model->$col->__toString();
+				}
+				else {
+					$a[] = "";
+				}
 			}
 			else {
 				$a[] = $model->$col;
