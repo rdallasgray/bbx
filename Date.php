@@ -261,7 +261,8 @@ class Bbx_Date {
 	protected static function _getDateTimeParts($str) {
 		$parts = array('', '');
 		$matches = array();
-		if (preg_match('/' . self::YEAR_PATTERN . '-' . self::MONTH_PATTERN . '-' . self::DAY_PATTERN . '/', $str, $matches) > 0) {
+		$datePattern =  '/(' . self::YEAR_PATTERN . ')(-' . self::MONTH_PATTERN . ')?(-' . self::DAY_PATTERN . ')?/';
+		if (preg_match($datePattern, $str, $matches) > 0) {
 			$parts[0] = $matches[0];
 		}
 		if (preg_match('/' . self::HOUR_PATTERN . ':' . self::MINUTE_PATTERN . ':' . self::SECOND_PATTERN . '/', $str, $matches) > 0) {
@@ -283,13 +284,11 @@ class Bbx_Date {
 		return $valid;
 	}
 	
-	protected static function _getValidDateParts($date) {
-		$parts = self::_getDateTimeParts($date);
+	protected static function _getValidDateParts($dateString) {
+		$parts = self::_getDateTimeParts($dateString);
 		$date = $parts[0];
-		
 		$dateParts = explode('-',$date);
 		$dateParts = array_pad($dateParts,3,"00");
-
 		$valid = array();
 		
 		if (preg_match('/^' . self::YEAR_PATTERN . '$/',$dateParts[0]) !== 0) {
