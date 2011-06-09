@@ -82,6 +82,9 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 		}
 		$this->setSize($size);
 		$path = str_replace(':size', $size, $this->_mediaUrl) . '/' . $this->id . '.' . $this->_extension;
+		if (isset($this->_cdn) && !is_readable(APPLICATION_PATH . '/..' . $path)) {
+			return $this->_cdn->filePath($path);
+		}
 		$absolutePath = $absolute ? 'http://'.$_SERVER['SERVER_NAME'] : '';
 		return $absolutePath . $path;
 	}
