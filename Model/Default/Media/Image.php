@@ -30,24 +30,16 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 		if ($this->getSize() === 'original' && !empty($this->width)) {
 			return $this->width;
 		}
-		try {
-			return Bbx_Media_Image::load($this->getMediaPath())->width();
-		}
-		catch (Exception $e) {
-			return 0;
-		}
+		$dims = $this->_calculateImageGeometry($this->_sizes[$this->getSize()], $this->width, $this->height);
+		return $dims[0];
 	}
 	
 	public function height() {
 		if ($this->getSize() === 'original' && !empty($this->height)) {
 			return $this->height;
 		}
-		try {
-			return Bbx_Media_Image::load($this->getMediaPath())->height();
-		}
-		catch (Exception $e) {
-			return 0;
-		}
+		$dims = $this->_calculateImageGeometry($this->_sizes[$this->getSize()], $this->width, $this->height);
+		return $dims[1];
 	}
 	
 	public function getMinHeightForSize($size) {
@@ -162,7 +154,7 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 		}
 		
 		$img = Bbx_Media_Image::load($this->getMediaPath('original'));
-		list($width, $height) = $this->_calculateImageGeometry($this->_sizes[$size], $img);
+		list($width, $height) = $this->_calculateImageGeometry($this->_sizes[$size], $this->width, $this->height);
 		
 		try {
 			$img->resize((int) $width, (int) $height)->save($this->getMediaPath($size, true));
@@ -173,7 +165,7 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 		}
 	}
 	
-	protected function _calculateImageGeometry($geom, $img) {
+	protected function _calculateImageGeometry($geom, $origWidth, $origHeight) {
 		preg_match('/(?<width>^\d*)x(?<height>\d*)(?<modifier>\^{0,1})/', $geom, $matches);
 		$reqWidth = (int) $matches['width'];
 		$reqHeight = (int) $matches['height'];
@@ -182,9 +174,6 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 		
 		$newWidth = $reqWidth;
 		$newHeight = $reqHeight;
-
-		$origWidth = $img->width();
-		$origHeight = $img->height();
 				
 		if ($reqWidth === 0 || ($reqHeight > 0 && (($reqWidth/$reqHeight) > ($origWidth/$origHeight)))) {
 			// width is not specified, or required width/height ratio is greater than original width/height ratio --
