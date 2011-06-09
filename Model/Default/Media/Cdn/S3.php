@@ -25,7 +25,7 @@ class Bbx_Model_Default_Media_Cdn_S3 extends Bbx_Model_Default_Media_Cdn_Abstrac
 	}
 	
 	public function url($path) {
-		return $this->_endpoint . $this->_bucket . '/' . $path;
+		return $this->_endpoint . '/' . $this->_bucket . '/' . $path;
 	}
 	
 	public static function init() {
