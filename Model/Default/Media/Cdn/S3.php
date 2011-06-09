@@ -24,6 +24,10 @@ class Bbx_Model_Default_Media_Cdn_S3 extends Bbx_Model_Default_Media_Cdn_Abstrac
 		return $this->_streamPath() . $path;
 	}
 	
+	public function url($path) {
+		return $this->_endpoint . $this->_bucket . '/' . $path;
+	}
+	
 	public static function init() {
 		if (!Zend_Registry::isRegistered('cdn')) {
 			Zend_Registry::set('cdn', new Bbx_Model_Default_Media_Cdn_S3());
