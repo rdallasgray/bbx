@@ -21,18 +21,18 @@ class Bbx_Model_Default_Media extends Bbx_Model {
 	protected $_mimeType;
 	protected $_mediaPath;
 	protected $_extension;
-	protected $_cdnType;
 	protected $_cdn;
 
 	public function __construct() {
 		parent::__construct();
-		if (isset($this->_cdnType)) {
-			$this->_initCdn();
+		$cdnType = Bbx_Config::get()->site->cdn->type;
+		if ($cdnType != '') {
+			$this->_initCdn($cdnType);
 		}
 	}
 	
-	protected function _initCdn() {
-		switch($this->_cdnType) {
+	protected function _initCdn($cdnType) {
+		switch($cdnType) {
 			case 's3':
 			$this->_cdn = Bbx_Model_Default_Media_Cdn_S3::init();
 			break;
