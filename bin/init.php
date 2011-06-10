@@ -9,7 +9,7 @@ defined('APPLICATION_PATH')
 defined('APPLICATION_ENV')
     || define('APPLICATION_ENV',
               (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV')
-                                         : 'testing'));
+                                         : 'production'));
  
 // Typically, you will also want to add your library/ directory
 // to the include_path, particularly if it contains your ZF installed

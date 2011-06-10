@@ -35,8 +35,42 @@ class Bbx_Model_Default_Media_Cdn_S3 extends Bbx_Model_Default_Media_Cdn_Abstrac
 		return Zend_Registry::get('cdn');
 	}
 	
-	public static function sync() {
-		$root = APPLICATION_PATH . '/../www/media';
+	public function sync($start) {
+		$root = realpath(APPLICATION_PATH . '/..');
+		$root_length = strlen($root);
+		$remote_path = $this->_streamPath();
+		Bbx_Log::write("Starting sync at " . $root . $start);
+		Bbx_Log::write("Syncing to " . $remote_path);
+		$stack = array();
+		array_push($stack, $root . $start);
+		while(!empty($stack)) {
+			$node = array_pop($stack);
+			if (is_dir($node)) {
+				$rel_path = substr($node, $root_length);
+				Bbx_Log::write("found dir " . $node);
+				Bbx_Log::write("checking remote dir " . $remote_path . $rel_path);
+				if (!is_resource(opendir($remote_path . $$rel_path))) {
+					Bbx_Log::write($remote_path . $rel_path . ' does not exist, creating');
+//					mkdir($remote_path . $rel_path);
+				}
+				$dir_res = opendir($node);
+				while(false !== ($dir_contents = readdir($dir_res))) {
+					if (substr($dir_contents, 0, 1) == '.') {
+						continue;
+					}
+					$path = $node . '/' . $dir_contents;
+					Bbx_Log::write("adding " . $path . " to stack");
+					array_push($stack, $path);
+				}
+			}
+			else if (is_file($node)) {
+				$rel_path = substr($node, $root_length);
+				Bbx_Log::write("copying " . $node . " to " . $remote_path . $rel_path);
+//				copy($node, $remote_path . $rel_path);
+				Bbx_Log::write("deleting " . $node . " from local fs");
+//				unlink($node);
+			}
+		}
 	}
 	
 }
