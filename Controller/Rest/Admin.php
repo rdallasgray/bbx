@@ -52,6 +52,7 @@ class Bbx_Controller_Rest_Admin extends Bbx_Controller_Rest {
 			Bbx_Log::debug("Unable to close session: ".$e->getMessage());
 		}
 		$this->_doSearchIndex();
+		$this->_doCdnSync();
 	}
 	
 	protected function _doSearchIndex() {
@@ -68,6 +69,12 @@ class Bbx_Controller_Rest_Admin extends Bbx_Controller_Rest {
 		}
 		catch (Exception $e) {
 			Bbx_Log::write('Unable to load SearchIndexReport model');
+		}
+	}
+	
+	protected function _doCdnSync() {
+		if (APPLICATION_ENV == 'production' && Bbx_Config::get()->site->cdn->endpoint != '') {
+			Bbx_Log::write('Doing CDN sync');
 		}
 	}
 
