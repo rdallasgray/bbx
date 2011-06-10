@@ -51,7 +51,7 @@ class Bbx_Controller_Rest_Admin extends Bbx_Controller_Rest {
 		catch (Exception $e) {
 			Bbx_Log::debug("Unable to close session: ".$e->getMessage());
 		}
-//		$this->_doSearchIndex();
+		$this->_doSearchIndex();
 		$this->_doCdnSync();
 	}
 	
