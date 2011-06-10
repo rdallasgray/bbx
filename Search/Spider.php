@@ -90,18 +90,18 @@ class Bbx_Search_Spider {
 			throw new Zend_Exception('No host set for Spider');
 		}
 
-		Bbx_Log::debug('Starting Spider with url ' . $url);
+		Bbx_Log::write('Starting Spider with url ' . $url, null, 'search_index_log');
 		$this->_report = Bbx_Model::load('SearchIndexReport')->create();
 		$this->_report->start();
 		$this->_spider($url, $reset);
 		$this->_search()->optimize();
 		$this->_report->complete($this->_indexed);
-		Bbx_Log::debug('Spider done');
+		Bbx_Log::write('Spider done', null, 'search_index_log');
 	}
 	
 	protected function _spider($url = '/', $reset = false) {
 		if ($reset) {
-			Bbx_Log::write('Resetting search index');
+			Bbx_Log::write('Resetting search index', null, 'search_index_log');
 			$this->_search()->reset();
 		}
 		if (($url = $this->_sanitizeUrl($url))) {
@@ -110,7 +110,7 @@ class Bbx_Search_Spider {
 				try {
 					$response = $this->_client->request();
 					$status = $response->getStatus();
-					Bbx_Log::write('Client response code ' . $status);
+					Bbx_Log::write('Client response code ' . $status, null, 'search_index_log');
 					if ($status == '200') {
 						$data = $response->getBody();
 						$doc = Zend_Search_Lucene_Document_Html::loadHTML($data, false, 'utf-8');
@@ -120,18 +120,18 @@ class Bbx_Search_Spider {
 						$links = array_diff($doc->getLinks(), $this->_visited);
 						foreach ($links as $link) {
 							if (count($this->_visited) < $this->_maxLinks) {
-								Bbx_Log::debug('Spidering url ' . $link);
+								Bbx_Log::debug('Spidering url ' . $link, null, 'search_index_log');
 								$this->_spider($link);
 							}
 							else {
-								Bbx_Log::debug('Reached max number of links (' . $this->_maxLinks . '), returning');
+								Bbx_Log::write('Reached max number of links (' . $this->_maxLinks . '), returning', null, 'search_index_log');
 							}
 						}
 					}
 					$this->_visited[] = $url;
 				}
 				catch (Exception $e) {
-					Bbx_Log::write('Request failed: ' . $e->getMessage());
+					Bbx_Log::write('Request failed: ' . $e->getMessage(), null, 'search_index_log');
 				}
 			}
 		}

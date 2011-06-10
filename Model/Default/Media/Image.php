@@ -157,7 +157,7 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 			Bbx_Log::debug($size . ' exists (' . $this->getMediaPath($size) . ')');
 			return;
 		}
-		
+		// This needs sorted to work with S3!!!
 		$img = Bbx_Media_Image::load($this->getMediaPath('original'));
 		list($width, $height) = $this->_calculateImageGeometry($this->_sizes[$size], $this->width, $this->height);
 		

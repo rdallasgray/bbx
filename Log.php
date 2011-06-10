@@ -21,12 +21,16 @@ class Bbx_Log {
 	public static function write($str, $type = 'info', $log = 'main_log') {
 
 		if (!Zend_Registry::isRegistered($log)) {
-
-			$logFilePath = APPLICATION_PATH . '/../logs';
+			$logFilePath = APPLICATION_PATH . '/../logs/' . $log;
 			if(!file_exists($logFilePath)) {
-				mkdir($logFilePath);
+				touch($logFilePath);
 			}
-			$writer = new Zend_Log_Writer_Stream($logFilePath.'/'.$log);
+			else if (filesize($logFilePath) > 2000000) {
+				exec('tail -n 10000 ' . $logFilePath . ' > ' . $logFilePath . '__new');
+				copy($logFilePath . '__new', $logFilePath);
+				unlink($logFilePath . '__new');
+			}
+			$writer = new Zend_Log_Writer_Stream($logFilePath);
 			$logger = new Zend_Log($writer);
 			Zend_Registry::set($log,$logger);
 		}

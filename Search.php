@@ -33,10 +33,10 @@ class Bbx_Search {
 			$this->_index = Zend_Search_Lucene::open($indexPath);
 		}
 		else {
-			Bbx_Log::debug('Creating index file');
+			Bbx_Log::write('Creating index file', null, 'search_index_log');
 			$this->_index = Zend_Search_Lucene::create($indexPath);
 			if (!$this->_index instanceof Zend_Search_Lucene_Interface) {
-				Bbx_Log::debug('Unable to create index file');
+				Bbx_Log::write('Unable to create index file', null, 'search_index_log');
 			}
 		}
 	}
@@ -69,7 +69,7 @@ class Bbx_Search {
 		$fields['docId'] = md5($fields['url']);
 		if ($oldDoc = $this->_documentExists($fields['docId'])) {
 			if (md5($doc->body) == $oldDoc->checkSum) {
-				Bbx_Log::debug('No change in document');
+				Bbx_Log::write('No change in document', null, 'search_index_log');
 				return;
 			}
 			else {
@@ -89,11 +89,11 @@ class Bbx_Search {
 			$doc->addField(Zend_Search_Lucene_Field::Text($name, $value));
 		}
 		$this->_index->addDocument($doc);
-		Bbx_Log::debug('Added ' . urldecode($doc->url) . ' to index');
+		Bbx_Log::write('Added ' . urldecode($doc->url) . ' to index', null, 'search_index_log');
 	}
 	
 	protected function _deleteDocument($id) {
-		Bbx_Log::debug('Deleting document id '.$id);
+		Bbx_Log::write('Deleting document id '.$id, null, 'search_index_log');
 		$this->_index->delete($id);
 	}
 	
@@ -101,7 +101,7 @@ class Bbx_Search {
 		@$hits = $this->_index->find('docId:' . $docId);
 		foreach ($hits as $hit) {
 			if ($hit->docId == $docId) {
-				Bbx_Log::debug('Found existing document: ' . urldecode($hit->url));
+				Bbx_Log::write('Found existing document: ' . urldecode($hit->url), null, 'search_index_log');
 				return $hit;
 			}
 		}
