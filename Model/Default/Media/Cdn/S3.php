@@ -66,9 +66,10 @@ class Bbx_Model_Default_Media_Cdn_S3 extends Bbx_Model_Default_Media_Cdn_Abstrac
 			else if (is_file($node)) {
 				$rel_path = substr($node, $root_length);
 				Bbx_Log::write("copying " . $node . " to " . $remote_path . $rel_path);
-//				copy($node, $remote_path . $rel_path);
-				Bbx_Log::write("deleting " . $node . " from local fs");
-//				unlink($node);
+//				if (copy($node, $remote_path . $rel_path)) {
+//					Bbx_Log::write("deleting " . $node . " from local fs");
+//					unlink($node);
+//				}
 			}
 		}
 	}
