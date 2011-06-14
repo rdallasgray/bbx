@@ -25,8 +25,9 @@ class Bbx_Search_Spider {
 	protected $_report;
 	protected $_client;
 	protected $_search;
+	protected $_instance = null;
 
-	public function __construct() {
+	protected function __construct() {
 		Zend_Search_Lucene_Document_Html::setExcludeNoFollowLinks(true);
 		$this->_client = new Zend_Http_Client();
 		$this->_client->setConfig(array('timeout' => 60));
@@ -73,7 +74,7 @@ class Bbx_Search_Spider {
 	protected function _getAbsoluteUrl($url) {
 		return 'http://' . $this->_host . $url;
 	}
-
+	
 	public function start($url, $host = null, $reset = false) {
 
 		if (empty($url)) {

@@ -85,6 +85,7 @@ class Bbx_Model_Default_Media_Cdn_S3 extends Bbx_Model_Default_Media_Cdn_Abstrac
 				}
 			}
 		}
+		$this->_syncing = false;
 	}
 	
 }

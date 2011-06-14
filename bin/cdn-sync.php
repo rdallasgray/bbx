@@ -2,6 +2,14 @@
 
 require('init.php');
 
+$sentinel_file = APPLICATION_PATH . '/../www/media/cdn_syncing';
+
+if (file_exists($sentinel_file)) {
+	Bbx_Log::write('CDN is already syncing');
+	exit();
+}
+
+touch($sentinel_file);
 
 set_time_limit(7200);
 $start = $argv[1];
@@ -14,5 +22,7 @@ switch($cdnType) {
 }
 
 $cdn->sync($start);
+
+unlink($sentinel_file);
 
 ?>
