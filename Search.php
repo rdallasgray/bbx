@@ -20,7 +20,7 @@ class Bbx_Search {
 	
 	protected $_index;
 	protected $_query;
-	const LOG = self::LOG;
+	const LOG = 'search_index_log';
 	
 	public static function reset() {
 		Zend_Search_Lucene::create(APPLICATION_PATH . '/modules/' . MODULE_NAME . '/search/index');
