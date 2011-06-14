@@ -2,7 +2,7 @@
 
 require('init.php');
 
-$sentinel_file = APPLICATION_PATH . '/../www/media/cdn_syncing';
+$sentinel_file = APPLICATION_PATH . '/../www/media/.cdn_syncing';
 
 if (file_exists($sentinel_file)) {
 	Bbx_Log::write('CDN is already syncing');

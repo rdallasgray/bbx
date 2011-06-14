@@ -119,7 +119,6 @@ class Bbx_Search_Spider {
 						$doc = Zend_Search_Lucene_Document_Html::loadHTML($data, false, 'utf-8');
 						$this->_search()->indexDoc($doc, $url);
 						$this->_indexed++;
-						$this->_visited[] = $url;
 						$links = array_diff($doc->getLinks(), $this->_visited);
 						foreach ($links as $link) {
 							if (count($this->_visited) < $this->_maxLinks) {

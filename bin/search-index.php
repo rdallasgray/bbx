@@ -2,7 +2,7 @@
 
 require('init.php');
 
-$sentinel_file = APPLICATION_PATH . '/modules/' . MODULE_NAME . '/search/indexing';
+$sentinel_file = APPLICATION_PATH . '/modules/' . MODULE_NAME . '/search/.indexing';
 
 if (file_exists($sentinel_file)) {
 	Bbx_Log::write('Spider is already indexing');
