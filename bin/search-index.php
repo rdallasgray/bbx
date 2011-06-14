@@ -13,7 +13,8 @@ touch($sentinel_file);
 
 set_time_limit(21600);
 $host = $argv[1];
-Bbx_Search_Spider::start('/', $host);
+$spider = new Bbx_Search_Spider();
+$spider->start('/', $host);
 
 unlink($sentinel_file);
 

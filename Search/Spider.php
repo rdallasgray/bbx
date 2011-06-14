@@ -27,7 +27,7 @@ class Bbx_Search_Spider {
 	protected $_search;
 	protected $_instance = null;
 
-	protected function __construct() {
+	public function __construct() {
 		Zend_Search_Lucene_Document_Html::setExcludeNoFollowLinks(true);
 		$this->_client = new Zend_Http_Client();
 		$this->_client->setConfig(array('timeout' => 60));
