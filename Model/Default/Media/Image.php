@@ -157,8 +157,14 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 			Bbx_Log::debug($size . ' exists (' . $this->getMediaPath($size) . ')');
 			return;
 		}
-		// This needs sorted to work with S3!!!
-		$img = Bbx_Media_Image::load($this->getMediaPath('original'));
+		$localPath = $this->getMediaPath('original', true);
+		if (!is_readable($localPath)) {
+			$cdnPath = $this->getMediaPath('original');
+			if (!copy($cdnPath, $localPath)) {
+				throw new Bbx_Model_Exception("Couldn't copy media from " . $cdnPath . " to " . $localPath);
+			}
+		}
+		$img = Bbx_Media_Image::load($localPath);
 		list($width, $height) = $this->_calculateImageGeometry($this->_sizes[$size], $this->width, $this->height);
 		
 		try {

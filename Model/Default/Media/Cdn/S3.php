@@ -52,11 +52,12 @@ class Bbx_Model_Default_Media_Cdn_S3 extends Bbx_Model_Default_Media_Cdn_Abstrac
 				Bbx_Log::write("checking remote dir " . $remote_path . $rel_path, null, self::LOG);
 				if (!is_resource(opendir($remote_path . $$rel_path))) {
 					Bbx_Log::write($remote_path . $rel_path . ' does not exist, creating', null, self::LOG);
-//					if (!mkdir($remote_path . $rel_path)) {
-//						Bbx_Log::write('Unable to create directory, skipping', null, self::LOG);
-//						continue;
-//					}
+					if (!mkdir($remote_path . $rel_path)) {
+						Bbx_Log::write('Unable to create directory, skipping', null, self::LOG);
+						continue;
+					}
 				}
+				Bbx_Log::write("dir OK", null, self::LOG);
 				$dir_res = opendir($node);
 				while(false !== ($dir_contents = readdir($dir_res))) {
 					if (substr($dir_contents, 0, 1) == '.') {
@@ -70,10 +71,18 @@ class Bbx_Model_Default_Media_Cdn_S3 extends Bbx_Model_Default_Media_Cdn_Abstrac
 			else if (is_file($node)) {
 				$rel_path = substr($node, $root_length);
 				Bbx_Log::write("copying " . $node . " to " . $remote_path . $rel_path, null, self::LOG);
-//				if (copy($node, $remote_path . $rel_path)) {
-//					Bbx_Log::write("deleting " . $node . " from local fs");
-//					unlink($node);
-//				}
+				if (!copy($node, $remote_path . $rel_path)) {
+					Bbx_Log::write("unable to copy " . $node . " to " . $remote_path . $rel_path, null, self::LOG);
+				}
+				else {
+					Bbx_Log::write("copy OK", null, self::LOG);
+					if (!unlink($node)) {
+						Bbx_Log::write("unable to delete " . $node, null, self::LOG);
+					}
+					else {
+						Bbx_Log::write("deleted " . $node, null, self::LOG);
+					}
+				}
 			}
 		}
 	}
