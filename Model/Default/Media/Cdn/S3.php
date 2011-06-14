@@ -5,6 +5,7 @@ class Bbx_Model_Default_Media_Cdn_S3 extends Bbx_Model_Default_Media_Cdn_Abstrac
 	private $_service;
 	private $_bucket;
 	private $_endpoint;
+	const LOG = 'cdn_sync_log';
 	
 	protected function __construct() {
 		$this->_endpoint = Bbx_Config::get()->site->cdn->endpoint;
@@ -39,19 +40,22 @@ class Bbx_Model_Default_Media_Cdn_S3 extends Bbx_Model_Default_Media_Cdn_Abstrac
 		$root = realpath(APPLICATION_PATH . '/..');
 		$root_length = strlen($root);
 		$remote_path = $this->_streamPath();
-		Bbx_Log::write("Starting sync at " . $root . $start, null, 'cdn_sync_log');
-		Bbx_Log::write("Syncing to " . $remote_path, null, 'cdn_sync_log');
+		Bbx_Log::write("Starting sync at " . $root . $start, null, self::LOG);
+		Bbx_Log::write("Syncing to " . $remote_path, null, self::LOG);
 		$stack = array();
 		array_push($stack, $root . $start);
 		while(!empty($stack)) {
 			$node = array_pop($stack);
 			if (is_dir($node)) {
 				$rel_path = substr($node, $root_length);
-				Bbx_Log::write("found dir " . $node, null, 'cdn_sync_log');
-				Bbx_Log::write("checking remote dir " . $remote_path . $rel_path, null, 'cdn_sync_log');
+				Bbx_Log::write("found dir " . $node, null, self::LOG);
+				Bbx_Log::write("checking remote dir " . $remote_path . $rel_path, null, self::LOG);
 				if (!is_resource(opendir($remote_path . $$rel_path))) {
-					Bbx_Log::write($remote_path . $rel_path . ' does not exist, creating', null, 'cdn_sync_log');
-//					mkdir($remote_path . $rel_path);
+					Bbx_Log::write($remote_path . $rel_path . ' does not exist, creating', null, self::LOG);
+//					if (!mkdir($remote_path . $rel_path)) {
+//						Bbx_Log::write('Unable to create directory, skipping', null, self::LOG);
+//						continue;
+//					}
 				}
 				$dir_res = opendir($node);
 				while(false !== ($dir_contents = readdir($dir_res))) {
@@ -59,13 +63,13 @@ class Bbx_Model_Default_Media_Cdn_S3 extends Bbx_Model_Default_Media_Cdn_Abstrac
 						continue;
 					}
 					$path = $node . '/' . $dir_contents;
-					Bbx_Log::write("adding " . $path . " to stack", null, 'cdn_sync_log');
+					Bbx_Log::write("adding " . $path . " to stack", null, self::LOG);
 					array_push($stack, $path);
 				}
 			}
 			else if (is_file($node)) {
 				$rel_path = substr($node, $root_length);
-				Bbx_Log::write("copying " . $node . " to " . $remote_path . $rel_path, null, 'cdn_sync_log');
+				Bbx_Log::write("copying " . $node . " to " . $remote_path . $rel_path, null, self::LOG);
 //				if (copy($node, $remote_path . $rel_path)) {
 //					Bbx_Log::write("deleting " . $node . " from local fs");
 //					unlink($node);
