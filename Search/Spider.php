@@ -94,7 +94,9 @@ class Bbx_Search_Spider {
 		$this->_report = Bbx_Model::load('SearchIndexReport')->create();
 		$this->_report->start();
 		$this->_spider($url, $reset);
+		Bbx_Log::write('Optimizing index', null, Bbx_Search::LOG);
 		$this->_search()->optimize();
+		Bbx_Log::write('Completing index', null, Bbx_Search::LOG);
 		$this->_report->complete($this->_indexed);
 		Bbx_Log::write('Spider done', null, Bbx_Search::LOG);
 	}
