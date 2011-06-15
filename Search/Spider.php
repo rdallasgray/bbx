@@ -25,12 +25,14 @@ class Bbx_Search_Spider {
 	protected $_report;
 	protected $_client;
 	protected $_search;
-	protected $_instance = null;
 
 	public function __construct() {
 		Zend_Search_Lucene_Document_Html::setExcludeNoFollowLinks(true);
 		$this->_client = new Zend_Http_Client();
-		$this->_client->setConfig(array('timeout' => 60));
+		$this->_client->setConfig(array(
+			'timeout' 	=> 10,
+			'keepalive'	=> true
+		));
 	}
 	
 	protected function _search() {
@@ -41,7 +43,7 @@ class Bbx_Search_Spider {
 	}
 
 	protected function _sanitizeUrl($url) {
-		if ($url == '') {
+		if (empty($url)) {
 			return false;
 		}
 		$schemeCheck = explode(':', $url);
@@ -68,7 +70,7 @@ class Bbx_Search_Spider {
 	}
 
 	protected function _isVisited($url) {
-		return in_array($url, $this->_visited);
+		return array_key_exists($url, $this->_visited);
 	}
 	
 	protected function _getAbsoluteUrl($url) {
@@ -94,7 +96,11 @@ class Bbx_Search_Spider {
 		Bbx_Log::write('Starting Spider with url ' . $url, null, Bbx_Search::LOG);
 		$this->_report = Bbx_Model::load('SearchIndexReport')->create();
 		$this->_report->start();
-		$this->_spider($url, $reset);
+		if ($reset) {
+			Bbx_Log::write('Resetting search index', null, Bbx_Search::LOG);
+			$this->_search()->reset();
+		}
+		$this->_spider($url);
 		Bbx_Log::write('Optimizing index', null, Bbx_Search::LOG);
 		$this->_search()->optimize();
 		Bbx_Log::write('Completing index', null, Bbx_Search::LOG);
@@ -102,38 +108,39 @@ class Bbx_Search_Spider {
 		Bbx_Log::write('Spider done', null, Bbx_Search::LOG);
 	}
 	
-	protected function _spider($url = '/', $reset = false) {
-		if ($reset) {
-			Bbx_Log::write('Resetting search index', null, Bbx_Search::LOG);
-			$this->_search()->reset();
-		}
-		if (($url = $this->_sanitizeUrl($url))) {
-			if (!$this->_isVisited($url)) {
-				$this->_client->setUri($this->_getAbsoluteUrl($url));
-				try {
-					$response = $this->_client->request();
-					$status = $response->getStatus();
-					Bbx_Log::write('Client response code ' . $status, null, Bbx_Search::LOG);
-					if ($status == '200') {
-						$data = $response->getBody();
-						$doc = Zend_Search_Lucene_Document_Html::loadHTML($data, false, 'utf-8');
-						$this->_search()->indexDoc($doc, $url);
-						$this->_indexed++;
-						$links = array_diff($doc->getLinks(), $this->_visited);
-						foreach ($links as $link) {
-							if (count($this->_visited) < $this->_maxLinks) {
-								Bbx_Log::debug('Spidering url ' . $link, null, Bbx_Search::LOG);
-								$this->_spider($link);
+	protected function _spider($url) {
+		$queue = array();
+		$visited = array();
+		array_push($queue, $url);
+		while(!empty($queue)) {
+			$url = array_shift($queue);
+			if (($url = $this->_sanitizeUrl($url))) {
+				if (!in_array($url, $visited)) {
+					$visited[] = $url;
+					Bbx_Log::write('Spidering url ' . $url, null, Bbx_Search::LOG);
+					$this->_client->setUri($this->_getAbsoluteUrl($url));
+					try {
+						$response = $this->_client->request();
+						$status = $response->getStatus();
+						Bbx_Log::write('Client response code ' . $status, null, Bbx_Search::LOG);
+						if ($status == '200') {
+							$data = $response->getBody();
+							$doc = Zend_Search_Lucene_Document_Html::loadHTML($data, false, 'utf-8');
+							$this->_search()->indexDoc($doc, $url);
+							$this->_indexed++;
+							$links = array_diff($doc->getLinks(), $this->_visited);
+							if (count($visited) < $this->_maxLinks) {
+								$queue = array_merge($queue, $links);
 							}
 							else {
-								Bbx_Log::write('Reached max number of links (' . $this->_maxLinks . '), returning', null, Bbx_Search::LOG);
+								Bbx_Log::write('Reached max number of links (' . $this->_maxLinks . '), exiting', null, Bbx_Search::LOG);
+								exit();
 							}
 						}
 					}
-					$this->_visited[] = $url;
-				}
-				catch (Exception $e) {
-					Bbx_Log::write('Request failed: ' . $e->getMessage(), null, Bbx_Search::LOG);
+					catch (Exception $e) {
+						Bbx_Log::write('Request failed: ' . $e->getMessage(), null, Bbx_Search::LOG);
+					}
 				}
 			}
 		}

@@ -68,7 +68,7 @@ class Bbx_Search {
 		$fields = array();
 		$fields['url'] = urlencode($url);
 		$fields['docId'] = md5($fields['url']);
-		if ($oldDoc = $this->_documentExists($fields['docId'])) {
+		if (($oldDoc = $this->_documentExists($fields['docId']))) {
 			if (md5($doc->body) == $oldDoc->checkSum) {
 				Bbx_Log::write('No change in document', null, self::LOG);
 				return;
