@@ -53,6 +53,7 @@ class Bbx_Controller_Rest_Admin extends Bbx_Controller_Rest {
 		}
 		$this->_doSearchIndex();
 		$this->_doCdnSync();
+		$this->_doCleanCache();
 	}
 	
 	protected function _doSearchIndex() {
@@ -79,6 +80,10 @@ class Bbx_Controller_Rest_Admin extends Bbx_Controller_Rest {
 			$pid = exec('nice php ' . APPLICATION_PATH . '/../library/Bbx/bin/cdn-sync.php /www/media ' . $cdnType .  
 				' > /dev/null 2>&1 &');
 		}
+	}
+	
+	protected function _doCleanCache() {
+		$this->_helper->getHelper('Cache')->removePagesTagged(array('index'));
 	}
 
 	protected function _loginUser() {
