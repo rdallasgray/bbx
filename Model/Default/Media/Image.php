@@ -81,12 +81,7 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 			$size = $this->getSize();
 		}
 		$this->setSize($size);
-		// KLUDGED TO GET S3 WORKING
 		$path = str_replace(':size', $size, $this->_mediaUrl) . '/' . $this->id . '.' . $this->_extension;
-		$mediaPath = str_replace(':size', $size, $this->_mediaPath) . '/' . $this->id . '.' . $this->_extension;
-		if (isset($this->_cdn) && !is_readable(APPLICATION_PATH . '/..' . $mediaPath)) {
-			return $this->_cdn->url($path);
-		}
 		$absolutePath = $absolute ? 'http://'.$_SERVER['SERVER_NAME'] : '';
 		return $absolutePath . $path;
 	}
