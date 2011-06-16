@@ -108,6 +108,8 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			$new_model = $collection->create($this->_getBodyData());
 		}
 		
+		Bbx_CacheManager::clean($this->getRequest(), 'post');
+		
 		$this->getResponse()->setHttpResponseCode(201)
 			->setHeader('Location',$new_model->url(true))
 			->setBody(Zend_Json::encode($new_model->toArray()))
@@ -125,6 +127,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 				$data = $this->_getBodyData();
 			}
 			$model->$method($data);
+			Bbx_CacheManager::clean($this->getRequest(), 'put');
 		}
 		catch (Exception $e) {
 			Bbx_Log::write('Unable to _put to model: ' . $e->getMessage());
@@ -140,6 +143,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		}
 		$model = $this->_helper->Model->getModel();
 		$model->delete($this->_getParam('id'));
+		Bbx_CacheManager::clean($this->getRequest(), 'delete');
 		$this->getResponse()->setHttpResponseCode(204)->sendResponse();
 		exit();
 	}
