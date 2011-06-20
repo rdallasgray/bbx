@@ -23,30 +23,31 @@ class Bbx_ControllerPlugin_ContextDependencies extends Zend_Controller_Plugin_Ab
 	public function routeShutdown(Zend_Controller_Request_Abstract $request) {
 		
 		$this->_request = $request;
+		$format = 'html';
 		
-		if ($accept = $request->getHeader('Accept')) {
-			$types = explode(',',$accept);
-			$mainType = trim($types[0]);
-			$mime = explode('/',$mainType);
+		if (($accept = $request->getHeader('Accept'))) {
+			if (strpos($accept, 'html') === false) {
+				$types = explode(',', $accept);
+				$mainType = trim($types[0]);
+				$mime = explode('/', $mainType);
 		
-			if ($mime[1] !== '') {
-				try {
-					if ($request->getParam('format') == '') {
-						$request->setParam('format',$mime[1]);
-					}
-				}
-				catch (Exception $e) {
+				if ($mime[1] !== '') {
+					$format = $mime[1];
 				}
 			}
+		}
+		
+		if ($request->getParam('format') === null) {
+			$request->setParam('format', $format);
 		}
 		
 		$context = $request->format;
 
 		$contextHelper = Zend_Controller_Action_HelperBroker::getStaticHelper('contextSwitch');
 		
-		$contextHelper->addContext('html',array())
+		$contextHelper->addContext('html', array())
 			          ->setDefaultContext('html');
-		
+
 		$this->_initDependencies($context);
 	}
 	
@@ -108,27 +109,19 @@ class Bbx_ControllerPlugin_ContextDependencies extends Zend_Controller_Plugin_Ab
 	}
 	
 	protected function _initHelpers() {
-		
-//		switch ($context) {
-			
-//			case 'csv':
-			$csvHelper = new Bbx_ActionHelper_Csv;
-			Zend_Controller_Action_HelperBroker::addHelper($csvHelper);
-			Zend_Controller_Action_HelperBroker::getStaticHelper('contextSwitch')->addContext(
-				'csv',
-				array(
-                    'suffix'    => 'csv',
-                    'headers'   => array('Content-Type' => 'application/csv; charset=iso-8859-1'),
-                    'callbacks' => array(
-                        'init' => array($csvHelper,'initContext'),
-                        'post' => array($csvHelper,'postContext'),
-					)
+		$csvHelper = new Bbx_ActionHelper_Csv;
+		Zend_Controller_Action_HelperBroker::addHelper($csvHelper);
+		Zend_Controller_Action_HelperBroker::getStaticHelper('contextSwitch')->addContext(
+			'csv',
+			array(
+                   'suffix'    => 'csv',
+                   'headers'   => array('Content-Type' => 'application/csv; charset=iso-8859-1'),
+                   'callbacks' => array(
+                       'init' => array($csvHelper,'initContext'),
+                       'post' => array($csvHelper,'postContext'),
 				)
-			);
-//			break;
-			
-//			default:
-//		}
+			)
+		);
 	}
 
 }

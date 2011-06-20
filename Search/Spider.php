@@ -113,33 +113,49 @@ class Bbx_Search_Spider {
 		$visited = array();
 		array_push($queue, $url);
 		while(!empty($queue)) {
+			$doc = null;
 			$url = array_shift($queue);
 			if (($url = $this->_sanitizeUrl($url))) {
 				if (!in_array($url, $visited)) {
 					$visited[] = $url;
 					Bbx_Log::write('Spidering url ' . $url, null, Bbx_Search::LOG);
-					$this->_client->setUri($this->_getAbsoluteUrl($url));
-					try {
-						$response = $this->_client->request();
-						$status = $response->getStatus();
-						Bbx_Log::write('Client response code ' . $status, null, Bbx_Search::LOG);
-						if ($status == '200') {
-							$data = $response->getBody();
-							$doc = Zend_Search_Lucene_Document_Html::loadHTML($data, false, 'utf-8');
-							$this->_search()->indexDoc($doc, $url);
-							$this->_indexed++;
-							$links = array_diff($doc->getLinks(), $this->_visited);
-							if (count($visited) < $this->_maxLinks) {
-								$queue = array_merge($queue, $links);
-							}
-							else {
-								Bbx_Log::write('Reached max number of links (' . $this->_maxLinks . '), exiting', null, Bbx_Search::LOG);
-								exit();
-							}
+					$cachePath = APPLICATION_PATH . '/../www/cached' . $url . '.html';
+					Bbx_Log::write('Checking cache: ' . $cachePath);
+					if (file_exists($cachePath)) {
+						Bbx_Log::write('Found file in cache', null, Bbx_Search::LOG);
+						try {
+							$doc = Zend_Search_Lucene_Document_Html::loadHTMLFile($cachePath, false, 'utf-8');
+						}
+						catch (Exception $e) {
+							Bbx_Log::write('Unable to open file: ' . $cachePath, null, Bbx_Search::LOG);
 						}
 					}
-					catch (Exception $e) {
-						Bbx_Log::write('Request failed: ' . $e->getMessage(), null, Bbx_Search::LOG);
+					else {
+						$this->_client->setUri($this->_getAbsoluteUrl($url));
+						try {
+							$response = $this->_client->request();
+							$status = $response->getStatus();
+							Bbx_Log::write('Client response code ' . $status, null, Bbx_Search::LOG);
+							if ($status == '200') {
+								$data = $response->getBody();
+								$doc = Zend_Search_Lucene_Document_Html::loadHTML($data, false, 'utf-8');
+							}
+						}
+						catch (Exception $e) {
+							Bbx_Log::write('Request failed: ' . $e->getMessage(), null, Bbx_Search::LOG);
+						}
+					}
+					if ($doc !== null) {
+						$this->_search()->indexDoc($doc, $url);
+						$this->_indexed++;
+						$links = array_diff($doc->getLinks(), $this->_visited);
+						if (count($visited) < $this->_maxLinks) {
+							$queue = array_merge($queue, $links);
+						}
+						else {
+							Bbx_Log::write('Reached max number of links (' . $this->_maxLinks . '), exiting', null, Bbx_Search::LOG);
+							exit();
+						}
 					}
 				}
 			}
