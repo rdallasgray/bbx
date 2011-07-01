@@ -20,7 +20,7 @@ class Bbx_View_Helper_Collection extends Bbx_View_Helper_Model {
 		$a = array();
 		foreach ($this->_model as $model) {
 			if ($model->isLinkable()) {
-				$a[] = '<a href="' . $model->url() . '">' . (string) $model . '</a>';
+				$a[] = '<a href="' . $model->url() . '">' . h((string) $model) . '</a>';
 			}
 			else {
 				$a[] = (string) $model;
@@ -31,7 +31,7 @@ class Bbx_View_Helper_Collection extends Bbx_View_Helper_Model {
 	
 	public function flatList() {
 		$a = $this->_model->toArray();
-		return implode(', ', $a);
+		return h(implode(', ', $a));
 	}
 	
 	public function columnize($num_cols) {
