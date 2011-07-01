@@ -30,9 +30,7 @@ function utf8_str_replace($search,$replace,$subject) {
 }
 
 function utf8_ucfirst($str){
-	$str=utf8_decode($str);
-	$str=ucfirst($str);
-	$str=utf8_encode($str);
+    $str[0] = mb_strtoupper($str[0]); 
 	return $str;
 }
 
