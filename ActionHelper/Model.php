@@ -32,7 +32,6 @@ class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 	}
 
 	public function getModel($routePart = null) {
-		$controller = $this->getActionController();
 		$request = $this->getRequest();
 		$controllerName = $request->getControllerName();
 		if ($controllerName == 'error') {
@@ -58,7 +57,6 @@ class Bbx_ActionHelper_Model extends Zend_Controller_Action_Helper_Abstract {
 	}
 	
 	public function getCollection() {
-		$controller = $this->getActionController();
 		$request = $this->getRequest();
 		$controllerName = $request->getControllerName();		
 		if ($controllerName == 'error') {
