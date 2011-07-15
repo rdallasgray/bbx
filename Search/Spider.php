@@ -120,7 +120,6 @@ class Bbx_Search_Spider {
 					$visited[] = $url;
 					Bbx_Log::write('Spidering url ' . $url, null, Bbx_Search::LOG);
 					$cachePath = APPLICATION_PATH . '/../www/cached' . $url . '.html';
-					Bbx_Log::write('Checking cache: ' . $cachePath);
 					if (file_exists($cachePath)) {
 						Bbx_Log::write('Found file in cache', null, Bbx_Search::LOG);
 						try {

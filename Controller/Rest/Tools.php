@@ -4,6 +4,7 @@ class Bbx_Controller_Rest_Tools extends Bbx_Controller_Rest {
 
 	public function init() {
 		$this->_helper->contextSwitch()->addActionContext('regenerate-images','json');
+		$this->_helper->contextSwitch()->addActionContext('regenerate-image','json');
 		$this->_helper->contextSwitch()->addActionContext('spider','json');
 		$this->_helper->contextSwitch()->addActionContext('update-all','json');
 		parent::init();
@@ -28,6 +29,30 @@ class Bbx_Controller_Rest_Tools extends Bbx_Controller_Rest {
 		// TODO send a JSON response
 		$this->getResponse()->sendResponse();
 		exit();
+	}
+	
+	public function regenerateImageAction() {
+		set_time_limit(86400);
+		$id = $this->_getParam('id');
+		if (empty($id)) {
+			return;
+		}
+		$cdnType = @Bbx_Config::get()->site->cdn->type;
+		$img = Bbx_Model::load('Image')->find($id);
+		$img->regenerateSizedMedia(null, true);
+		if (APPLICATION_ENV == 'production' && $cdnType != '') {
+			Bbx_Log::write('Doing CDN sync');
+			$pid = exec('nice php ' . APPLICATION_PATH . '/../library/Bbx/bin/cdn-sync.php /www/media ' . $cdnType .  
+				' > /dev/null 2>&1 &');
+		}
+		// TODO send a JSON response
+		$this->getResponse()->sendResponse();
+		exit();
+	}
+	
+	public function migrateAction() {
+		set_time_limit(86400);
+		include(APPLICATION_PATH . '/migrations/current.php');
 	}
 	
 	public function updateAllAction() {
