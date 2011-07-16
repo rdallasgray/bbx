@@ -172,6 +172,9 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 	}
 	
 	protected function _calculateImageGeometry($geom, $origWidth, $origHeight) {
+		if ($origWidth == 0 || $origHeight == 0) {
+			return array(0, 0);
+		}
 		preg_match('/(?<width>^\d*)x(?<height>\d*)(?<modifier>\^{0,1})/', $geom, $matches);
 		$reqWidth = (int) $matches['width'];
 		$reqHeight = (int) $matches['height'];
