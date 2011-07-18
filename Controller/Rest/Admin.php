@@ -80,6 +80,9 @@ class Bbx_Controller_Rest_Admin extends Bbx_Controller_Rest {
 			$pid = exec('nice php ' . APPLICATION_PATH . '/../library/Bbx/bin/cdn-sync.php /www/media ' . $cdnType .  
 				' > /dev/null 2>&1 &');
 		}
+		else {
+			Bbx_Log::write('App env is ' . APPLICATION_ENV .'; cdnType is ' . $cdnType);
+		}
 	}
 	
 	protected function _doCleanCache() {
