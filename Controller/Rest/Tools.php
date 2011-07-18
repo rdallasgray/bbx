@@ -20,7 +20,7 @@ class Bbx_Controller_Rest_Tools extends Bbx_Controller_Rest {
 		foreach ($imgs as $img) {
 			Bbx_Log::debug("regenerating sized media for image " . $img->id);
 			$img->regenerateSizedMedia($size, $overwrite);
-			if (APPLICATION_ENV == 'production' && $cdnType != '') {
+			if (APPLICATION_ENV == 'production' && $cdnType != null) {
 				Bbx_Log::write('Doing CDN sync');
 				$pid = exec('nice php ' . APPLICATION_PATH . '/../library/Bbx/bin/cdn-sync.php /www/media ' . $cdnType .  
 					' > /dev/null 2>&1 &');
@@ -40,7 +40,7 @@ class Bbx_Controller_Rest_Tools extends Bbx_Controller_Rest {
 		$cdnType = @Bbx_Config::get()->site->cdn->type;
 		$img = Bbx_Model::load('Image')->find($id);
 		$img->regenerateSizedMedia(null, true);
-		if (APPLICATION_ENV == 'production' && $cdnType != '') {
+		if (APPLICATION_ENV == 'production' && $cdnType != null) {
 			Bbx_Log::write('Doing CDN sync');
 			$pid = exec('nice php ' . APPLICATION_PATH . '/../library/Bbx/bin/cdn-sync.php /www/media ' . $cdnType .  
 				' > /dev/null 2>&1 &');

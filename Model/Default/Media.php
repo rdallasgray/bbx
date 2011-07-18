@@ -26,7 +26,7 @@ class Bbx_Model_Default_Media extends Bbx_Model {
 	public function __construct() {
 		parent::__construct();
 		$cdnType = @Bbx_Config::get()->site->cdn->type;
-		if ($cdnType != '') {
+		if ($cdnType != null) {
 			$this->_initCdn($cdnType);
 		}
 	}
