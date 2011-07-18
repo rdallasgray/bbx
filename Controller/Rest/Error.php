@@ -59,6 +59,10 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 					$method = '_set500';
 				}
 				$this->$method();
+				if ($this->_error['exception']->getCode() == 401) {
+					$this->getResponse()->sendResponse();
+					exit();
+				}
 			}
 			else {
 				$this->_set500();
