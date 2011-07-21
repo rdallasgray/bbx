@@ -55,6 +55,13 @@ class Bbx_View_Helper_Model extends Zend_View_Helper_Abstract {
 		return $this;
 	}
 	
+	public function wrapIfLinkable() {
+		if ($this->_model->isLinkable()) {
+			$this->wrapLink();
+		}
+		return $this;
+	}
+	
 	public function __toString() {
 		$text = $this->_text;
 		$this->_text = '';
