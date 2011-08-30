@@ -25,10 +25,10 @@ class Bbx_ActionHelper_Error extends Zend_Controller_Action_Helper_Abstract {
 			try {
 				$mail = Bbx_Mail::instance();
 				$mail->setFrom('error@'.Bbx_Config::get()->site->location,Bbx_Config::get()->site->location);
-				$mail->setBodyText($this->getRequest()->getRequestUri() . "\n\n" . print_r($e, true));
+				$mail->setBodyText($this->getRequest()->getRequestUri() . "\n\n" . $e->getMessage());
 				$mail->addTo(Bbx_Config::get()->site->support_address);
 				$mail->setSubject('Error at '.Bbx_Config::get()->site->location);
-				$mail->send();
+				$mail->sendAsync();
 			}
 			catch (Exception $exc) {
 				Bbx_Log::debug(print_r($e, true));
