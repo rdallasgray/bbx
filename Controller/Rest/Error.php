@@ -26,13 +26,12 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 		if ($plugin = Zend_Controller_Front::getInstance()->getPlugin('Bbx_ControllerPlugin_NestedLayouts')) {
 			$plugin->setErrorDetected(true);
 		}
+		// TODO the below does nothing at present
+		$this->_helper->getHelper('StaticCache')->cancel();
 	}
 
 	public function errorAction() {
 		$this->_error = $this->_getParam('error_handler');
-		if (!($this->_error['exception'] instanceof Bbx_Controller_Rest_Exception && $this->_error['exception']->getCode() == 401)) {
-			Bbx_Log::write(print_r($this->_error, true));
-		}
 		$response = $this->getResponse();
 
 		switch ($this->_error->type) {
@@ -59,10 +58,6 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 					$method = '_set500';
 				}
 				$this->$method();
-				if ($this->_error['exception']->getCode() == 401) {
-					$this->getResponse()->sendResponse();
-					exit();
-				}
 			}
 			else {
 				$this->_set500();
@@ -71,7 +66,7 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 			
 		if ($this->_helper->contextSwitch()->getCurrentContext() === 'json') {
 			$vars = isset($this->view->errorVars) ? $this->view->errorVars : array();
-			$response->setBody($this->view->error."\n\n".implode("\n",$vars));
+			$response->setBody($this->view->error."\n\n".implode("\n", $vars));
 			$this->view->clearVars();
 			$response->sendResponse();
 			exit();
@@ -118,7 +113,8 @@ class Bbx_Controller_Rest_Error extends Bbx_Controller_Rest {
 		$this->_log();
 	}
 	
-	protected function _set500() {
+	protected function _set500() {		
+		Bbx_Log::write(print_r($this->_error, true));
 		$this->getResponse()->setHttpResponseCode(500);
 		$this->view->errorType = 'Server Error';
 		$this->view->error = $this->_error['exception']->getMessage();;
