@@ -61,6 +61,15 @@ class Bbx_Mail extends Zend_Mail {
 		}
 		return self::$_instance;
 	}
+	
+	public function sendAsync() {
+		$pid = exec('nice php ' . APPLICATION_PATH . '/../library/Bbx/bin/send-mail.php '
+				. '"' . $this->getFrom() . '" '  
+				. '"' . $this->getBodyText(true) . '" '  
+				. '"' . implode(',', $this->getRecipients()) . '" '  
+				. '"' . $this->getSubject() . '" '  
+				. '> /dev/null 2>&1 &');
+	}
 
 }
 
