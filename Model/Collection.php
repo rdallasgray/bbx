@@ -180,11 +180,9 @@ class Bbx_Model_Collection implements IteratorAggregate, Countable, ArrayAccess 
 	
 	public function create($attributes = array(), $useId = false) {
 		if (isset($this->_relationship)) {
-			Bbx_Log::debug('$this->_relationship is set, creating new and reloading');
 			$model = $this->_relationship->create($this->_parentModel, $attributes, $useId);
 		}
 		else {
-			Bbx_Log::debug('$this->_relationship is NOT set, creating new and reloading');
 			$model = $this->_parentModel->create($attributes, $useId);
 		}
 		$this->_reload($this->_parentModel);
