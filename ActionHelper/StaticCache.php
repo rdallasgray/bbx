@@ -42,6 +42,10 @@ class Bbx_ActionHelper_StaticCache extends Zend_Controller_Action_Helper_Abstrac
 			$helper->direct(array($action), $parsedTags);
 		}
 	}
+	
+	public function cancel() {
+		//TODO
+	}
 
 }
 
