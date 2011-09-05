@@ -59,6 +59,7 @@ class Bbx_Media_Image extends Bbx_Media_Abstract {
 	}
 	
 	public function resize($width,$height,$upsize = false) {
+		set_time_limit(240);
 		$this->_processor()->resize($width,$height,$upsize);
 		return $this;
 	}
