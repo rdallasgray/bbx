@@ -64,6 +64,7 @@ class Bbx_ControllerPlugin_ContextDependencies extends Zend_Controller_Plugin_Ab
 			
 			case 'json':
 			case 'csv':
+			$this->_initView();
 			$this->_initHelpers();
 			break;
 

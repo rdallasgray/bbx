@@ -17,6 +17,9 @@ You should have received a copy of the GNU General Public License along with Bac
 class Bbx_ActionHelper_StaticCache extends Zend_Controller_Action_Helper_Abstract {
 		
 	public function direct($params, $format = 'html', $allowQuery = false) {
+		if (APPLICATION_ENV !== 'production') {
+			return;
+		}
 		$request = $this->getRequest();
 		if ($request->getParam('format') != $format || !$request->isGet() || (!$allowQuery && $request->getQuery() != null)) {
 			return;
