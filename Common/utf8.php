@@ -105,12 +105,13 @@ function utf8_excerpt($text, $chars, $balance_tags = true, $middle = false) {
 				$text = mb_substr($text, $first_space);
 			}
 		}
+    	if ($balance_tags) {
+    		$text = balance_tags($text);
+    	}
+    	$text = preg_replace("/^[^a-zA-Z0-9]+/", "", $text);
+    	return $text . ' …';
 	}
-	if ($balance_tags) {
-		$text = balance_tags($text);
-	}
-	$text = preg_replace("/^[^a-zA-Z0-9]+/", "", $text);
-	return $text . ' …';
+	return $text;
 }
 
 ?>
