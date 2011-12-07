@@ -23,13 +23,13 @@ class Bbx_CacheManager {
 	}
 	
 	private static function _clean($tags) {
-		function sanitizeTags(&$el, $idx) {
-			$el = preg_replace('/[^A-Za-z0-9_]/', '', $el);
+		$san_tags = array();
+		foreach($tags as $k => $v) {
+		    $san_tags[$k] = preg_replace('/[^A-Za-z0-9_]/', '', $v);
 		}
-		array_walk($tags, 'sanitizeTags');
-		Bbx_Log::write('Cleaning tags ' . print_r($tags, true));
+		Bbx_Log::write('Cleaning tags ' . print_r($san_tags, true));
 
-		self::_cache()->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, $tags);
+		self::_cache()->clean(Zend_Cache::CLEANING_MODE_MATCHING_TAG, $san_tags);
 	}
 
 	private static function _cleanForPut($request) {

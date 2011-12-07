@@ -35,8 +35,11 @@ class Bbx_ActionHelper_Download extends Zend_Controller_Action_Helper_Abstract {
 	}
 	
 	private function _doMediaDownload($model) {
-		Zend_Controller_Action_HelperBroker::getExistingHelper('viewRenderer')->setNoRender(true);
-		Zend_Controller_Action_HelperBroker::getExistingHelper('layout')->disableLayout();
+	    try {
+    		Zend_Controller_Action_HelperBroker::getExistingHelper('viewRenderer')->setNoRender(true);
+    		Zend_Controller_Action_HelperBroker::getExistingHelper('layout')->disableLayout();
+	    }
+	    catch (Exception $e) {}
 		try {
 			$this->getResponse()->setHeader('Content-Type', $model->getMimeType());
 			if ($this->getRequest()->isHead()) {
