@@ -16,7 +16,7 @@ You should have received a copy of the GNU General Public License along with Bac
 
 class Bbx_View_Helper_Collection extends Bbx_View_Helper_Model {
 
-	public function linkList() {
+	public function linkList($separator = ', ') {
 		$a = array();
 		foreach ($this->_model as $model) {
 			if ($model->isLinkable()) {
@@ -26,7 +26,7 @@ class Bbx_View_Helper_Collection extends Bbx_View_Helper_Model {
 				$a[] = (string) $model;
 			}
 		}
-		return implode(', ', $a);
+		return implode($separator, $a);
 	}
 	
 	public function flatList() {

@@ -58,7 +58,7 @@ class Bbx_Model_Default_Media extends Bbx_Model {
 	public function getMediaUrl($absolute = false) {
 		$path = $this->_mediaUrl . $this->id . '.' . $this->_extension;
 		$absolutePath = $absolute ? 'http://'.$_SERVER['SERVER_NAME'] : '';
-		return $absolutePath . $$path;
+		return $absolutePath . $path;
 	}
 	
 	public function getExtension() {
