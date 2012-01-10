@@ -53,6 +53,9 @@ class Bbx_Mail extends Zend_Mail {
 			if (isset(Bbx_Config::get()->site->smtp_port)) {
 				$options['port'] = Bbx_Config::get()->site->smtp_port;
 			}
+			if (isset(Bbx_Config::get()->site->smtp_ssl)) {
+				$options['ssl'] = Bbx_Config::get()->site->smtp_ssl;
+			}
 			$port = array_key_exists('port', $options) ? $options['port'] : 25;
 			$options = array_merge($options, $userOptions);
 			$transport = new Zend_Mail_Transport_Smtp(Bbx_Config::get()->site->smtp_server, $options);
