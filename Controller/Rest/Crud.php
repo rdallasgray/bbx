@@ -28,7 +28,9 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 			}
 			Zend_Controller_Action_HelperBroker::getExistingHelper('viewRenderer')->setScriptAction($rel);
 		}
-		$this->_doRequestMethod();
+		if(in_array($request->getActionName(), array('index', 'show'))) {
+		  $this->_doRequestMethod();
+		}
 	}
 	
 	public function indexAction() {
