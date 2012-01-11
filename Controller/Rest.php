@@ -64,7 +64,13 @@ class Bbx_Controller_Rest extends Zend_Controller_Action {
 	}
 	
 	protected function _getBodyData() {
-		return Zend_Json::decode($this->getRequest()->getRawBody());
+	  try {
+		return Zend_Json::decode($this->getRequest()->getRawBody());	    
+	  }
+	  catch(Zend_Json_Exception $e) {
+	    Bbx_Log::write($e->getMessage());
+	  }
+	  return $this->getRequest()->getRawBody();
 	}
 	
 	protected function _get() {
