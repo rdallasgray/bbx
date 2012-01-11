@@ -399,7 +399,7 @@ class Bbx_Model implements IteratorAggregate {
 	public function create($attributes = array(), $useId = false) {
 		$this->_beforeCreate();
 		if (!$useId) {
-			unset($attributes['id']);
+		       $attributes['id'] = null;
 		}
 		$this->build($attributes);
 		$this->save();
