@@ -433,7 +433,7 @@ class Bbx_Model implements IteratorAggregate {
 
 		$cols = $this->columns();
 
-v		if (in_array('updated_at',$cols)) {
+		if (in_array('updated_at',$cols)) {
 			$date = new Zend_Date();
 			$attributes['updated_at'] = $date->get(Zend_Date::ISO_8601);
 		}
