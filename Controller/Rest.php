@@ -68,7 +68,7 @@ class Bbx_Controller_Rest extends Zend_Controller_Action {
 		return Zend_Json::decode($this->getRequest()->getRawBody());	    
 	  }
 	  catch(Zend_Json_Exception $e) {
-	    Bbx_Log::write($e->getMessage());
+	    Bbx_Log::write('JSON exception: ' . $e->getMessage());
 	  }
 	  return $this->getRequest()->getRawBody();
 	}
