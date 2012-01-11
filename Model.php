@@ -399,7 +399,7 @@ class Bbx_Model implements IteratorAggregate {
 	public function create($attributes = array(), $useId = false) {
 		$this->_beforeCreate();
 		if (!$useId) {
-		       $attributes['id'] = null;
+		  unset($attributes['id']);
 		}
 		$this->build($attributes);
 		$this->save();
@@ -433,7 +433,7 @@ class Bbx_Model implements IteratorAggregate {
 
 		$cols = $this->columns();
 
-		if (in_array('updated_at',$cols)) {
+v		if (in_array('updated_at',$cols)) {
 			$date = new Zend_Date();
 			$attributes['updated_at'] = $date->get(Zend_Date::ISO_8601);
 		}
