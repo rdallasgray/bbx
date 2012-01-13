@@ -147,7 +147,7 @@ class Inflector
         '/s$/i' => '',
         );
 
-        $uncountable = array('audio', 'committee', 'equipment', 'information', 'rice', 'money', 'species', 'series', 'fish', 'sheep', 'press', 'news');
+        $uncountable = array('audio', 'committee', 'equipment', 'information', 'rice', 'money', 'species', 'series', 'fish', 'sheep', 'press', 'news', 'music');
 
         $irregular = array(
         'person' => 'people',
