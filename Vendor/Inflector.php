@@ -74,7 +74,7 @@ class Inflector
         '/s$/i'=> 's',
         '/$/'=> 's');
 
-        $uncountable = array('committee', 'equipment', 'information', 'rice', 'money', 'species', 'series', 'fish', 'sheep', 'press', 'news');
+        $uncountable = array('committee', 'equipment', 'information', 'rice', 'money', 'music', 'species', 'series', 'fish', 'sheep', 'press', 'news');
 
         $irregular = array(
         'person' => 'people',
