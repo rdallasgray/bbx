@@ -19,9 +19,10 @@ class Bbx_Controller_Rest_Tools extends Bbx_Controller_Rest {
       $roles = Bbx_Model::load('Role')->findAll();
       if (count($roles) === 0) {
 	$admin = Bbx_Model::load('Role')->create(array('name' => 'admin', 'precedence' => 0));
+	$staff = Bbx_Model::load('Role')->create(array('name' => 'staff', 'precedence' => 1));
       }
       $admin = Bbx_Model::load('Role')->find(array('where' => "name = 'admin'"));
-      $admin->users->create(array('username' => 'default', 'password' => 'default'));
+      $admin->users->create(array('username' => 'default', 'name' => 'default', 'password' => 'default'));
     }
   }
 	
