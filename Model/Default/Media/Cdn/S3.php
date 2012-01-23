@@ -37,21 +37,16 @@ class Bbx_Model_Default_Media_Cdn_S3 extends Bbx_Model_Default_Media_Cdn_Abstrac
 		return $cdn;
 	}
 
-	private function _checkBucket() {
-	  $b = false;
-	  $msg = "Bucket not available"
-	  if ($this->_service->isBucketAvailable($this->_bucket)) {
-	    $msg = "Bucket OK";
-	    $b = true;
+	private function _checkBuckets() {
+	  $buckets = $this->_service->getBuckets();
+	  Bbx_Log::write("Found buckets:", null, self::LOG);
+	  foreach($buckets as $b) {
+	    Bbx_Log::write($b);
 	  }
-	  Bbx_Log::write($msg, null, self::LOG);
-	  return $b;
 	}
 	
 	public function sync($start) {
-	  if (!$this->_checkBucket()) {
-	    return;
-	  }
+	  $this->_checkBuckets();
 		$root = realpath(APPLICATION_PATH . '/..');
 		$root_length = strlen($root);
 		$remote_path = $this->_streamPath();
