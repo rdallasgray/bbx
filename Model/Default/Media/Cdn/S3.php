@@ -41,7 +41,7 @@ class Bbx_Model_Default_Media_Cdn_S3 extends Bbx_Model_Default_Media_Cdn_Abstrac
 	  $buckets = $this->_service->getBuckets();
 	  Bbx_Log::write("Found buckets:", null, self::LOG);
 	  foreach($buckets as $b) {
-	    Bbx_Log::write($b);
+	    Bbx_Log::write($b, null, self::LOG);
 	  }
 	}
 	
