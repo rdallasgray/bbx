@@ -33,10 +33,25 @@ class Bbx_Model_Default_Media_Cdn_S3 extends Bbx_Model_Default_Media_Cdn_Abstrac
 		if (!Zend_Registry::isRegistered('cdn')) {
 			Zend_Registry::set('cdn', new Bbx_Model_Default_Media_Cdn_S3());
 		}
-		return Zend_Registry::get('cdn');
+		$cdn = Zend_Registry::get('cdn');
+		return $cdn;
+	}
+
+	private function _checkBucket() {
+	  $b = false;
+	  $msg = "Bucket not available"
+	  if ($this->_service->isBucketAvailable($this->_bucket)) {
+	    $msg = "Bucket OK";
+	    $b = true;
+	  }
+	  Bbx_Log::write($msg, null, self::LOG);
+	  return $b;
 	}
 	
 	public function sync($start) {
+	  if (!$this->_checkBucket()) {
+	    return;
+	  }
 		$root = realpath(APPLICATION_PATH . '/..');
 		$root_length = strlen($root);
 		$remote_path = $this->_streamPath();
