@@ -46,7 +46,7 @@ class Bbx_Model_Default_Media_Cdn_S3 extends Bbx_Model_Default_Media_Cdn_Abstrac
 	}
 	
 	public function sync($start) {
-	  $this->_checkBuckets();
+	  //	  $this->_checkBuckets();
 		$root = realpath(APPLICATION_PATH . '/..');
 		$root_length = strlen($root);
 		$remote_path = $this->_streamPath();
