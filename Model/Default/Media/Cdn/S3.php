@@ -37,16 +37,7 @@ class Bbx_Model_Default_Media_Cdn_S3 extends Bbx_Model_Default_Media_Cdn_Abstrac
 		return $cdn;
 	}
 
-	private function _checkBuckets() {
-	  $buckets = $this->_service->getBuckets();
-	  Bbx_Log::write("Found buckets:", null, self::LOG);
-	  foreach($buckets as $b) {
-	    Bbx_Log::write($b, null, self::LOG);
-	  }
-	}
-	
 	public function sync($start) {
-	  	  $this->_checkBuckets();
 		$root = realpath(APPLICATION_PATH . '/..');
 		$root_length = strlen($root);
 		$remote_path = $this->_streamPath();
