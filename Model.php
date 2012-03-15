@@ -282,6 +282,18 @@ class Bbx_Model implements IteratorAggregate {
 
 		return new Bbx_Model_Collection($this, $this->_table()->fetchAll($select));
 	}
+
+	public function findLinkable() {
+	  $args = func_get_args();
+	  $found = call_user_func_array(array($this, 'findAll'), $args);
+	  $linkable = array();
+	  foreach($found as $model) {
+	    if ($model->isLinkable()) {
+	      $linkable[] = $model;
+	    }
+	  }
+	  return $linkable;
+	}
 	
 	public function parseParams(array $params) {
 		
