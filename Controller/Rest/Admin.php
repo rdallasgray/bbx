@@ -78,7 +78,8 @@ class Bbx_Controller_Rest_Admin extends Bbx_Controller_Rest {
 		if (APPLICATION_ENV == 'production' && $cdnType != null) {
 			Bbx_Log::write('Doing CDN sync');
 			$pid = exec('nice php ' . APPLICATION_PATH . '/../library/Bbx/bin/cdn-sync.php /www/media ' . $cdnType .  
-				' > /dev/null 2>&1 &');
+				    ' 2>&1 &', $out, $result);
+			Bbx_Log::write(print_r($out, true));
 		}
 		else {
 			Bbx_Log::write('App env is ' . APPLICATION_ENV .'; cdnType is ' . $cdnType);
