@@ -51,7 +51,7 @@ class Bbx_Model_Default_Media_Cdn_S3 extends Bbx_Model_Default_Media_Cdn_Abstrac
 				$rel_path = substr($node, $root_length);
 				Bbx_Log::write("found dir " . $node, null, self::LOG);
 				Bbx_Log::write("checking remote dir " . $remote_path . $rel_path, null, self::LOG);
-				if (!is_resource(opendir($remote_path . $$rel_path))) {
+				if (!is_resource(opendir("" . $remote_path . $$rel_path))) {
 					Bbx_Log::write($remote_path . $rel_path . ' does not exist, creating', null, self::LOG);
 					if (!mkdir($remote_path . $rel_path)) {
 						Bbx_Log::write('Unable to create directory, skipping', null, self::LOG);
