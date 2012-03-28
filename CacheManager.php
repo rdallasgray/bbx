@@ -5,10 +5,10 @@ class Bbx_CacheManager {
 	public static function clean($request, $method) {
 		switch($method) {
 			case 'put':
-			case 'delete':
 			self::_cleanForPut($request);
 			break;
 			case 'post':
+			case 'delete':
 			self::_cleanForPost($request);
 			break;
 		}
