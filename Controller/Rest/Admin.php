@@ -80,7 +80,10 @@ class Bbx_Controller_Rest_Admin extends Bbx_Controller_Rest {
 			$pid = exec('nice php ' . APPLICATION_PATH . '/../library/Bbx/bin/cdn-sync.php /www/media '
 				    . $cdnType
 				    . ' 2>&1 &', $out, $result);
-			Bbx_Log::write(print_r($out, true));
+			if ($result !== 0) {
+			  Bbx_Log::write("CDN command failed with the following output: ");
+			  Bbx_Log::write(print_r($out, true));
+			}
 		}
 		else {
 			Bbx_Log::write('App env is ' . APPLICATION_ENV .'; cdnType is ' . $cdnType);
