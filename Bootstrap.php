@@ -65,13 +65,6 @@ class Bbx_Bootstrap extends Zend_Application_Bootstrap_Bootstrap {
 	protected function _initRegistry() {
 		Zend_Registry::set('db', $this->getResource('Db'));
 	}
-	
-	protected function _initExpires() {
-		$expires = Bbx_Config::get()->site->expires;
-		if ($expires) {
-			header('Expires: ' . $expires);
-		}
-	}
 
 }
 
