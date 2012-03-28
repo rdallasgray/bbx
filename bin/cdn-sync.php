@@ -16,9 +16,9 @@ if (!touch($sentinel_file)) {
 }
 
 set_time_limit(7200);
-$start = $argv[1];
+$start = (string) $argv[1];
 
-$cdnType = $argv[2];
+$cdnType = (string) $argv[2];
 
 Bbx_Log::write('CDN syncing at ' . $start . ', CDN type is ' . $cdnType);
 

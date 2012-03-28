@@ -5,11 +5,11 @@ require('init.php');
 $mail = Bbx_Mail::instance();
 
 $mail
-	->setFrom($argv[1])
-	->setBodyText($argv[3])
-	->setSubject($argv[4]);
+->setFrom((string) $argv[1])
+->setBodyText((String) $argv[3])
+->setSubject((string) $argv[4]);
 	
-foreach(explode(',', $argv[2]) as $to) {
+foreach(explode(',', (string) $argv[2]) as $to) {
 	$mail->addTo($to);
 }
 
