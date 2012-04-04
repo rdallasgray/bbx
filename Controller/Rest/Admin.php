@@ -51,9 +51,9 @@ class Bbx_Controller_Rest_Admin extends Bbx_Controller_Rest {
 		catch (Exception $e) {
 			Bbx_Log::debug("Unable to close session: ".$e->getMessage());
 		}
+		$this->_doCleanCache();
 		$this->_doSearchIndex();
 		$this->_doCdnSync();
-		$this->_doCleanCache();
 	}
 	
 	protected function _doSearchIndex() {
@@ -77,8 +77,13 @@ class Bbx_Controller_Rest_Admin extends Bbx_Controller_Rest {
 		$cdnType = @Bbx_Config::get()->site->cdn->type;
 		if (APPLICATION_ENV == 'production' && $cdnType != null) {
 			Bbx_Log::write('Doing CDN sync');
-			$pid = exec('nice php ' . APPLICATION_PATH . '/../library/Bbx/bin/cdn-sync.php /www/media ' . $cdnType .  
-				' > /dev/null 2>&1 &');
+			$pid = exec('nice php ' . APPLICATION_PATH . '/../library/Bbx/bin/cdn-sync.php /www/media '
+				    . $cdnType
+				    . ' 2>&1 &', $out, $result);
+			if ($result !== 0) {
+			  Bbx_Log::write("CDN command failed with the following output: ");
+			  Bbx_Log::write(print_r($out, true));
+			}
 		}
 		else {
 			Bbx_Log::write('App env is ' . APPLICATION_ENV .'; cdnType is ' . $cdnType);

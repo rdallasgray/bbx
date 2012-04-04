@@ -31,6 +31,7 @@ class Bbx_Controller_Rest_Crud extends Bbx_Controller_Rest {
 		if(in_array($request->getActionName(), array('index', 'show'))) {
 		  $this->_doRequestMethod();
 		}
+		Zend_Controller_Front::getInstance()->getResponse()->setHeader('Cache-control', 'must-revalidate', true);
 	}
 	
 	public function indexAction() {
