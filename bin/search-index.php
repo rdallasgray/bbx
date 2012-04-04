@@ -12,7 +12,7 @@ if (file_exists($sentinel_file)) {
 touch($sentinel_file);
 
 set_time_limit(21600);
-$host = $argv[1];
+$host = (string) $argv[1];
 $spider = new Bbx_Search_Spider();
 $spider->start('/', $host);
 
