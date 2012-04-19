@@ -44,7 +44,7 @@ class Bbx_Model_Default_User extends Bbx_Model {
 	
 	public function hasPrivilege($roleName) {
 		$role = Bbx_Model::load('Role')->find(array('name' => $roleName));
-		if (!$role instanceof Bbx_Model_Default_Role) {
+		if (!$role instanceof Bbx_Model_Default_Role || !$this->role instanceof Bbx_Model_Default_Role) {
 			return false;
 		}
 		return (int) $this->role->precedence <= (int) $role->precedence;
