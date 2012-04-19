@@ -106,6 +106,9 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 
 			$this->width = $img->width();
 			$this->height = $img->height();
+			if ($this->width == 0 || $this->height == 0) {
+			  throw new Bbx_Model_Exception('Unable to create sized media for image ' . $filePath);
+			}
 			$this->save();
 			
 			$this->_createSizedMedia();

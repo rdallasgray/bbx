@@ -31,16 +31,16 @@ class Bbx_Controller_Rest_Tools extends Bbx_Controller_Rest {
     set_time_limit(86400);
     $size = $this->_getParam('size');
     $overwrite = $this->_getParam('overwrite');
-    $cdnType = Bbx_Config::get()->site->cdn->type;
+    $cdnType = @Bbx_Config::get()->site->cdn->type;
     $imgs = Bbx_Model::load('Image')->findAll();
     foreach ($imgs as $img) {
       Bbx_Log::debug("regenerating sized media for image " . $img->id);
       $img->regenerateSizedMedia($size, $overwrite);
-      if (APPLICATION_ENV == 'production' && $cdnType != null) {
-	Bbx_Log::write('Doing CDN sync');
-	$pid = exec('nice php ' . APPLICATION_PATH . '/../library/Bbx/bin/cdn-sync.php /www/media ' . $cdnType .  
-		    ' > /dev/null 2>&1 &');
-      }
+    }
+    if (APPLICATION_ENV == 'production' && $cdnType != null) {
+      Bbx_Log::write('Doing CDN sync');
+      $pid = exec('nice php ' . APPLICATION_PATH . '/../library/Bbx/bin/cdn-sync.php /www/media ' . $cdnType .  
+		  ' > /dev/null 2>&1 &');
     }
     // TODO send a JSON response
     $this->getResponse()->sendResponse();

@@ -49,7 +49,7 @@ class Bbx_Model_Default_Media extends Bbx_Model {
 	}
 	
 	protected function _mediaPath($path, $forceLocal = false) {
-		if (!$forceLocal && isset($this->_cdn) && !is_readable(APPLICATION_PATH . '/..' . $path)) {
+		if (!$forceLocal && isset($this->_cdn) && !is_readable(APPLICATION_PATH . '/..' . $path) && APPLICATION_ENV == 'production') {
 			return $this->_cdn->filePath($path);
 		}
 		return APPLICATION_PATH . '/..' . $path;
