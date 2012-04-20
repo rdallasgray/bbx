@@ -154,7 +154,8 @@ class Inflector
         'man' => 'men',
         'child' => 'children',
         'sex' => 'sexes',
-        'move' => 'moves');
+        'move' => 'moves',
+	'status' => 'status');
 
         $lowercased_word = mb_strtolower($word);
         foreach ($uncountable as $_uncountable){
