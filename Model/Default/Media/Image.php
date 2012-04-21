@@ -25,6 +25,8 @@ class Bbx_Model_Default_Media_Image extends Bbx_Model_Default_Media {
 	protected $_tableName = 'images';
 	protected $_sizes = array();
 	protected $_size = 'original';
+	protected $_defaultParams = array('order'=>array('created_at DESC'));
+
 	
 	public function width() {
 		if ($this->getSize() === 'original' && !empty($this->width)) {
