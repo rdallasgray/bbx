@@ -24,6 +24,10 @@ class Bbx_ControllerPlugin_NestedLayouts extends Zend_Controller_Plugin_Abstract
 	public function addLayout($layout) {
 		$this->_layouts = array_merge($this->_layouts,$layout);
 	}
+
+	public function setLayout($layout) {
+	  $this->_layouts = array($layout);
+	}
 	
 	public function setErrorDetected($bool = true) {
 		$this->_errorDetected = $bool;

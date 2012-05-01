@@ -732,6 +732,16 @@ class Bbx_Model implements IteratorAggregate {
     }
     return new Bbx_Model_Collection($this, $items);
   }
+
+  public function has($key) {
+    try {
+      return count($this->$key) > 0;
+    }
+    catch (Exception $e) {
+      Bbx_Log::write('Exception checking ' . get_class($this) . '->has(' . $key . '): ' . $e->getMessage());
+      return false;
+    }
+  }
 	
   public function hasLinkable($key) {
     $method = 'hasLinkable' . Inflector::camelize($key);

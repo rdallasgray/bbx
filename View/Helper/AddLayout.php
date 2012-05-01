@@ -44,6 +44,10 @@ class Bbx_View_Helper_AddLayout {
 		$layout = func_get_args();
 		$this->_plugin->addLayout($layout);
 	}
+
+	public function setLayout($layout) {
+	  $this->_plugin->setLayout($layout);
+	}
 }
 
 ?>
