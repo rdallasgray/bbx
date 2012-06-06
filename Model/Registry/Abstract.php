@@ -100,7 +100,7 @@ abstract class Bbx_Model_Registry_Abstract {
 		if (empty($this->_tempEntry)) {
 			throw new Zend_Exception('No current entry is set: '.$method.' '.implode(',',$arguments));
 		}
-		if (count($arguments) == 1 && is_numeric(reset(array_keys($arguments)))) {
+		if (count($arguments) == 1 && @is_numeric(reset(array_keys($arguments)))) {
 			$arguments = $arguments[0];
 		}
 		$this->_currentKey[$method] = $arguments;

@@ -93,7 +93,7 @@ class Bbx_Model_Registry_Relationships extends Bbx_Model_Registry_Abstract {
 	
 	protected function _instantiate(Bbx_Model $parentModel,$childName) {
 		$parentModelName = get_class($parentModel);
-		$type = reset(array_keys($this->_data[$parentModelName][$childName]));
+		$type = @reset(array_keys($this->_data[$parentModelName][$childName]));
 		$class = 'Bbx_Model_Relationship_'.ucwords($type);
 		if (array_key_exists('through',$this->_data[$parentModelName][$childName][$type])) {
 			$class .= 'Through';

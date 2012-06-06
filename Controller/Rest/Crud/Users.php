@@ -18,7 +18,7 @@ class Bbx_Controller_Rest_Crud_Users extends Bbx_Controller_Rest_Crud {
 		parent::_get();
 	}
 	
-	protected function _put() {
+	protected function _put($data = null) {
 		$data = $this->_getBodyData();
 		if ($data['password'] === '') {
 			if (!($this->_userIsSelf($data['id']) && $this->_helper->Authenticate->getUser()->username != $data['username'])) {
