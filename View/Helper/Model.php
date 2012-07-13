@@ -44,6 +44,11 @@ class Bbx_View_Helper_Model extends Zend_View_Helper_Abstract {
 		$this->_model = $m;
 		return $this;
 	}
+
+  public function setText($text) {
+    $this->_text = $text;
+    return $this;
+  }
 	
 	public function wrap($start, $end) {
 		$this->_text = $start . $this->_text . $end;
