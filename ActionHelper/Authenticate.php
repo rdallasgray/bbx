@@ -20,7 +20,7 @@ class Bbx_ActionHelper_Authenticate extends Zend_Controller_Action_Helper_Abstra
 	protected $_resolver;
 	protected $_redirect;
 	
-	public function direct() {	
+	public function direct() {
 		if (!$this->asPrivilege('staff')) {
 			throw new Bbx_Controller_Rest_Exception(null, 401);
 		}
