@@ -25,7 +25,7 @@ class Bbx_Log {
 			if(!file_exists($logFilePath)) {
 				touch($logFilePath);
 			}
-			else if (filesize($logFilePath) > 10000000) {
+			else if (filesize($logFilePath) > 100000000) {
 				exec('tail -n 50000 ' . $logFilePath . ' > ' . $logFilePath . '__new');
 				copy($logFilePath . '__new', $logFilePath);
 				unlink($logFilePath . '__new');
