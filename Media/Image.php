@@ -30,6 +30,7 @@ class Bbx_Media_Image extends Bbx_Media_Abstract {
 	}
 	
 	public function save($savePath) {
+    $this->_checkPath($savePath);
 		$this->_processor()->save($savePath);
 		return $this;
 	}

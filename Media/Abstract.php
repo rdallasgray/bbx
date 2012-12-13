@@ -21,6 +21,13 @@ abstract class Bbx_Media_Abstract {
 	protected function __construct($sourcePath) {
 		$this->_sourcePath = $sourcePath;
 	}
+
+  protected function _checkPath($savePath) {
+    $pathName = dirname($savePath)
+    if (!file_exists($pathName)) {
+      mkdir($pathName, 0770, true);
+    }
+  }
 	
 }
 
